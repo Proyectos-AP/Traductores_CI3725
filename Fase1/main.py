@@ -18,11 +18,14 @@
 '''
 
 #------------------------------------------------------------------------------#
-#							IMPORTE DE MODULOS								   #
+#							                  IMPORTE DE MODULOS				          				   #
 #------------------------------------------------------------------------------#
+import sys
+import os 
+import ply.lex as lex
 
 #------------------------------------------------------------------------------#
-#						FUNCIONES Y PROCEDIMIENTOS							   #
+#						                 FUNCIONES Y PROCEDIMIENTOS				        			   #
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 def LeerArchivoEntrada(): 
@@ -58,25 +61,82 @@ def LeerArchivoEntrada():
 
 # List of token names.   This is always required
 tokens = (
-   'NUMBER',
-   'PLUS',
-   'MINUS',
-   'TIMES',
-   'DIVIDE',
-   'LPAREN',
-   'RPAREN',
+   'TkCreate',
+   'TkBot',
+   'TkOn',
+   'TkActivation',
+   'TkDeActivation',
+   'TkStore',
+   'TkEnd',
+   'TkExecute',
+   'TkActivate',
+   'TkDeactivate',
+   'TkSend',
+   'TkAdvance',
+   'TkRecieve',
+   'TkDefault',
+   'TkMe',
+   'TkDrop',
+   'TkCollect',
+   'TkAs',
+   'TkLeft',
+   'TkRigh',
+   'TkUp',
+   'TkDown',
+   'TkRead',
+   'TkWhile',
+   'TkBool',
+   'TkIf',
+   'TkElse',
+   'TkIdent',
+   'TkNum',
+   'TkTrue',
+   'TkFalse',
+   'TkCaracter',
+   'TkComa',
+   'TkPunto',
+   'TkDosPuntos',
+   'TkParAbre',
+   'TkParCierra',
+   'TkSuma',
+   'TkResta',
+   'TkMult',
+   'TkDiv',
+   'TkMod',
+   'TkConjuncion',
+   'TkDisyuncion',
+   'TkNegacion',
+   'TkMenor',
+   'TkMenorIgual',
+   'TkMayor',
+   'TkMayorIgual',
+   'TkIgual',
+   'TkDesigual'
 )
 
 # Regular expression rules for simple tokens
-t_PLUS    = r'\+'
-t_MINUS   = r'-'
-t_TIMES   = r'\*'
-t_DIVIDE  = r'/'
-t_LPAREN  = r'\('
-t_RPAREN  = r'\)'
+
+t_TkPunto      = r'\.'
+t_TkDosPuntos  = r'\:'
+t_TkParAbre    = r'\('
+t_TkParCierra  = r'\)'
+t_TkSuma       = r'\+'
+t_TkResta      = r'-'
+t_TkMult       = r'\*'
+t_TkDiv        = r'/'
+t_TkMod        = r'\%'
+t_TkConjuncion = r'/\\.'
+t_TkDisyuncion = r'\\/.'
+t_TkNegacion   = r'\~'
+t_TkMenor      = r'<.'
+t_TkMenorIgual = r'<=.'
+t_TkMayor      = r'>'
+t_TkMayorIgual = r'>='
+t_TkIgual      = r'='
+t_TkDesigual      = r'/='
 
 # A regular rule with some action code
-def t_NUMBER(t):
+def t_TkNum(t):
     r'\d+'
     t.value = int(t.value)    
     return t
@@ -91,7 +151,7 @@ t_ignore  = ' \t'
 
 # Error handling rule
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
+    print("Illegal character '%s'" % t.value[0],t.lineno,t.lexpos)
     t.lexer.skip(1)
     #exit(0)
 
