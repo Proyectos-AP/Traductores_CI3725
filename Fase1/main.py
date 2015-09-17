@@ -56,44 +56,45 @@ def LeerArchivoEntrada():
   return data
 
 #------------------------------------------------------------------------------#
-#						INICIO DEL PROGRAMA PRINCIPAL 						   #
+#           INICIO DEL PROGRAMA PRINCIPAL                #
 #------------------------------------------------------------------------------#
 
 # List of token names.   This is always required
-tokens = (
-   'TkCreate',
-   'TkBot',
-   'TkOn',
-   'TkActivation',
-   'TkDeActivation',
-   'TkStore',
-   'TkEnd',
-   'TkExecute',
-   'TkActivate',
-   'TkDeactivate',
-   'TkSend',
-   'TkAdvance',
-   'TkRecieve',
-   'TkDefault',
-   'TkMe',
-   'TkDrop',
-   'TkCollect',
-   'TkAs',
-   'TkLeft',
-   'TkRight',
-   'TkUp',
-   'TkDown',
-   'TkRead',
-   'TkWhile',
-   'TkBool',
-   'TkIf',
-   'TkElse',
-   'TkIdent',
-   'TkNum',
-   'TkInt',
-   'TkTrue',
-   'TkFalse',
-   'TkCaracter',
+reserved = {
+    'create'           : 'TkCreate',
+    'bot'              : 'TkBot' ,
+    'on'               : 'TkOn',
+    'activation'       : 'TkActivation' ,
+    'desactivation'    : 'TkDeActivation',
+    'store'            : 'TkStore' ,
+    'end'              : 'TkEnd'  ,
+    'execute'          : 'TkExecute' ,
+    'activate'         : 'TkActivate',
+    'desactivate'      : 'TkDeactivate' ,
+    'send'             : 'TkSend' ,   
+    'advance'          : 'TkAdvance' ,
+    'recive'           : 'TkRecieve',
+    'default'          : 'TkDefault' ,
+    'me'               : 'TkMe' ,
+    'drop'             : 'TkDrop',
+    'collect'          : 'TkCollect',
+    'as'               : 'TkAs',
+    'int'              : 'TkInt',
+    'left'             : 'TkLeft',
+    'right'            : 'TkRight',
+    'up'               : 'TkUp' ,
+    'down'             : 'TkDown' ,
+    'read'             : 'TkRead',
+    'while'            : 'TkWhile' ,
+    'bool'             : 'TkBool',
+    'if'               : 'TkIf',
+    'else'             : 'TkElse'  ,
+    'true'             : 'TkTrue'  ,
+    'false'            : 'TkFalse',
+    'char'             : 'TkCaracter'
+}
+
+tokens = [
    'TkComa',
    'TkPunto',
    'TkDosPuntos',
@@ -112,41 +113,13 @@ tokens = (
    'TkMayor',
    'TkMayorIgual',
    'TkIgual',
-   'TkDesigual'
-)
+   'TkDesigual',
+   'TkIdent',
+   'TkNum'
+] + list(reserved.values())
 
 # Regular expression rules for simple tokens
-t_TkCreate       = 'create'
-t_TkBot          = 'bot'
-t_TkOn           = 'on'
-t_TkActivation   = 'activation'
-t_TkDeActivation = 'desactivation'
-t_TkStore        = 'store'
-t_TkEnd          = 'end'
-t_TkExecute      = 'execute'
-t_TkActivate     = 'activate'
-t_TkDeactivate   = 'desactivate'
-t_TkSend         = 'send'     
-t_TkAdvance      = 'advance'
-t_TkRecieve      = 'recive'
-t_TkDefault      = 'default'
-t_TkMe           = 'me'
-t_TkDrop         = 'drop'
-t_TkCollect      = 'collect'
-t_TkAs           = 'as'
-t_TkInt          = 'int'
-t_TkLeft         = 'left'
-t_TkRight        = 'right'
-t_TkUp           = 'up'
-t_TkDown         = 'down'
-t_TkRead         = 'read'
-t_TkWhile        = 'while'
-t_TkBool         = 'bool'
-t_TkIf           = 'if'
-t_TkElse         = 'else'
-t_TkTrue         = 'true'
-t_TkFalse        = 'false'
-t_TkCaracter     = 'char'
+
 t_TkPunto        = r'\.'
 t_TkDosPuntos    = r'\:'
 t_TkParAbre      = r'\('
@@ -166,15 +139,17 @@ t_TkMayorIgual   = r'>='
 t_TkIgual        = r'='
 t_TkDesigual     = r'/='
 
+
 # A regular rule with some action code
 def t_TkNum(t):
     r'\d+'
     t.value = int(t.value)    
     return t
 
-#def t_TkIdent(t):
- # r'[a-zA-Z_][a-zA-Z_0-9]*'
-  #return t
+def t_TkIdent(t):
+  r'[a-zA-Z_][a-zA-Z_0-9]*'
+  t.type = reserved.get(t.value,'TkIdent')
+  return t
 
 # Define a rule so we can track line numbers
 def t_newline(t):
