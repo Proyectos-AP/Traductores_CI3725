@@ -107,7 +107,7 @@ class lista:
 				elif (aux.valor.tipo=="TkIdent"):
 					print(aux.valor.tipo+"(\""+aux.valor.elem+"\")",aux.valor.fila,aux.valor.columna)
 				else:
-					print(aux.valor.tipo,aux.valor.elem)
+					print(aux.valor.tipo,aux.valor.fila,aux.valor.columna)
 				aux = aux.siguiente
 	
 #------------------------------------------------------------------------------#
