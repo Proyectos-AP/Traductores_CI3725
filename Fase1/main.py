@@ -222,7 +222,7 @@ while True:
     if not tok: 
         break      # No more input
     print(tok.type, tok.value, tok.lineno,find_column(datos,tok))
-    Nodo = token(tok.type,tok.lineno,find_column(datos,tok))
+    Nodo = token(tok.type,tok.value,tok.lineno,find_column(datos,tok))
     ListaTokens.agregar(Nodo)
  
 ListaTokens.imprimir()  

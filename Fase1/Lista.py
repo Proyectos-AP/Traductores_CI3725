@@ -22,7 +22,7 @@
 ################################################################################
 
 class token:
-	def __init__(self,tipo=None,fila=None,columna=None):
+	def __init__(self,tipo=None,elem=None,fila=None,columna=None):
 		'''
 		Descripción de la función: 
 		Variables de entrada: La objetivo de esta funcion es servir de apoyo 
@@ -34,6 +34,7 @@ class token:
 		'''
 		# Tipo del token
 		self.tipo = tipo
+		self.elem = elem
 		# Fila donde se encuentra el token
 		self.fila = fila
 		# Fila donde se encuentra el token
@@ -100,7 +101,13 @@ class lista:
 		elif self.valor:
 			aux = self
 			while aux:
-				print(aux.valor.tipo,aux.valor.fila,aux.valor.columna)
+
+				if (aux.valor.tipo=="TkNum"):
+					print(aux.valor.tipo+"("+str(aux.valor.elem)+")",aux.valor.fila,aux.valor.columna)
+				elif (aux.valor.tipo=="TkIdent"):
+					print(aux.valor.tipo+"(\""+aux.valor.elem+"\")",aux.valor.fila,aux.valor.columna)
+				else:
+					print(aux.valor.tipo,aux.valor.elem)
 				aux = aux.siguiente
 	
 #------------------------------------------------------------------------------#
