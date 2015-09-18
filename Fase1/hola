@@ -1,0 +1,13 @@
+create
+ int bot contador
+$- holis 
+	como estas -$
+  on activation:
+			store 35.
+		end
+	end
+	
+	execute
+		activate contador.
+	end
+Create

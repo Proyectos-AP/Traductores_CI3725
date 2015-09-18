@@ -17,11 +17,24 @@
 *
 '''
 
+'''
+
+  Cosas que faltan:
+
+    * Crear clases (listo)
+    * Ignorar comentarios (listo)
+    * Ignorar comillas simples (listo)
+    * Buen manejo de errores
+    * Imprimir de forma lineal
+
+'''
+
 #------------------------------------------------------------------------------#
 #							                  IMPORTE DE MODULOS				          				   #
 #------------------------------------------------------------------------------#
 import sys
-import os 
+import os
+from Lista import * 
 import ply.lex as lex
 
 #------------------------------------------------------------------------------#
@@ -115,7 +128,9 @@ tokens = [
    'TkIgual',
    'TkDesigual',
    'TkIdent',
-   'TkNum'
+   'TkNum',
+   'TkComment',
+   'TkComillas'
 ] + list(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -140,6 +155,9 @@ t_TkIgual        = r'='
 t_TkDesigual     = r'/='
 
 
+# A string containing ignored characters (spaces and tabs)
+t_ignore  = ' \t'
+
 # A regular rule with some action code
 def t_TkNum(t):
     r'\d+'
@@ -151,13 +169,29 @@ def t_TkIdent(t):
   t.type = reserved.get(t.value,'TkIdent')
   return t
 
+def t_TkComment(t):
+    r'\$-[^-]*-\$'
+    pass
+    # No return value. Token discarded
+
+def t_TkComillas(t):
+    r'\'-[^-]*-\''
+    pass
+
 # Define a rule so we can track line numbers
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
-# A string containing ignored characters (spaces and tabs)
-t_ignore  = ' \t'
+# Compute column. 
+#     input is the input text string
+#     token is a token instance
+def find_column(input,token):
+    last_cr = input.rfind('\n',0,token.lexpos)
+    if last_cr < 0:
+      last_cr = 0
+    column = (token.lexpos - last_cr) + 1
+    return column
 
 # Error handling rule
 def t_error(t):
@@ -167,8 +201,9 @@ def t_error(t):
 
 # Build the lexer
 lexer = lex.lex()
+ListaTokens = lista()
 
-############################################################
+################################################################################
 
 datos = LeerArchivoEntrada()
 # Give the lexer some input
@@ -186,8 +221,12 @@ while True:
     tok = lexer.token()
     if not tok: 
         break      # No more input
-    print(tok.type, tok.value, tok.lineno, tok.lexpos)
+    print(tok.type, tok.value, tok.lineno,find_column(datos,tok))
+    Nodo = token(tok.type,tok.lineno,find_column(datos,tok))
+    ListaTokens.agregar(Nodo)
+ 
+ListaTokens.imprimir()  
 
 #------------------------------------------------------------------------------#
-#						 FIN DEL PROGRAMA PRINCIPAL 						   #
+#						             FIN DEL PROGRAMA PRINCIPAL 				             		   #
 #------------------------------------------------------------------------------#
