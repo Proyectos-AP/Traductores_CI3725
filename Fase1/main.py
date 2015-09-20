@@ -129,7 +129,8 @@ tokens = [
    'TkDesigual',
    'TkIdent',
    'TkNum',
-   'TkComment',
+   #'TkComment',
+   'TkCommentL',
    'TkComillas'
 ] + list(reserved.values())
 
@@ -170,12 +171,18 @@ def t_TkIdent(t):
   return t
 
 def t_TkComment(t):
-    r'\$-[^-]*-\$'
-    pass
+  #r'(/\*(.|\n)*?\*/)|(//.*)'
+  r'(\$-(.|\n)*?-\$)|(\$\$.*)'
+  #r'\$-([^-]|-|\$)*-\$'
+  pass
     # No return value. Token discarded
 
+#def t_TkCommentL(t):
+#    r'\$\$ .*'
+#    pass
+
 def t_TkComillas(t):
-    r'\'-[^-]*-\''
+    r'\'[^\']*\''
     pass
 
 # Define a rule so we can track line numbers
