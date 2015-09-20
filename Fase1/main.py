@@ -24,8 +24,10 @@
     * Crear clases (listo)
     * Ignorar comentarios (listo)
     * Ignorar comillas simples (listo)
-    * Buen manejo de errores
+    * Buen manejo de errores (listo)
     * Imprimir de forma lineal (listo)
+    * Probar bien
+    * Poner bonito el codigo
 
 '''
 
@@ -34,12 +36,12 @@
 #------------------------------------------------------------------------------#
 import sys
 import os
-from Lista import * 
+from Lista import *
+from Lexer import * 
 import ply.lex as lex
 
 #------------------------------------------------------------------------------#
 #						                 FUNCIONES Y PROCEDIMIENTOS				        			   #
-#------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 def LeerArchivoEntrada(): 
   '''
@@ -69,170 +71,68 @@ def LeerArchivoEntrada():
   return data
 
 #------------------------------------------------------------------------------#
-#           INICIO DEL PROGRAMA PRINCIPAL                #
+
+def ImprimirErrores(ArregloErrores):
+
+  '''
+    Descripción de la función: Lee el archivo de entrada, crea los 
+    paquetes y los almacena en la cola de prioridades.
+    Variables de entrada: Ninguna
+    Variables de salida: Ninguna
+  '''
+
+  for i in range(len(ArregloErrores)):
+
+    print("Error: Caracter inesperado \""+ArregloErrores[i].elem+"\" en la fila "\
+      +str(ArregloErrores[i].fila)+", columna "+str(ArregloErrores[i].columna) )
+
 #------------------------------------------------------------------------------#
 
-# List of token names.   This is always required
-reserved = {
-    'create'           : 'TkCreate',
-    'bot'              : 'TkBot' ,
-    'on'               : 'TkOn',
-    'activation'       : 'TkActivation' ,
-    'desactivation'    : 'TkDeActivation',
-    'store'            : 'TkStore' ,
-    'end'              : 'TkEnd'  ,
-    'execute'          : 'TkExecute' ,
-    'activate'         : 'TkActivate',
-    'desactivate'      : 'TkDeactivate' ,
-    'send'             : 'TkSend' ,   
-    'advance'          : 'TkAdvance' ,
-    'recive'           : 'TkRecieve',
-    'default'          : 'TkDefault' ,
-    'me'               : 'TkMe' ,
-    'drop'             : 'TkDrop',
-    'collect'          : 'TkCollect',
-    'as'               : 'TkAs',
-    'int'              : 'TkInt',
-    'left'             : 'TkLeft',
-    'right'            : 'TkRight',
-    'up'               : 'TkUp' ,
-    'down'             : 'TkDown' ,
-    'read'             : 'TkRead',
-    'while'            : 'TkWhile' ,
-    'bool'             : 'TkBool',
-    'if'               : 'TkIf',
-    'else'             : 'TkElse'  ,
-    'true'             : 'TkTrue'  ,
-    'false'            : 'TkFalse',
-    'char'             : 'TkCaracter'
-}
+def ImprimirTokens(ArregloTokens):
 
-tokens = [
-   'TkComa',
-   'TkPunto',
-   'TkDosPuntos',
-   'TkParAbre',
-   'TkParCierra',
-   'TkSuma',
-   'TkResta',
-   'TkMult',
-   'TkDiv',
-   'TkMod',
-   'TkConjuncion',
-   'TkDisyuncion',
-   'TkNegacion',
-   'TkMenor',
-   'TkMenorIgual',
-   'TkMayor',
-   'TkMayorIgual',
-   'TkIgual',
-   'TkDesigual',
-   'TkIdent',
-   'TkNum',
-   #'TkComment',
-   'TkCommentL',
-   'TkComillas'
-] + list(reserved.values())
+  '''
+    Descripción de la función: Lee el archivo de entrada, crea los 
+    paquetes y los almacena en la cola de prioridades.
+    Variables de entrada: Ninguna
+    Variables de salida: Ninguna
+  '''
 
-# Regular expression rules for simple tokens
+  for i in range(len(ArregloTokens)):
 
-t_TkPunto        = r'\.'
-t_TkDosPuntos    = r'\:'
-t_TkParAbre      = r'\('
-t_TkParCierra    = r'\)'
-t_TkSuma         = r'\+'
-t_TkResta        = r'-'
-t_TkMult         = r'\*'
-t_TkDiv          = r'/'
-t_TkMod          = r'\%'
-t_TkConjuncion   = r'/\\.'
-t_TkDisyuncion   = r'\\/.'
-t_TkNegacion     = r'\~'
-t_TkMenor        = r'<.'
-t_TkMenorIgual   = r'<=.'
-t_TkMayor        = r'>'
-t_TkMayorIgual   = r'>='
-t_TkIgual        = r'='
-t_TkDesigual     = r'/='
+    #print(tok.type, tok.value, tok.lineno,self.find_column(self.data,tok),end=" ")
+    if (ArregloTokens[i].tipo=="TkNum"):
+      print(ArregloTokens[i].tipo+"("+str(ArregloTokens[i].elem)+")",\
+        ArregloTokens[i].fila,ArregloTokens[i].columna,end="  ")
 
+    elif (ArregloTokens[i].tipo=="TkIdent"):
+      print(ArregloTokens[i].tipo+"(\""+ArregloTokens[i].elem+"\")",\
+        ArregloTokens[i].fila,ArregloTokens[i].columna,end="  ")
 
-# A string containing ignored characters (spaces and tabs)
-t_ignore  = ' \t'
+    elif (ArregloTokens[i].tipo=="TkCaracter"):
+      print(ArregloTokens[i].tipo+"("+ArregloTokens[i].elem+")",\
+        ArregloTokens[i].fila,ArregloTokens[i].columna,end="  ")
 
-# A regular rule with some action code
-def t_TkNum(t):
-    r'\d+'
-    t.value = int(t.value)    
-    return t
+    else:
+      print(ArregloTokens[i].tipo,ArregloTokens[i].fila,\
+        ArregloTokens[i].columna,end="  ")
 
-def t_TkIdent(t):
-  r'[a-zA-Z_][a-zA-Z_0-9]*'
-  t.type = reserved.get(t.value,'TkIdent')
-  return t
+#------------------------------------------------------------------------------#
+#                          INICIO DEL PROGRAMA PRINCIPAL                       #
+#------------------------------------------------------------------------------#
 
-def t_TkComment(t):
-  #r'(/\*(.|\n)*?\*/)|(//.*)'
-  r'(\$-(.|\n)*?-\$)|(\$\$.*)'
-  #r'\$-([^-]|-|\$)*-\$'
-  pass
-    # No return value. Token discarded
+datos = LeerArchivoEntrada()  # Se lee el archivo de entrada
+MiLexer=Lexer(datos)          # Se crea el Lexer
+MiLexer.build()               # Se construye el Lexer
+MiLexer.tokenizar()           # Se arman los tokens
 
-#def t_TkCommentL(t):
-#    r'\$\$ .*'
-#    pass
+# Se verifica si existen caracteres no permitidos en el codigo
+if (len(MiLexer.Errores)!= 0 ) :
+  # Se imprimen los errores lexicograficos
+  ImprimirErrores(MiLexer.Errores)
 
-def t_TkComillas(t):
-    r'\'[^\']*\''
-    pass
-
-# Define a rule so we can track line numbers
-def t_newline(t):
-    r'\n+'
-    t.lexer.lineno += len(t.value)
-
-# Compute column. 
-#     input is the input text string
-#     token is a token instance
-def find_column(input,token):
-    last_cr = input.rfind('\n',0,token.lexpos)
-    if last_cr < 0:
-      last_cr = 0
-    column = (token.lexpos - last_cr) + 1
-    return column
-
-# Error handling rule
-def t_error(t):
-    print("Illegal character '%s'" % t.value[0],t.lineno,t.lexpos)
-    t.lexer.skip(1)
-    #exit(0)
-
-# Build the lexer
-lexer = lex.lex()
-ListaTokens = lista()
-
-################################################################################
-
-datos = LeerArchivoEntrada()
-# Give the lexer some input
-lexer.input(datos)
-
-# Tokenize
-#while True:
- #   tok = lexer.token()
-  #  if not tok: 
-   #     break      # No more input
-    #print(tok)
-
-# Tokenize
-while True:
-    tok = lexer.token()
-    if not tok: 
-        break      # No more input
-    print(tok.type, tok.value, tok.lineno,find_column(datos,tok),end=" ")
-    Nodo = token(tok.type,tok.value,tok.lineno,find_column(datos,tok))
-    ListaTokens.agregar(Nodo)
- 
-ListaTokens.imprimir()  
+else:
+  # Se imprimen los tokens
+  ImprimirTokens(MiLexer.Tokens)
 
 #------------------------------------------------------------------------------#
 #						             FIN DEL PROGRAMA PRINCIPAL 				             		   #
