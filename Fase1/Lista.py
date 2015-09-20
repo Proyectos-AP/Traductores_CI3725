@@ -93,6 +93,7 @@ class lista:
 						  la lista.
 		Variables de salida: Ninguna.
 		'''
+		print()
 		print("-------------------------------")
 		print("        Imprimiendo lista")
 		print("-------------------------------")

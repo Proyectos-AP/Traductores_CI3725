@@ -25,7 +25,7 @@
     * Ignorar comentarios (listo)
     * Ignorar comillas simples (listo)
     * Buen manejo de errores
-    * Imprimir de forma lineal
+    * Imprimir de forma lineal (listo)
 
 '''
 
@@ -221,7 +221,7 @@ while True:
     tok = lexer.token()
     if not tok: 
         break      # No more input
-    print(tok.type, tok.value, tok.lineno,find_column(datos,tok))
+    print(tok.type, tok.value, tok.lineno,find_column(datos,tok),end=" ")
     Nodo = token(tok.type,tok.value,tok.lineno,find_column(datos,tok))
     ListaTokens.agregar(Nodo)
  
