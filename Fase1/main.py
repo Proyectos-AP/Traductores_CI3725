@@ -100,16 +100,14 @@ def ImprimirTokens(ArregloTokens):
   for i in range(len(ArregloTokens)):
 
     #print(tok.type, tok.value, tok.lineno,self.find_column(self.data,tok),end=" ")
-    if (ArregloTokens[i].tipo=="TkNum"):
+    if (ArregloTokens[i].tipo in {"TkNum","TkCaracter"} ):
+
       print(ArregloTokens[i].tipo+"("+str(ArregloTokens[i].elem)+")",\
         ArregloTokens[i].fila,ArregloTokens[i].columna,end="  ")
 
     elif (ArregloTokens[i].tipo=="TkIdent"):
-      print(ArregloTokens[i].tipo+"(\""+ArregloTokens[i].elem+"\")",\
-        ArregloTokens[i].fila,ArregloTokens[i].columna,end="  ")
 
-    elif (ArregloTokens[i].tipo=="TkCaracter"):
-      print(ArregloTokens[i].tipo+"("+ArregloTokens[i].elem+")",\
+      print(ArregloTokens[i].tipo+"(\""+ArregloTokens[i].elem+"\")",\
         ArregloTokens[i].fila,ArregloTokens[i].columna,end="  ")
 
     else:
