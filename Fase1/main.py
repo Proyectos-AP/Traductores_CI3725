@@ -13,7 +13,7 @@
 * Descripcion:
 *
 *
-* Ultima modificacion: 17/09/2015
+* Ultima modificacion: 25/09/2015
 *
 '''
 
@@ -46,10 +46,11 @@ import ply.lex as lex
 def LeerArchivoEntrada(): 
   '''
     Descripción de la función: Lee el archivo de entrada.
-    
+
     * Variables de entrada: Ninguna
-    * Variables de salida: data // Almacena toda la informacion que 
-                                contiene el archivo de entrada
+    * Variables de salida: data// Almacena toda la informacion que se 
+                                  encuentra en el archivo de entrada.
+
   '''
 
   # Verificación de la correctitud de los argumentos dados.
@@ -94,13 +95,12 @@ def ImprimirErrores(ArregloErrores):
 def ImprimirTokens(ArregloTokens):
 
   '''
-
     Descripción de la función: Imprime la lista de tokens que almacena
       los tokens realizados a partir del archivo de entrada.
 
     * Variables de entrada: ArregloTokens // Lista de tokens
     * Variables de salida: Ninguna.
-
+    
   '''
 
   for i in range(len(ArregloTokens)):
