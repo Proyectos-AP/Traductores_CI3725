@@ -123,8 +123,8 @@ class Lexer():
 	   'TkDisyuncion',
 	   'TkNegacion',
 	   'TkMenor',
-	   'TkMenorIgual',
 	   'TkMayor',
+	   'TkMenorIgual',
 	   'TkMayorIgual',
 	   'TkIgual',
 	   'TkDesigual',
@@ -145,12 +145,12 @@ class Lexer():
 	t_TkMult         = r'\*'
 	t_TkDiv          = r'/'
 	t_TkMod          = r'\%'
-	t_TkConjuncion   = r'/\\.'
-	t_TkDisyuncion   = r'\\/.'
+	t_TkConjuncion   = r'/\\'
+	t_TkDisyuncion   = r'\\/'
 	t_TkNegacion     = r'\~'
-	t_TkMenor        = r'<.'
-	t_TkMenorIgual   = r'<=.'
+	t_TkMenor        = r'<'
 	t_TkMayor        = r'>'
+	t_TkMenorIgual   = r'<='
 	t_TkMayorIgual   = r'>='
 	t_TkIgual        = r'='
 	t_TkDesigual     = r'/='
@@ -230,7 +230,7 @@ class Lexer():
 	        if not tok: 
 	            break
 	        #print(tok.type, tok.value, tok.lineno,self.find_column(self.data,tok),end=" ")
-	        #print(tok.type, tok.value, tok.lineno,self.find_column(self.data,tok))
+	        print(tok.type, tok.value, tok.lineno,self.find_column(self.data,tok))
 	        if ( tok.type in {"TkNum","TkIdent","TkCaracter"} ):
 	        	NodoToken = token(tok.type,tok.value,tok.lineno,\
 	        		self.find_column(self.data,tok))
