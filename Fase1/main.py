@@ -13,7 +13,7 @@
 * Descripcion:
 *
 *
-* Ultima modificacion: 17/09/2015
+* Ultima modificacion: 25/09/2015
 *
 '''
 
@@ -45,10 +45,12 @@ import ply.lex as lex
 #------------------------------------------------------------------------------#
 def LeerArchivoEntrada(): 
   '''
-    Descripción de la función: Lee el archivo de entrada, crea los 
-    paquetes y los almacena en la cola de prioridades.
-    Variables de entrada: Ninguna
-    Variables de salida: Ninguna
+  *  Descripción de la función: Lee el archivo de entrada, crea los 
+  *  paquetes y los almacena en la cola de prioridades.
+  *  Variables de entrada: 
+  *    - Ninguna
+  *  Variables de salida: 
+  *    - Ninguna
   '''
 
   # Verificación de la correctitud de los argumentos dados.
@@ -75,10 +77,12 @@ def LeerArchivoEntrada():
 def ImprimirErrores(ArregloErrores):
 
   '''
-    Descripción de la función: Lee el archivo de entrada, crea los 
-    paquetes y los almacena en la cola de prioridades.
-    Variables de entrada: Ninguna
-    Variables de salida: Ninguna
+  *  Descripción de la función: Lee el archivo de entrada, crea los 
+  *  paquetes y los almacena en la cola de prioridades.
+  *  Variables de entrada: 
+  *    - Ninguna
+  *  Variables de salida: 
+  *    - Ninguna
   '''
 
   for i in range(len(ArregloErrores)):
@@ -91,10 +95,12 @@ def ImprimirErrores(ArregloErrores):
 def ImprimirTokens(ArregloTokens):
 
   '''
-    Descripción de la función: Lee el archivo de entrada, crea los 
-    paquetes y los almacena en la cola de prioridades.
-    Variables de entrada: Ninguna
-    Variables de salida: Ninguna
+  *  Descripción de la función: Lee el archivo de entrada, crea los 
+  *  paquetes y los almacena en la cola de prioridades.
+  *  Variables de entrada: 
+  *    - Ninguna
+  *  Variables de salida: 
+  *    - Ninguna
   '''
 
   for i in range(len(ArregloTokens)):

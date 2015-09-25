@@ -13,7 +13,7 @@
 * Descripcion:
 *
 *
-* Ultima modificacion: 17/09/2015
+* Ultima modificacion: 25/09/2015
 *
 '''
 
@@ -26,10 +26,17 @@ import os
 from Lista import * 
 import ply.lex as lex
 
+#------------------------------------------------------------------------------#
+#					     DEFINICION DE LA CLASE LEXER				           #
+#------------------------------------------------------------------------------#
 
 class Lexer():
 
 	def __init__(self,data=None):
+
+
+
+
 		self.data = data
 		self.Tokens = []
 		self.Errores = []
@@ -162,15 +169,15 @@ class Lexer():
 #------------------------------------------------------------------------------#
 
 	def t_TkIdent(self,t):
-	  r'[a-zA-Z_][a-zA-Z_0-9]*'
-	  t.type = self.reserved.get(t.value,'TkIdent')
-	  return t
+		r'[a-zA-Z_][a-zA-Z_0-9]*'
+		t.type = self.reserved.get(t.value,'TkIdent')
+	  	return t
 
 #------------------------------------------------------------------------------#
 
 	def t_TkComment(self,t):
-	  r'(\$-(.|\n)*?-\$)|(\$\$.*)'
-	  pass
+		r'(\$-(.|\n)*?-\$)|(\$\$.*)'
+		pass
 	    # No return value. Token discarded
 
 #------------------------------------------------------------------------------#
@@ -231,6 +238,4 @@ class Lexer():
 	        else:
 	        	NodoToken = token(tok.type,None,tok.lineno,\
 	        		self.find_column(self.data,tok))
-	        self.Tokens+=[NodoToken]    
-
-
+	        self.Tokens+=[NodoToken]
