@@ -149,56 +149,101 @@ class Lexer():
 	t_TkDesigual     = r'/='
 
 
-	# A string containing ignored characters (spaces and tabs)
+	# Ignora los tabs y espacios
 	t_ignore  = ' \t'
 #------------------------------------------------------------------------------#
 
 	# A regular rule with some action code
+	# 
 	def t_TkNum(self,t):
+
+		'''
+			Descripción de la función: Regla para tokens correspondientes
+			 a numeros.
+		'''
+
 	    r'\d+'
 	    t.value = int(t.value)    
 	    return t
 
 #------------------------------------------------------------------------------#
 
+	# Regla para conjuntos de caracteres. Si el caracter es igual a algun 
+	# caracter reservado entonces t.type sera igual al del caracter reservado,
+	# de no ser igual a ningun caracter reservado entonces t.type sera
+	# igual a TkIdent.
+
 	def t_TkIdent(self,t):
+		'''
+			Descripción de la función: Regla para tokens correspondientes
+			 a numeros.
+
+		'''
 	  r'[a-zA-Z_][a-zA-Z_0-9]*'
 	  t.type = self.reserved.get(t.value,'TkIdent')
 	  return t
 
 #------------------------------------------------------------------------------#
 
+	# Regla para los comentarios.
+	# Los tokens obtenidos por esta expresion regular seran omitidos.
 	def t_TkComment(self,t):
+		'''
+			Descripción de la función: Regla para tokens correspondientes
+			 a numeros.
+		'''
 	  r'(\$-(.|\n)*?-\$)|(\$\$.*)'
 	  pass
-	    # No return value. Token discarded
+	 	# No return value. Token discarded
 
 #------------------------------------------------------------------------------#
 
+	# Regla para caracteres.
+	# Este token solo toma caracteres encerrados entre comillas simples
 	def t_TkCaracter(self,t):
+		'''
+			Descripción de la función: Regla para tokens correspondientes
+			 a numeros.
+		'''
 	    r'\'.\''
 	    return t
 
 #------------------------------------------------------------------------------#
 
 	# Define a rule so we can track line numbers
+	# Regla para contar los numeros de linea.
 	def t_newline(self,t):
+		'''
+			Descripción de la función: Regla para tokens correspondientes
+			 a numeros.
+		'''
 	    r'\n+'
 	    t.lexer.lineno += len(t.value)
 
 #------------------------------------------------------------------------------#
 
-	# Compute column. 
+	# Funcion para localizar el numero de columna de una palabra. 
 	#     input is the input text string
 	#     token is a token instance
 	def find_column(self,input,token):
+		'''
+			Descripción de la función: Regla para tokens correspondientes
+			 a numeros.
+		'''
 	    last_cr = input.rfind('\n',0,token.lexpos)
 	    column = (token.lexpos - last_cr) 
 	    return column
 
 #------------------------------------------------------------------------------#
-	# Error handling rule
+	# Funcion para el manejo de errores
 	def t_error(self,t):
+
+				'''
+			Descripción de la función: Regla para tokens correspondientes
+			 a numeros.
+		'''
+
+
 	    # print("Error: Caracter inesperado \""+t.value[0]+"\" en la fila\
 	    # "+str(t.lineno)+"\, columna "+str(self.find_column(self.data,t)) )
 
@@ -210,12 +255,13 @@ class Lexer():
 	
 #------------------------------------------------------------------------------#
 
-	# Build the lexer
+	# Constructor del lexer
 	def build(self,**kwargs):
 	    self.lexer = lex.lex(module=self, **kwargs)
 
 #------------------------------------------------------------------------------#
 
+	# Funcion que tokeniza entrada
 	def tokenizar(self):
 	    self.lexer.input(self.data)
 	    while True:

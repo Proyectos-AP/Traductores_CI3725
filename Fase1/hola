@@ -1,7 +1,9 @@
-create
+create char int
  int bot contador
-$- holis 
-	como estas -$
+$$ ALE 
+$- holis  como - Maria
+        Juana -
+        estas  -$
   on activation:
 			store 35.
 		end
@@ -11,3 +13,10 @@ $- holis
 		activate contador.
 	end
 Create
+'?'
+'l'
+'a'
+/\esto/\aquello\/proba
+createon
+<>
+><
