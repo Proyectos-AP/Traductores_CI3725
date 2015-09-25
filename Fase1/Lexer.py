@@ -50,37 +50,37 @@ class Lexer():
 		self.Tokens = []
 		self.Errores = []
 		self.reserved = {
-		'create'           : 'TkCreate',
-		'bot'              : 'TkBot' ,
-		'on'               : 'TkOn',
-		'activation'       : 'TkActivation' ,
-		'desactivation'    : 'TkDeActivation',
-		'store'            : 'TkStore' ,
-		'end'              : 'TkEnd'  ,
-		'execute'          : 'TkExecute' ,
-		'activate'         : 'TkActivate',
-		'desactivate'      : 'TkDeactivate' ,
-		'send'             : 'TkSend' ,   
-		'advance'          : 'TkAdvance' ,
-		'recive'           : 'TkRecieve',
-		'default'          : 'TkDefault' ,
-		'me'               : 'TkMe' ,
-		'drop'             : 'TkDrop',
-		'collect'          : 'TkCollect',
-		'as'               : 'TkAs',
-		'int'              : 'TkInt',
-		'left'             : 'TkLeft',
-		'right'            : 'TkRight',
-		'up'               : 'TkUp' ,
-		'down'             : 'TkDown' ,
-		'read'             : 'TkRead',
-		'while'            : 'TkWhile' ,
-		'bool'             : 'TkBool',
-		'if'               : 'TkIf',
-		'else'             : 'TkElse'  ,
-		'true'             : 'TkTrue'  ,
-		'false'            : 'TkFalse',
-		'char'             : 'TkChar'
+			'create'           : 'TkCreate',
+			'bot'              : 'TkBot' ,
+			'on'               : 'TkOn',
+			'activation'       : 'TkActivation' ,
+			'desactivation'    : 'TkDeActivation',
+			'store'            : 'TkStore' ,
+			'end'              : 'TkEnd'  ,
+			'execute'          : 'TkExecute' ,
+			'activate'         : 'TkActivate',
+			'desactivate'      : 'TkDeactivate' ,
+			'send'             : 'TkSend' ,   
+			'advance'          : 'TkAdvance' ,
+			'recive'           : 'TkRecieve',
+			'default'          : 'TkDefault' ,
+			'me'               : 'TkMe' ,
+			'drop'             : 'TkDrop',
+			'collect'          : 'TkCollect',
+			'as'               : 'TkAs',
+			'int'              : 'TkInt',
+			'left'             : 'TkLeft',
+			'right'            : 'TkRight',
+			'up'               : 'TkUp' ,
+			'down'             : 'TkDown' ,
+			'read'             : 'TkRead',
+			'while'            : 'TkWhile' ,
+			'bool'             : 'TkBool',
+			'if'               : 'TkIf',
+			'else'             : 'TkElse'  ,
+			'true'             : 'TkTrue'  ,
+			'false'            : 'TkFalse',
+			'char'             : 'TkChar'
 		}
 
 	reserved = {
@@ -169,138 +169,67 @@ class Lexer():
 	t_ignore  = ' \t'
 #------------------------------------------------------------------------------#
 
+	# Descripción de la función: Regla para tokens correspondientes
+	# a numeros.
 	def t_TkNum(self,t):
-
-		'''
-			Descripción de la función: Regla para tokens correspondientes
-			 a numeros.
-
-			Variables de entrada:
-				* self : Corresponde a la instancia del objeto Lexer.
-				* t : Variable de tipo LexToken (clase implementada en lex.py).
-
-			Variables de salida:
-
-				* t : Variable de tipo LexToken (clase implementada en lex.py).
-		'''
 		r'\d+'
 		t.value = int(t.value)
 		return t
 
 #------------------------------------------------------------------------------#
 
+	# Descripción de la función:	Regla para conjuntos de caracteres. 
+	# Si el caracter es igual a algun caracter reservado entonces t.type 
+	# sera igual al del caracter reservado,de no ser igual a ningun 
+	# caracter reservado entonces t.type sera igual a TkIdent.
 	def t_TkIdent(self,t):
-		'''
-			Descripción de la función:	Regla para conjuntos de caracteres. 
-			Si el caracter es igual a algun caracter reservado entonces t.type 
-			sera igual al del caracter reservado,de no ser igual a ningun 
-			caracter reservado entonces t.type sera igual a TkIdent.
 
-			Variables de entrada:
-				* self : Corresponde a la instancia del objeto Lexer.
-				* t : Variable de tipo LexToken (clase implementada en lex.py).
-
-			Variables de salida:
-
-				* t : Variable de tipo LexToken (clase implementada en lex.py).
-
-		'''
 		r'[a-zA-Z_][a-zA-Z_0-9]*'
 		t.type = self.reserved.get(t.value,'TkIdent')
 		return t
 
 #------------------------------------------------------------------------------#
 
+	# Descripción de la función: Reglas para los comentarios.
+	# Los tokens obtenidos por esta expresion regular seran omitidos.
 	def t_TkComment(self,t):
 
-		'''
-			Descripción de la función: Reglas para los comentarios.
-			Los tokens obtenidos por esta expresion regular seran omitidos.
-
-			Variables de entrada:
-				* self : Corresponde a la instancia del objeto Lexer.
-				* t : Variable de tipo LexToken (clase implementada en lex.py).
-
-			Variables de salida:
-
-				* Ninguno.
-
-		'''
 		r'(\$-(.|\n)*?-\$)|(\$\$.*)'
 		pass
 
 
 #------------------------------------------------------------------------------#
 
+	# Descripción de la función: Reglas para caracteres. Este token solo 
+	# toma caracteres encerrados entre comillas simples.
 	def t_TkCaracter(self,t):
-		'''
-			Descripción de la función: Reglas para caracteres. Este token solo 
-			toma caracteres encerrados entre comillas simples.
-			Variables de entrada:
-				* self : Corresponde a la instancia del objeto Lexer.
-				* t : Variable de tipo LexToken (clase implementada en lex.py).
 
-			Variables de salida:
-
-				* t : Variable de tipo LexToken (clase implementada en lex.py).
-		'''
 		r'\'.\''
 		return t
 
 #------------------------------------------------------------------------------#
 
+	# Descripción de la función:Regla para contar los numeros de linea.
 	def t_newline(self,t):
-		'''
-			Descripción de la función:Regla para contar los numeros de linea.
-			Variables de entrada:
-				* self : Corresponde a la instancia del objeto Lexer.
-				* t : Variable de tipo LexToken (clase implementada en lex.py).
 
-			Variables de salida:
-
-				* Ninguno.
-
-		'''
 		r'\n+'
 		t.lexer.lineno += len(t.value)
 
 #------------------------------------------------------------------------------#
 
+	# Descripción de la función: Funcion para localizar el numero de 
+	# columna de una palabra.
 	def Numerocolumna(self,input,token):
 
-		'''
-			Descripción de la función: Funcion para localizar el numero de 
-										columna de una palabra.
-			Variables de entrada:
-				* self : Corresponde a la instancia del objeto Lexer.
-				* token : Variable de tipo LexToken (clase implementada en lex.py).
-				* input : Input de la clase Lexer
-
-			Variables de salida:
-
-				* Ninguno.
-
-		'''
 		last_cr = input.rfind('\n',0,token.lexpos)
 		columna = (token.lexpos - last_cr) 
 		return columna
 
 #------------------------------------------------------------------------------#
 
+	# Descripción de la función: Funcion para el manejo de errores .
 	def t_error(self,t):
 
-		'''
-			Descripción de la función: Funcion para el manejo de errores .
-
-			Variables de entrada:
-				* self : Corresponde a la instancia del objeto Lexer.
-				* t : Variable de tipo LexToken (clase implementada en lex.py).
-
-			Variables de salida:
-
-				* Ninguno.
-
-		'''
 		ErrorEncontrado = token(None,t.value[0],\
 			t.lineno,self.Numerocolumna(self.data,t))
 		self.Errores+=[ErrorEncontrado] 
@@ -308,26 +237,16 @@ class Lexer():
 	
 #------------------------------------------------------------------------------#
 
+	# Descripción de la función: Constructor del lexer.
 	def build(self,**kwargs):
-		'''
-			Descripción de la función: Constructor del lexer.
 
-		'''
 		self.lexer = lex.lex(module=self, **kwargs)
 
 #------------------------------------------------------------------------------#
 
+	# Descripción de la función: Funcion que tokeniza entrada.
 	def tokenizar(self):
-		'''
-			Descripción de la función: Funcion que tokeniza entrada.
-			Variables de entrada:
-				* self : Corresponde a la instancia del objeto Lexer.
-
-			Variables de salida:
-
-				* Ninguno.
-
-		'''
+		
 		self.lexer.input(self.data)
 		while True:
 			tok = self.lexer.token()
