@@ -184,7 +184,7 @@ class Lexer():
 	# caracter reservado entonces t.type sera igual a TkIdent.
 	def t_TkIdent(self,t):
 
-		r'[a-zA-Z_][a-zA-Z_0-9]*'
+		r'[a-zA-Z][a-zA-Z_0-9]*'
 		t.type = self.reserved.get(t.value,'TkIdent')
 		return t
 
@@ -219,7 +219,7 @@ class Lexer():
 
 	# Descripción de la función: Funcion para localizar el numero de 
 	# columna de una palabra.
-	def Numerocolumna(self,input,token):
+	def NumeroColumna(self,input,token):
 
 		last_cr = input.rfind('\n',0,token.lexpos)
 		columna = (token.lexpos - last_cr) 
@@ -231,7 +231,7 @@ class Lexer():
 	def t_error(self,t):
 
 		ErrorEncontrado = token(None,t.value[0],\
-			t.lineno,self.Numerocolumna(self.data,t))
+			t.lineno,self.NumeroColumna(self.data,t))
 		self.Errores+=[ErrorEncontrado] 
 		t.lexer.skip(1)
 	
@@ -252,13 +252,13 @@ class Lexer():
 			tok = self.lexer.token()
 			if not tok: 
 				break
-			print(tok.type, tok.value, tok.lineno,self.Numerocolumna(self.data,tok))
+			print(tok.type, tok.value, tok.lineno,self.NumeroColumna(self.data,tok))
 			if ( tok.type in {"TkNum","TkIdent","TkCaracter"} ):
 				NodoToken = token(tok.type,tok.value,tok.lineno,\
-					self.Numerocolumna(self.data,tok))
+					self.NumeroColumna(self.data,tok))
 			else:
 				NodoToken = token(tok.type,None,tok.lineno,\
-					self.Numerocolumna(self.data,tok))
+					self.NumeroColumna(self.data,tok))
 			self.Tokens+=[NodoToken]    
 
 			#print(tok.type, tok.value, tok.lineno,self.find_column(self.data,tok),end=" ")
