@@ -2,10 +2,11 @@ create char int
  int bot contador
 $$ ALE 
 $- holis  como - Maria
-        Juana -
+        Juana
+ 
         estas  -$
   on activation:
-			store 35.
+				store 35.
 		end
 	end
 	
@@ -20,6 +21,4 @@ Create
 createon
 <>
 ><
-9999a
-_aa
 create

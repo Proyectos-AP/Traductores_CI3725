@@ -140,7 +140,7 @@ class Lexer():
 	   'TkIdent',
 	   'TkNum',
 	   'TkCaracter',
-	   'TkCommentL',
+	   'TkErrorNum',
 	   'TkComillas'
 	] + list(reserved.values())
 
@@ -167,6 +167,14 @@ class Lexer():
 
 	# Ignora los tabs y espacios
 	t_ignore  = ' \t'
+
+#------------------------------------------------------------------------------#
+
+	def t_TkErrorNum(self,t):
+
+		r'\d+[a-zA-Z]+'
+		return t
+	
 #------------------------------------------------------------------------------#
 
 	# Descripción de la función: Regla para tokens correspondientes
@@ -190,13 +198,20 @@ class Lexer():
 
 #------------------------------------------------------------------------------#
 
+	# Descripción de la función:Regla para contar los numeros de linea.
+	def t_newline(self,t):
+
+		r'\n+'
+		t.lexer.lineno += len(t.value)
+
+#------------------------------------------------------------------------------#
+
 	# Descripción de la función: Reglas para los comentarios.
 	# Los tokens obtenidos por esta expresion regular seran omitidos.
 	def t_TkComment(self,t):
-
 		r'(\$-(.|\n)*?-\$)|(\$\$.*)'
+		t.lexer.lineno += t.value.count('\n')
 		pass
-
 
 #------------------------------------------------------------------------------#
 
@@ -208,15 +223,6 @@ class Lexer():
 		return t
 
 #------------------------------------------------------------------------------#
-
-	# Descripción de la función:Regla para contar los numeros de linea.
-	def t_newline(self,t):
-
-		r'\n+'
-		t.lexer.lineno += len(t.value)
-
-#------------------------------------------------------------------------------#
-
 	# Descripción de la función: Funcion para localizar el numero de 
 	# columna de una palabra.
 	def NumeroColumna(self,input,token):
@@ -230,11 +236,11 @@ class Lexer():
 	# Descripción de la función: Funcion para el manejo de errores .
 	def t_error(self,t):
 
+		print("Error ",t.value[0])
 		ErrorEncontrado = token(None,t.value[0],\
 			t.lineno,self.NumeroColumna(self.data,t))
 		self.Errores+=[ErrorEncontrado] 
 		t.lexer.skip(1)
-	
 #------------------------------------------------------------------------------#
 
 	# Descripción de la función: Constructor del lexer.
@@ -253,13 +259,21 @@ class Lexer():
 			if not tok: 
 				break
 			print(tok.type, tok.value, tok.lineno,self.NumeroColumna(self.data,tok))
-			if ( tok.type in {"TkNum","TkIdent","TkCaracter"} ):
+
+			if ( tok.type=="TkErrorNum" ):
+				NodoError = token(None,tok.value,tok.lineno,\
+					self.NumeroColumna(self.data,tok))
+				self.Errores+=[NodoError]
+
+			elif ( tok.type in {"TkNum","TkIdent","TkCaracter"} ):
 				NodoToken = token(tok.type,tok.value,tok.lineno,\
 					self.NumeroColumna(self.data,tok))
+				self.Tokens+=[NodoToken]  
+
 			else:
 				NodoToken = token(tok.type,None,tok.lineno,\
 					self.NumeroColumna(self.data,tok))
-			self.Tokens+=[NodoToken]    
+				self.Tokens+=[NodoToken]    
 
 			#print(tok.type, tok.value, tok.lineno,self.find_column(self.data,tok),end=" ")
 
