@@ -204,7 +204,7 @@ class Lexer():
 	# Descripción de la función: Funcion para el manejo de errores .
 	def t_error(self,t):
 
-		print("Error ",t.value[0])
+		#print("Error ",t.value[0])
 		ErrorEncontrado = token(None,t.value[0],\
 			t.lineno,self.NumeroColumna(self.data,t))
 		self.Errores+=[ErrorEncontrado] 
