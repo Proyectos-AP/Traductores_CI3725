@@ -91,20 +91,26 @@ def ImprimirTokens(ArregloTokens):
 
   for i in range(len(ArregloTokens)):
 
+    if ( (i%4==0 and i!=0) or (i%4!=0 and i==len(ArregloTokens)-1) ):
+      FinLinea ='\n'
+    else :
+      FinLinea=",  "
+
+
     #print(tok.type, tok.value, tok.lineno,self.find_column(self.data,tok),end=" ")
     if (ArregloTokens[i].tipo in {"TkNum","TkCaracter"} ):
 
       print(ArregloTokens[i].tipo+"("+str(ArregloTokens[i].elem)+")",\
-        ArregloTokens[i].fila,ArregloTokens[i].columna,end="  ")
+        ArregloTokens[i].fila,ArregloTokens[i].columna,end=FinLinea)
 
     elif (ArregloTokens[i].tipo=="TkIdent"):
 
       print(ArregloTokens[i].tipo+"(\""+ArregloTokens[i].elem+"\")",\
-        ArregloTokens[i].fila,ArregloTokens[i].columna,end="  ")
+        ArregloTokens[i].fila,ArregloTokens[i].columna,end=FinLinea)
 
     else:
       print(ArregloTokens[i].tipo,ArregloTokens[i].fila,\
-        ArregloTokens[i].columna,end="  ")
+        ArregloTokens[i].columna,end=FinLinea)
 
 #------------------------------------------------------------------------------#
 #                          INICIO DEL PROGRAMA PRINCIPAL                       #

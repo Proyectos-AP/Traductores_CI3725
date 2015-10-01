@@ -226,7 +226,7 @@ class Lexer():
 			tok = self.lexer.token()
 			if not tok: 
 				break
-			print(tok.type, tok.value, tok.lineno,self.NumeroColumna(self.data,tok))
+			#print(tok.type, tok.value, tok.lineno,self.NumeroColumna(self.data,tok))
 
 			if ( tok.type=="TkErrorNum" ):
 				NodoError = token(None,tok.value,tok.lineno,\
