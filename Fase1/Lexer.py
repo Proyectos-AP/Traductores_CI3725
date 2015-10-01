@@ -56,12 +56,12 @@ class Lexer():
 		'bot'              : 'TkBot' ,
 		'on'               : 'TkOn',
 		'activation'       : 'TkActivation' ,
-		'deactivation'    : 'TkDeActivation',
+		'deactivation'     : 'TkDeActivation',
 		'store'            : 'TkStore' ,
 		'end'              : 'TkEnd'  ,
 		'execute'          : 'TkExecute' ,
 		'activate'         : 'TkActivate',
-		'deactivate'      : 'TkDeactivate' ,
+		'deactivate'       : 'TkDeactivate' ,
 		'send'             : 'TkSend' ,   
 		'advance'          : 'TkAdvance' ,
 		'recieve'          : 'TkRecieve',
@@ -140,7 +140,8 @@ class Lexer():
 
 	def t_TkErrorNum(self,t):
 
-		r'\d+[a-zA-Z]+'
+		r'[\d_]+[a-zA-Z_]+'
+		t.value = t.value[0]
 		return t
 	
 #------------------------------------------------------------------------------#
