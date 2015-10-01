@@ -91,7 +91,7 @@ def ImprimirTokens(ArregloTokens):
 
   for i in range(len(ArregloTokens)):
 
-    if ( i%4!=0 and i==len(ArregloTokens)-1 ):
+    if ( i==len(ArregloTokens)-1 ):
       FinLinea ='\n'
     elif ( i%4==0 and i!=0 ):
       FinLinea =", \n"  
