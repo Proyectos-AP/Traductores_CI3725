@@ -64,7 +64,7 @@ class Lexer():
 		'desactivate'      : 'TkDeactivate' ,
 		'send'             : 'TkSend' ,   
 		'advance'          : 'TkAdvance' ,
-		'recive'           : 'TkRecieve',
+		'recieve'          : 'TkRecieve',
 		'default'          : 'TkDefault' ,
 		'me'               : 'TkMe' ,
 		'drop'             : 'TkDrop',
@@ -108,11 +108,11 @@ class Lexer():
 	   'TkIdent',
 	   'TkNum',
 	   'TkCaracter',
-	   'TkErrorNum',
-	   'TkComillas'
+	   'TkErrorNum'
 	] + list(reserved.values())
 
 	# Expresiones regulares para tokens simples.
+	t_TkComa		 = r','
 	t_TkPunto        = r'\.'
 	t_TkDosPuntos    = r'\:'
 	t_TkParAbre      = r'\('
@@ -204,7 +204,6 @@ class Lexer():
 	# Descripción de la función: Funcion para el manejo de errores .
 	def t_error(self,t):
 
-		#print("Error ",t.value[0])
 		ErrorEncontrado = token(None,t.value[0],\
 			t.lineno,self.NumeroColumna(self.data,t))
 		self.Errores+=[ErrorEncontrado] 
@@ -226,7 +225,6 @@ class Lexer():
 			tok = self.lexer.token()
 			if not tok: 
 				break
-			#print(tok.type, tok.value, tok.lineno,self.NumeroColumna(self.data,tok))
 
 			if ( tok.type=="TkErrorNum" ):
 				NodoError = token(None,tok.value,tok.lineno,\
@@ -241,7 +239,8 @@ class Lexer():
 			else:
 				NodoToken = token(tok.type,None,tok.lineno,\
 					self.NumeroColumna(self.data,tok))
-				self.Tokens+=[NodoToken]    
+				self.Tokens+=[NodoToken] 
+				
+#------------------------------------------------------------------------------#   
 
-			#print(tok.type, tok.value, tok.lineno,self.find_column(self.data,tok),end=" ")
 

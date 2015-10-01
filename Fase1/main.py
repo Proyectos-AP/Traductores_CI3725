@@ -91,6 +91,7 @@ def ImprimirTokens(ArregloTokens):
 
   for i in range(len(ArregloTokens)):
 
+    # Se fija el fin de linea
     if ( i==len(ArregloTokens)-1 ):
       FinLinea ='\n'
     elif ( i%4==0 and i!=0 ):
@@ -98,8 +99,7 @@ def ImprimirTokens(ArregloTokens):
     else :
       FinLinea=",  "
 
-
-    #print(tok.type, tok.value, tok.lineno,self.find_column(self.data,tok),end=" ")
+    # Se imprimen los tokens
     if (ArregloTokens[i].tipo in {"TkNum","TkCaracter"} ):
 
       print(ArregloTokens[i].tipo+"("+str(ArregloTokens[i].elem)+")",\
