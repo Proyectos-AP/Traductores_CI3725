@@ -10,10 +10,10 @@
 * 		Alejandra Cordero / Carnet: 12-10645
 * 		Pablo Maldonado   / Carnet: 12-10561
 *
-* Descripcion:
+* Descripcion: Definicion de la clase Lexer().
 *
 *
-* Ultima modificacion: 25/09/2015
+* Ultima modificacion: 02/10/2015
 *
 '''
 
