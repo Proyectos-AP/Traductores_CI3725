@@ -138,17 +138,16 @@ class Lexer():
 
 #------------------------------------------------------------------------------#
 
-	def t_TkErrorNum(self,t):
-
-		r'\d+[a-zA-Z]+'
-		return t
+	#def t_TkErrorNum(self,t):
+	#	r'[\d|_][a-zA-Z_0-9]+'
+	#	return t
 	
 #------------------------------------------------------------------------------#
 
 	# Descripción de la función: Regla para tokens correspondientes
 	# a numeros.
 	def t_TkNum(self,t):
-		r'\d+'
+		r'\b\d+\b'
 		t.value = int(t.value)
 		return t
 
@@ -160,7 +159,7 @@ class Lexer():
 	# caracter reservado entonces t.type sera igual a TkIdent.
 	def t_TkIdent(self,t):
 
-		r'[a-zA-Z][a-zA-Z_0-9]*'
+		r'\b[a-zA-Z][a-zA-Z_0-9]*\b'
 		t.type = reserved.get(t.value,'TkIdent')
 		return t
 
@@ -225,6 +224,8 @@ class Lexer():
 			tok = self.lexer.token()
 			if not tok: 
 				break
+
+			print(tok.value,tok.type)
 
 			if ( tok.type=="TkErrorNum" ):
 				NodoError = token(None,tok.value,tok.lineno,\
