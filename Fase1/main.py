@@ -17,26 +17,12 @@
 *
 '''
 
-'''
-
-  Cosas que faltan:
-
-    * Crear clases (listo)
-    * Ignorar comentarios (listo)
-    * Ignorar comillas simples (listo)
-    * Buen manejo de errores (listo)
-    * Imprimir de forma lineal (listo)
-    * Probar bien
-    * Poner bonito el codigo
-
-'''
-
 #------------------------------------------------------------------------------#
 #							                  IMPORTE DE MODULOS				          				   #
 #------------------------------------------------------------------------------#
 import sys
 import os
-from Lista import *
+from Tokens import *
 from Lexer import * 
 import ply.lex as lex
 

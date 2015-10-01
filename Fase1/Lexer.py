@@ -23,7 +23,7 @@
 
 import sys
 import os
-from Lista import * 
+from Tokens import * 
 import ply.lex as lex
 
 #------------------------------------------------------------------------------#
@@ -49,40 +49,8 @@ class Lexer():
 		self.data = data
 		self.Tokens = []
 		self.Errores = []
-		self.reserved = {
-			'create'           : 'TkCreate',
-			'bot'              : 'TkBot' ,
-			'on'               : 'TkOn',
-			'activation'       : 'TkActivation' ,
-			'desactivation'    : 'TkDeActivation',
-			'store'            : 'TkStore' ,
-			'end'              : 'TkEnd'  ,
-			'execute'          : 'TkExecute' ,
-			'activate'         : 'TkActivate',
-			'desactivate'      : 'TkDeactivate' ,
-			'send'             : 'TkSend' ,   
-			'advance'          : 'TkAdvance' ,
-			'recive'           : 'TkRecieve',
-			'default'          : 'TkDefault' ,
-			'me'               : 'TkMe' ,
-			'drop'             : 'TkDrop',
-			'collect'          : 'TkCollect',
-			'as'               : 'TkAs',
-			'int'              : 'TkInt',
-			'left'             : 'TkLeft',
-			'right'            : 'TkRight',
-			'up'               : 'TkUp' ,
-			'down'             : 'TkDown' ,
-			'read'             : 'TkRead',
-			'while'            : 'TkWhile' ,
-			'bool'             : 'TkBool',
-			'if'               : 'TkIf',
-			'else'             : 'TkElse'  ,
-			'true'             : 'TkTrue'  ,
-			'false'            : 'TkFalse',
-			'char'             : 'TkChar'
-		}
 
+	global reserved
 	reserved = {
 		'create'           : 'TkCreate',
 		'bot'              : 'TkBot' ,
@@ -100,7 +68,7 @@ class Lexer():
 		'default'          : 'TkDefault' ,
 		'me'               : 'TkMe' ,
 		'drop'             : 'TkDrop',
-		'collect'          : 'TkCollect',
+		'collect'  		   : 'TkCollect',
 		'as'               : 'TkAs',
 		'int'              : 'TkInt',
 		'left'             : 'TkLeft',
@@ -193,7 +161,7 @@ class Lexer():
 	def t_TkIdent(self,t):
 
 		r'[a-zA-Z][a-zA-Z_0-9]*'
-		t.type = self.reserved.get(t.value,'TkIdent')
+		t.type = reserved.get(t.value,'TkIdent')
 		return t
 
 #------------------------------------------------------------------------------#
