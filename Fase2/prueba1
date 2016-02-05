@@ -1,0 +1,13 @@
+create
+ int bot ale,pablo,pepe 
+ on deactivation:
+   store 8+9.
+   collect.
+   left.
+   send.
+ end
+
+end
+execute
+ 8+8/\9+9*9 
+end
