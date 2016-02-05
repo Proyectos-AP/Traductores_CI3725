@@ -262,8 +262,11 @@ def p_guardarVariable(t):
                         |'''
 
 def p_instruccionesControlador(t):
-    '''  INSTRUCCIONES_CONTROLADOR : expression
-                                    |'''
+    '''  INSTRUCCIONES_CONTROLADOR : INSTRUCCIONES_CONTROLADOR INSTRUCCIONES_CONTROLADOR
+                                    | TkActivate LISTA_IDENT TkPunto 
+                                    | TkAdvance LISTA_IDENT TkPunto 
+                                    | TkDeactivate LISTA_IDENT TkPunto 
+                                    '''
 
 # def p_expresionExecute(t):
 #     ''' expressionE : TkExecute expression '''

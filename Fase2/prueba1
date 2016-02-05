@@ -1,7 +1,7 @@
 create
  int bot ale,pablo,pepe 
  on deactivation:
-   store 8+9.
+   store 5/\5.
    collect.
    left.
    send.
@@ -9,5 +9,7 @@ create
 
 end
 execute
- 8+8/\9+9*9 
+ activate pepe.
+ advance pepe3.
+ deactivate pepe4.
 end
