@@ -12,4 +12,13 @@ execute
  activate pepe.
  advance pepe3.
  deactivate pepe4.
+ if 8+8>9+9:
+   if false:
+    activate pepe.
+   end
+ end
+
+while n>0:
+  advance n.
+end
 end

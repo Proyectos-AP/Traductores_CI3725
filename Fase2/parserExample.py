@@ -246,6 +246,7 @@ def p_instruccionRobot(t):
     ''' INSTRUCCIONES_ROBOT : INSTRUCCIONES_ROBOT INSTRUCCIONES_ROBOT
                             | TkStore expression TkPunto 
                             | TkCollect GUARDAR_VARIABLE TkPunto 
+                            | TkDrop expression TkPunto
                             | TkRight EXPRESION_OPCIONAL TkPunto 
                             | TkLeft EXPRESION_OPCIONAL TkPunto 
                             | TkUp EXPRESION_OPCIONAL TkPunto 
@@ -266,7 +267,33 @@ def p_instruccionesControlador(t):
                                     | TkActivate LISTA_IDENT TkPunto 
                                     | TkAdvance LISTA_IDENT TkPunto 
                                     | TkDeactivate LISTA_IDENT TkPunto 
+                                    | TkIf EXPRESION_BOOL TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
+                                    | TkIf EXPRESION_BOOL TkDosPuntos INSTRUCCIONES_CONTROLADOR TkElse TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
+                                    | TkWhile EXPRESION_BOOL TkDosPuntos INSTRUCCIONES_CONTROLADOR TkEnd
                                     '''
+
+# def p_expresionCondicional(t):
+#     ''' EXPRESION_CONDICIONAL : INSTRUCCIONES_CONTROLADOR EXPRESION_ELSE'''
+
+
+# def p_expresionElse(t):
+#     ''' EXPRESION_ELSE : TkElse TkDosPuntos INSTRUCCIONES_CONTROLADOR 
+#                         |'''
+
+def p_expresionBool(t):
+    ''' EXPRESION_BOOL : EXPRESION_BOOL TkConjuncion EXPRESION_BOOL
+                        | EXPRESION_BOOL TkDisyuncion EXPRESION_BOOL
+                        | EXPRESION_BOOL TkIgual EXPRESION_BOOL
+                        | EXPRESION_BOOL TkDesigual EXPRESION_BOOL
+                        | TkNegacion EXPRESION_BOOL
+                        | expression TkMayor expression
+                        | expression TkMenor expression
+                        | expression TkMayorIgual expression
+                        | expression TkMenorIgual expression
+                        | TkIdent
+                        | TkTrue
+                        | TkFalse'''
+
 
 # def p_expresionExecute(t):
 #     ''' expressionE : TkExecute expression '''
@@ -285,6 +312,7 @@ def p_expression_binop(t):
                   | expression TkResta expression
                   | expression TkMult expression
                   | expression TkDiv expression
+                  | expression TkMod expression
                   | expression TkConjuncion expression
                   | expression TkDisyuncion expression '''
     if t[2] == '+'  : 
@@ -336,7 +364,7 @@ def p_expression_name(t):
         t[0] = 0
 
 def p_error(t):
-    print("Syntax error at '%s'" % t.value)
+    print("Syntax error at '%s' in line " % t.value,t.lineno)
     #print("Syntax error at ")
 
 
