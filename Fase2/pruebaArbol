@@ -1,0 +1,5 @@
+execute
+   if -(1+2+3):
+      activate b.
+   end
+end

@@ -1,5 +1,6 @@
 import sys
 import os
+from Arbol import *
 
 # -----------------------------------------------------------------------------
 # calc.py
@@ -200,6 +201,7 @@ def t_error(t):
 import ply.lex as lex
 lexer = lex.lex()
 
+global Raiz
 # Parsing rules
 
 precedence = (
@@ -319,28 +321,34 @@ def p_expression_binaria(t):
                   | EXPRESION_BIN TkDisyuncion EXPRESION_BIN
                   | EXPRESION_BIN TkIgual EXPRESION_BIN
                   | EXPRESION_BIN TkDesigual EXPRESION_BIN
-                  | TkNegacion EXPRESION_BIN
                   | EXPRESION_BIN TkMayor EXPRESION_BIN
                   | EXPRESION_BIN TkMenor EXPRESION_BIN
                   | EXPRESION_BIN TkMayorIgual EXPRESION_BIN
                   | EXPRESION_BIN TkMenorIgual EXPRESION_BIN'''
 
-    if t[2] == '+'  : 
-        #t[0] = t[1] + t[3]
-        t[0]=str(t[1])+" + "+str(t[3])
-    elif t[2] == '-': 
-        #t[0] = t[1] - t[3]
-        t[0] = str(t[1])+" - "+str(t[3])
-    elif t[2] == '*': 
-        #t[0] = t[1] * t[3]
-        t[0] = str(t[1])+" * "+str(t[3])
-    elif t[2] == '/': 
-        #t[0] = t[1] / t[3]
-        t[0] = str(t[1])+" / "+str(t[3])
-    elif t[2] == '/\\' : 
-        print(str(t[1])+"/\\"+str(t[3]) )
-    elif t[2] == '\\/': 
-        print(str(t[1])+"\\/"+str(t[3]) )
+    t[0] = BinOp(t[1],t[2],t[3])
+    # global Raiz
+    # Raiz=t[0]
+    # print(t[0].op)
+    # print(t[0].left)
+    # print(t[0].right)
+    # if t[2] == '+'  : 
+    #     #t[0] = t[1] + t[3]
+    #     t[0]=str(t[1])+" + "+str(t[3])
+    # elif t[2] == '-': 
+    #     #t[0] = t[1] - t[3]
+    #     t[0] = str(t[1])+" - "+str(t[3])
+    # elif t[2] == '*': 
+    #     #t[0] = t[1] * t[3]
+    #     t[0] = str(t[1])+" * "+str(t[3])
+    # elif t[2] == '/': 
+    #     #t[0] = t[1] / t[3]
+    #     t[0] = str(t[1])+" / "+str(t[3])
+    # elif t[2] == '/\\' : 
+    #     print(str(t[1])+"/\\"+str(t[3]) )
+    # elif t[2] == '\\/': 
+    #     print(str(t[1])+"\\/"+str(t[3]) )
+    #return(Raiz)
 
 # def p_expression_bool(t):
 #     '''expressionBool : expressionBool TkConjuncion expressionBool
@@ -353,9 +361,15 @@ def p_expression_binaria(t):
 #                         | TkFalse'''
 #     t[0] = t[2]
 
+def p_negacion_bool(t):
+    '''EXPRESION_BIN : TkNegacion EXPRESION_BIN '''
+    t[0] = OperadorUnario(t[1],t[2])
+
 def p_expression_uminus(t):
     'EXPRESION_BIN : TkResta EXPRESION_BIN %prec UMINUS'
-    t[0] = -t[2]
+    t[0] = OperadorUnario(t[1],t[2])
+    global Raiz
+    Raiz=t[0]
 
 def p_expression_group(t):
     'EXPRESION_BIN : TkParAbre EXPRESION_BIN TkParCierra'
@@ -363,17 +377,20 @@ def p_expression_group(t):
 
 def p_expression_number(t):
     'EXPRESION_BIN : TkNum'
-    t[0] = t[1]
-
+    # t[0] = t[1]
+    t[0] = Number(t[1])
 def p_expression_TrueFalse(t):
     '''EXPRESION_BIN : TkTrue
                      | TkFalse '''
+    t[0] = Booleano(t[1])
 
 def p_expression_name(t):
     'EXPRESION_BIN : TkIdent'
+    t[0] = Identificadores(t[1])
 
 def p_expression_me(t):
     'EXPRESION_BIN : TkMe'
+    t[0] = VariableMe(t[1])
     # try:
     #     t[0] = names[t[1]]
     # except LookupError:
@@ -382,6 +399,8 @@ def p_expression_me(t):
 
 def p_expression_caracter(t):
     'EXPRESION_BIN : TkCaracter'
+    t[0] = Caracter(t[1])
+
 
 def p_error(t):
     print("Syntax error at '%s' in line " % t.value,t.lineno)
@@ -393,3 +412,10 @@ parser = yacc.yacc()
 
 datos = LeerArchivoEntrada()
 parser.parse(datos)
+
+print(Raiz.op)
+print(Raiz.value.op)
+print(Raiz.value.left.op)
+print(Raiz.value.left.left.value)
+print(Raiz.value.left.right.value)
+print(Raiz.value.right.value)
