@@ -219,9 +219,10 @@ def p_inicioPrograma(t):
 #     ''' INICIO_LISTA_DECLARACIONES :  LISTA_DECLARACIONES LISTA_COMPORTAMIENTOS'''
 
 def p_listaDeclaraciones(t):
-    ''' LISTA_DECLARACIONES : TkInt TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd LISTA_DECLARACIONES
-                            | TkBool TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd LISTA_DECLARACIONES
-                            | TkChar TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd LISTA_DECLARACIONES 
+    ''' LISTA_DECLARACIONES : LISTA_DECLARACIONES LISTA_DECLARACIONES
+                            | TkInt TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd 
+                            | TkBool TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd 
+                            | TkChar TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd 
                             |'''
 
 def  p_listaIdent(t):
@@ -233,20 +234,22 @@ def  p_listaIdent(t):
 #                               |'''
 
 def p_listaComportamientos(t):
-    ''' LISTA_COMPORTAMIENTOS : TkOn CONDICION TkDosPuntos INSTRUCCIONES_ROBOT TkEnd LISTA_COMPORTAMIENTOS
+    ''' LISTA_COMPORTAMIENTOS : LISTA_COMPORTAMIENTOS LISTA_COMPORTAMIENTOS
+                              | TkOn CONDICION TkDosPuntos INSTRUCCIONES_ROBOT TkEnd 
                               |'''
 
 def p_condicion(t):
     ''' CONDICION : TkDeActivation
                   | TkActivation
-                  | expression
+                  | EXPRESION_BIN
                   | TkDefault''' 
 
 def p_instruccionRobot(t):
     ''' INSTRUCCIONES_ROBOT : INSTRUCCIONES_ROBOT INSTRUCCIONES_ROBOT
-                            | TkStore expression TkPunto 
+                            | TkStore EXPRESION_BIN TkPunto 
+                            | TkRecieve TkPunto
                             | TkCollect GUARDAR_VARIABLE TkPunto 
-                            | TkDrop expression TkPunto
+                            | TkDrop EXPRESION_BIN TkPunto
                             | TkRight EXPRESION_OPCIONAL TkPunto 
                             | TkLeft EXPRESION_OPCIONAL TkPunto 
                             | TkUp EXPRESION_OPCIONAL TkPunto 
@@ -255,7 +258,7 @@ def p_instruccionRobot(t):
                             | TkSend TkPunto  '''
 
 def p_expresionOpcional(t):
-    ''' EXPRESION_OPCIONAL : expression
+    ''' EXPRESION_OPCIONAL : EXPRESION_BIN
                            |'''
 
 def p_guardarVariable(t):
@@ -267,9 +270,9 @@ def p_instruccionesControlador(t):
                                     | TkActivate LISTA_IDENT TkPunto 
                                     | TkAdvance LISTA_IDENT TkPunto 
                                     | TkDeactivate LISTA_IDENT TkPunto 
-                                    | TkIf EXPRESION_BOOL TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
-                                    | TkIf EXPRESION_BOOL TkDosPuntos INSTRUCCIONES_CONTROLADOR TkElse TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
-                                    | TkWhile EXPRESION_BOOL TkDosPuntos INSTRUCCIONES_CONTROLADOR TkEnd
+                                    | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
+                                    | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkElse TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
+                                    | TkWhile EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkEnd
                                     '''
 
 # def p_expresionCondicional(t):
@@ -280,41 +283,48 @@ def p_instruccionesControlador(t):
 #     ''' EXPRESION_ELSE : TkElse TkDosPuntos INSTRUCCIONES_CONTROLADOR 
 #                         |'''
 
-def p_expresionBool(t):
-    ''' EXPRESION_BOOL : EXPRESION_BOOL TkConjuncion EXPRESION_BOOL
-                        | EXPRESION_BOOL TkDisyuncion EXPRESION_BOOL
-                        | EXPRESION_BOOL TkIgual EXPRESION_BOOL
-                        | EXPRESION_BOOL TkDesigual EXPRESION_BOOL
-                        | TkNegacion EXPRESION_BOOL
-                        | expression TkMayor expression
-                        | expression TkMenor expression
-                        | expression TkMayorIgual expression
-                        | expression TkMenorIgual expression
-                        | TkIdent
-                        | TkTrue
-                        | TkFalse'''
+# def p_expresionBool(t):
+#     ''' EXPRESION_BOOL : EXPRESION_BOOL TkConjuncion EXPRESION_BOOL
+#                         | EXPRESION_BOOL TkDisyuncion EXPRESION_BOOL
+#                         | EXPRESION_BOOL TkIgual EXPRESION_BOOL
+#                         | EXPRESION_BOOL TkDesigual EXPRESION_BOOL
+#                         | TkNegacion EXPRESION_BOOL
+#                         | EXPRESION_ARITMETICA TkMayor EXPRESION_ARITMETICA
+#                         | EXPRESION_ARITMETICA TkMenor EXPRESION_ARITMETICA
+#                         | EXPRESION_ARITMETICA TkMayorIgual EXPRESION_ARITMETICA
+#                         | EXPRESION_ARITMETICA TkMenorIgual EXPRESION_ARITMETICA
+#                         | TkTrue
+#                         | TkFalse'''
 
 
 # def p_expresionExecute(t):
 #     ''' expressionE : TkExecute expression '''
 
-def p_statement_assign(t):
-    'statement : TkIdent TkIgual expression'
-    names[t[1]] = t[3]
+# def p_statement_assign(t):
+#     'statement : TkIdent TkIgual EXPRESION_BIN'
+#     names[t[1]] = t[3]
 
-def p_statement_expr(t):
-    '''statement : expression'''
+# def p_statement_expr(t):
+#     '''statement : EXPRESION_BIN'''
 
-    #print(t[1])
+#     #print(t[1])
 
-def p_expression_binop(t):
-    '''expression : expression TkSuma expression
-                  | expression TkResta expression
-                  | expression TkMult expression
-                  | expression TkDiv expression
-                  | expression TkMod expression
-                  | expression TkConjuncion expression
-                  | expression TkDisyuncion expression '''
+def p_expression_binaria(t):
+    '''EXPRESION_BIN : EXPRESION_BIN TkSuma EXPRESION_BIN
+                  | EXPRESION_BIN TkResta EXPRESION_BIN
+                  | EXPRESION_BIN TkMult EXPRESION_BIN
+                  | EXPRESION_BIN TkDiv EXPRESION_BIN
+                  | EXPRESION_BIN TkMod EXPRESION_BIN
+                  | EXPRESION_BIN TkConjuncion EXPRESION_BIN
+                  | EXPRESION_BIN TkDisyuncion EXPRESION_BIN
+                  | EXPRESION_BIN TkIgual EXPRESION_BIN
+                  | EXPRESION_BIN TkDesigual EXPRESION_BIN
+                  | TkNegacion EXPRESION_BIN
+                  | EXPRESION_BIN TkMayor EXPRESION_BIN
+                  | EXPRESION_BIN TkMenor EXPRESION_BIN
+                  | EXPRESION_BIN TkMayorIgual EXPRESION_BIN
+                  | EXPRESION_BIN TkMenorIgual EXPRESION_BIN'''
+
     if t[2] == '+'  : 
         #t[0] = t[1] + t[3]
         t[0]=str(t[1])+" + "+str(t[3])
@@ -338,30 +348,40 @@ def p_expression_binop(t):
 #     if t[2] == '/\\'  : print(str(t[1])+"/\\"+str(t[3]) )
 #     elif t[2] == '\\/': print(str(t[1])+"\\/"+str(t[3]) )
 
-def p_expression_True(t):
-    '''expressionBool : TkTrue 
-                        | TkFalse'''
-    t[0] = t[2]
+# def p_expression_True(t):
+#     '''expressionBool : TkTrue 
+#                         | TkFalse'''
+#     t[0] = t[2]
 
 def p_expression_uminus(t):
-    'expression : TkResta expression %prec UMINUS'
+    'EXPRESION_BIN : TkResta EXPRESION_BIN %prec UMINUS'
     t[0] = -t[2]
 
 def p_expression_group(t):
-    'expression : TkParAbre expression TkParCierra'
+    'EXPRESION_BIN : TkParAbre EXPRESION_BIN TkParCierra'
     t[0] = t[2]
 
 def p_expression_number(t):
-    'expression : TkNum'
+    'EXPRESION_BIN : TkNum'
     t[0] = t[1]
 
+def p_expression_TrueFalse(t):
+    '''EXPRESION_BIN : TkTrue
+                     | TkFalse '''
+
 def p_expression_name(t):
-    'expression : TkIdent'
-    try:
-        t[0] = names[t[1]]
-    except LookupError:
-        print("Undefined name '%s'" % t[1])
-        t[0] = 0
+    'EXPRESION_BIN : TkIdent'
+
+def p_expression_me(t):
+    'EXPRESION_BIN : TkMe'
+    # try:
+    #     t[0] = names[t[1]]
+    # except LookupError:
+    #     print("Undefined name '%s'" % t[1])
+    #     t[0] = 0
+
+def p_expression_caracter(t):
+    'EXPRESION_BIN : TkCaracter'
 
 def p_error(t):
     print("Syntax error at '%s' in line " % t.value,t.lineno)
