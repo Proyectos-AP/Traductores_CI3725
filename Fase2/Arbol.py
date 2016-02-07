@@ -1,3 +1,22 @@
+def agregarHijos(hijo1,hijo2):
+
+	aux = hijo1
+	while aux.sig != None:
+		aux = aux.sig
+	aux.sig = hijo2
+
+	return hijo1
+	
+# def agregarHijos(hijo1,hijo2):
+#     if not(isinstance(hijo1,list)) and isinstance(hijo2,list):
+#         return [hijo1] + hijo2
+#     elif isinstance(hijo1,list) and isinstance(hijo2,list):
+#         return hijo1 + hijo2
+#     else:
+#         return [hijo1,hijo2] 
+
+#------#		
+
 class Expr: pass
 
 class BinOp(Expr):
@@ -37,6 +56,7 @@ class Identificadores(Expr):
     def __init__(self,value):
         self.type = "ident"
         self.value = value
+        self.sig = None
 
 class VariableMe(Expr):
     def __init__(self,value):
@@ -47,3 +67,14 @@ class Caracter(Expr):
     def __init__(self,value):
         self.type = "caracter"
         self.value = value
+
+# class ListaHijos(Expr):
+#     def __init__(self,hijo1,hijo2):
+#         self.type = "secuencia identifiadores"
+#         # if len(hijo2) == 1:
+#         # 	self.hijos = [hijo1] + [hijo2]
+#         # else:
+#         # 	self.hijos = [hijo1] + ListaHijos(hijo2[0],hijo2[1:])
+#         self.hijos = agregarHijos(hijo1,hijo2)
+
+

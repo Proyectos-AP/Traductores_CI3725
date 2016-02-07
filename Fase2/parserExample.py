@@ -205,9 +205,11 @@ global Raiz
 # Parsing rules
 
 precedence = (
+    ('left','TkConjuncion','TkDisyuncion'),
     ('left','TkSuma','TkResta'),
     ('left','TkMult','TkDiv'),
     ('right','UMINUS'),
+    ('right','UMNEGACION'),
     )
 
 # dictionary of names
@@ -228,8 +230,16 @@ def p_listaDeclaraciones(t):
                             |'''
 
 def  p_listaIdent(t):
-    ''' LISTA_IDENT : LISTA_IDENT TkComa LISTA_IDENT
-                    | TkIdent '''
+    ''' LISTA_IDENT : LISTA_IDENT TkComa LISTA_IDENT'''
+    # t[0]= ListaHijos([t[1]]+[t[2]]
+    t[0] = agregarHijos(t[1],t[3])
+    # print(t[1].value)
+    # global Raiz
+    # Raiz = t[0]
+ 
+def p_listaIdentUnico(t):
+    '''  LISTA_IDENT : TkIdent'''
+    t[0]=Identificadores(t[1])
     
 # def p_IniciolistaComportamientos(t):
 #     ''' INICIO_LISTA_COMPORTAMIENTOS : TkOn CONDICION TkDosPuntos INICIO_INSTRUCCIONES_ROBOT 
@@ -276,6 +286,8 @@ def p_instruccionesControlador(t):
                                     | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkElse TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
                                     | TkWhile EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkEnd
                                     '''
+    global Raiz
+    Raiz = t[2]
 
 # def p_expresionCondicional(t):
 #     ''' EXPRESION_CONDICIONAL : INSTRUCCIONES_CONTROLADOR EXPRESION_ELSE'''
@@ -362,14 +374,17 @@ def p_expression_binaria(t):
 #     t[0] = t[2]
 
 def p_negacion_bool(t):
-    '''EXPRESION_BIN : TkNegacion EXPRESION_BIN '''
+    '''EXPRESION_BIN : TkNegacion EXPRESION_BIN %prec UMNEGACION'''
     t[0] = OperadorUnario(t[1],t[2])
+    # global Raiz
+    # Raiz=t[0]
+
 
 def p_expression_uminus(t):
     'EXPRESION_BIN : TkResta EXPRESION_BIN %prec UMINUS'
     t[0] = OperadorUnario(t[1],t[2])
-    global Raiz
-    Raiz=t[0]
+    # global Raiz
+    # Raiz=t[0]
 
 def p_expression_group(t):
     'EXPRESION_BIN : TkParAbre EXPRESION_BIN TkParCierra'
@@ -413,9 +428,31 @@ parser = yacc.yacc()
 datos = LeerArchivoEntrada()
 parser.parse(datos)
 
-print(Raiz.op)
-print(Raiz.value.op)
-print(Raiz.value.left.op)
-print(Raiz.value.left.left.value)
-print(Raiz.value.left.right.value)
-print(Raiz.value.right.value)
+# print(Raiz.op)
+# print(Raiz.left.op)
+# print(Raiz.left.left.value)
+# print(Raiz.left.right.value)
+# print(Raiz.right.value)
+# print(Raiz.right.left.value)
+
+print(Raiz.value)
+print(Raiz.sig.value)
+print(Raiz.sig.sig.value)
+#print(Raiz.hijos[1].value)
+
+# print(Raiz.hijos[0].value)
+# print(Raiz.hijos[1].value)
+#print(Raiz.hijos[1].hijos[1].value)
+
+# print(Raiz.op)
+# print(Raiz.left.value)
+# print(Raiz.right.op)
+# print(Raiz.right.left.value)
+# print(Raiz.right.right.value)
+
+# print(Raiz.op)
+# print(Raiz.value.op)
+# print(Raiz.value.left.op)
+# print(Raiz.value.left.left.value)
+# print(Raiz.value.left.right.value)
+# print(Raiz.value.right.value)
