@@ -6,7 +6,7 @@ def agregarHijos(hijo1,hijo2):
 	aux.sig = hijo2
 
 	return hijo1
-	
+
 # def agregarHijos(hijo1,hijo2):
 #     if not(isinstance(hijo1,list)) and isinstance(hijo2,list):
 #         return [hijo1] + hijo2
@@ -67,6 +67,25 @@ class Caracter(Expr):
     def __init__(self,value):
         self.type = "caracter"
         self.value = value
+
+class Activate(Expr):
+    def __init__(self,listaIdentificadores):
+        self.type = "Activate"
+        self.Identificadores = listaIdentificadores
+        self.sig = None
+
+class Deactivate(Expr):
+    def __init__(self,listaIdentificadores):
+        self.type = "Deactivate"
+        self.Identificadores = listaIdentificadores
+        self.sig = None
+
+class Advance(Expr):
+    def __init__(self,listaIdentificadores):
+        self.type = "Advance"
+        self.Identificadores = listaIdentificadores
+        self.sig = None
+
 
 # class ListaHijos(Expr):
 #     def __init__(self,hijo1,hijo2):

@@ -219,6 +219,9 @@ def p_inicioPrograma(t):
     ''' inicio : TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
                 | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd '''
 
+    global Raiz
+    Raiz = t[2]
+
 # def p_IniciolistaDeclaraciones(t):
 #     ''' INICIO_LISTA_DECLARACIONES :  LISTA_DECLARACIONES LISTA_COMPORTAMIENTOS'''
 
@@ -277,17 +280,35 @@ def p_guardarVariable(t):
     ''' GUARDAR_VARIABLE : TkAs TkIdent
                         |'''
 
-def p_instruccionesControlador(t):
+def p_SecuenciaInstruccionesControlador(t):
     '''  INSTRUCCIONES_CONTROLADOR : INSTRUCCIONES_CONTROLADOR INSTRUCCIONES_CONTROLADOR
-                                    | TkActivate LISTA_IDENT TkPunto 
-                                    | TkAdvance LISTA_IDENT TkPunto 
-                                    | TkDeactivate LISTA_IDENT TkPunto 
-                                    | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
-                                    | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkElse TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
-                                    | TkWhile EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkEnd
-                                    '''
-    global Raiz
-    Raiz = t[2]
+                                  | TkActivate LISTA_IDENT TkPunto 
+                                  | TkAdvance LISTA_IDENT TkPunto 
+                                  | TkDeactivate LISTA_IDENT TkPunto 
+                                  | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
+                                  | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkElse TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
+                                  | TkWhile EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkEnd
+
+    '''
+    if (t[1]=="activate"):
+        t[0] = Activate(t[2])
+        # global Raiz
+        # Raiz = t[0]
+    elif(t[1]=="advance"):
+        t[0] = Advance(t[2])
+        # global Raiz
+        # Raiz = t[0]
+    elif(t[1]=="deactivate"):
+        t[0] = Deactivate(t[2])
+        # global Raiz
+        # Raiz = t[0]
+    else:
+        t[0] = agregarHijos(t[1],t[2])
+    
+# def InstruccionesControlador(t):
+
+#     ''' INSTRUCCIONES_CONTROLADOR : '''
+
 
 # def p_expresionCondicional(t):
 #     ''' EXPRESION_CONDICIONAL : INSTRUCCIONES_CONTROLADOR EXPRESION_ELSE'''
@@ -435,9 +456,22 @@ parser.parse(datos)
 # print(Raiz.right.value)
 # print(Raiz.right.left.value)
 
-print(Raiz.value)
-print(Raiz.sig.value)
-print(Raiz.sig.sig.value)
+print(Raiz.type)
+print(Raiz.Identificadores.value)
+print(Raiz.Identificadores.sig.value)
+print(Raiz.Identificadores.sig.sig.value)
+print(Raiz.sig.type)
+print(Raiz.sig.Identificadores.value)
+print(Raiz.sig.sig.type)
+print(Raiz.sig.sig.Identificadores.value)
+
+# print(Raiz.Identificadores.value)
+# print(Raiz.Identificadores.sig.value)
+# print(Raiz.Identificadores.sig.sig.value)
+
+# print(Raiz.value)
+# print(Raiz.sig.value)
+# print(Raiz.sig.sig.value)
 #print(Raiz.hijos[1].value)
 
 # print(Raiz.hijos[0].value)
