@@ -86,6 +86,19 @@ class Advance(Expr):
         self.Identificadores = listaIdentificadores
         self.sig = None
 
+class Execute(Expr):
+    def __init__(self,listaInstrucciones):
+        self.type = "Execute"
+        self.Instrucciones = listaInstrucciones
+        self.sig = None
+
+class While(Expr):
+    def __init__(self,listaExpresiones,listaInstrucciones):
+        self.type = "While"
+        self.expresiones = listaExpresiones
+        self.InstruccionesWhile = listaInstrucciones
+        self.sig = None
+
 
 # class ListaHijos(Expr):
 #     def __init__(self,hijo1,hijo2):

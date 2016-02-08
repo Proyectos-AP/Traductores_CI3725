@@ -219,8 +219,10 @@ def p_inicioPrograma(t):
     ''' inicio : TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
                 | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd '''
 
-    global Raiz
-    Raiz = t[2]
+    if(t[1]=="execute"):
+        t[0] = Execute(t[2])
+        global Raiz
+        Raiz = t[0]
 
 # def p_IniciolistaDeclaraciones(t):
 #     ''' INICIO_LISTA_DECLARACIONES :  LISTA_DECLARACIONES LISTA_COMPORTAMIENTOS'''
@@ -302,6 +304,10 @@ def p_SecuenciaInstruccionesControlador(t):
         t[0] = Deactivate(t[2])
         # global Raiz
         # Raiz = t[0]
+    elif(t[1]=="while"):
+
+        t[0]= While(t[2],t[4])
+
     else:
         t[0] = agregarHijos(t[1],t[2])
     
@@ -455,15 +461,28 @@ parser.parse(datos)
 # print(Raiz.left.right.value)
 # print(Raiz.right.value)
 # print(Raiz.right.left.value)
-
 print(Raiz.type)
-print(Raiz.Identificadores.value)
-print(Raiz.Identificadores.sig.value)
-print(Raiz.Identificadores.sig.sig.value)
-print(Raiz.sig.type)
-print(Raiz.sig.Identificadores.value)
-print(Raiz.sig.sig.type)
-print(Raiz.sig.sig.Identificadores.value)
+print(Raiz.Instrucciones.type)
+print(Raiz.Instrucciones.expresiones.op)
+print(Raiz.Instrucciones.expresiones.left.value)
+print(Raiz.Instrucciones.expresiones.right.value)
+print(Raiz.Instrucciones.InstruccionesWhile.type)
+print(Raiz.Instrucciones.InstruccionesWhile.Identificadores.value)
+print(Raiz.Instrucciones.InstruccionesWhile.sig.type)
+print(Raiz.Instrucciones.InstruccionesWhile.sig.Identificadores.value)
+print(Raiz.Instrucciones.sig.type)
+print(Raiz.Instrucciones.sig.Identificadores.value)
+
+
+
+
+# print(Raiz.Instrucciones.Identificadores.value)
+# print(Raiz.Instrucciones.Identificadores.sig.value)
+# print(Raiz.Instrucciones.Identificadores.sig.sig.value)
+# print(Raiz.Instrucciones.sig.type)
+# print(Raiz.Instrucciones.sig.Identificadores.value)
+# print(Raiz.Instrucciones.sig.sig.type)
+# print(Raiz.Instrucciones.sig.sig.Identificadores.value)
 
 # print(Raiz.Identificadores.value)
 # print(Raiz.Identificadores.sig.value)
