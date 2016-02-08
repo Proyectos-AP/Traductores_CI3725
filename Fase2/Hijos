@@ -1,0 +1,9 @@
+execute
+   while true /\false:
+      advance a.
+      deactivate b.
+   end
+deactivate c.
+$$ activate z.
+$$advance m.
+end

@@ -1,0 +1,9 @@
+execute
+   if true \/ false:
+      advance a.
+   else:
+       deactivate b.
+   end
+   
+   advance zeta.
+end

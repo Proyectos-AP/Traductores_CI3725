@@ -99,6 +99,14 @@ class While(Expr):
         self.InstruccionesWhile = listaInstrucciones
         self.sig = None
 
+class Condicional(Expr):
+    def __init__(self,listaExpresiones,exito,fracaso):
+        self.type = "Condicional"
+        self.expresionesCondicional = listaExpresiones
+        self.exito = exito
+        self.fracaso = fracaso
+        self.sig = None
+
 
 # class ListaHijos(Expr):
 #     def __init__(self,hijo1,hijo2):
