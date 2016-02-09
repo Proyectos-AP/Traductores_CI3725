@@ -18,25 +18,29 @@ def agregarHijos(hijo1,hijo2):
 #------#		
 
 class Expr: 
-    def imprimirInstruccionesSimples(self):
-        print(self.type)
+    def imprimirInstruccionesSimples(self,nivelArbol):
+        espacio = "  "*nivelArbol
+        print(espacio+self.type)
+
+        nivelArbol+=1
+        espacio = "  "*nivelArbol
         aux = self.Identificadores
         while (aux != None):
-            print(" - var:",aux.value)
+            print(espacio+"- var:",aux.value)
             aux = aux.sig
 
-    def imprimirInstrucciones(self):
+    def imprimirInstrucciones(self,nivelArbol):
         aux = self
         while (aux!= None):
             if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
-                aux.imprimirInstruccionesSimples()
+                aux.imprimirInstruccionesSimples(nivelArbol)
             elif (aux.type in {"ITERACION INDETERMINADA","CONDICIONAL"}):
                 if (aux.type == "ITERACION INDETERMINADA"):
-                    aux.imprimirWhile()
+                    aux.imprimirWhile(nivelArbol)
                 elif (aux.type == "CONDICIONAL"):
-                    aux.imprimirCondiional()
+                    aux.imprimirCondicional(nivelArbol)
             else:
-                aux.imprimirAST()
+                aux.imprimirAST(nivelArbol)
             aux=aux.sig
 
     def imprimirExpresionesBinarias(self):
@@ -129,12 +133,19 @@ class While(Expr):
         self.InstruccionesWhile = listaInstrucciones
         self.sig = None
 
-    def imprimirWhile(self):
-        print(self.type)
-        print("GUARDIA")
+    def imprimirWhile(self,nivelArbol):
+
+        espacio = "  "*nivelArbol
+        nivelArbol+=1
+        print(espacio+self.type)
+
+        espacio = "  "*nivelArbol
+        print(espacio+"-guardia :",end=" ")
+        nivelArbol+=1
         self.expresiones.imprimirExpresionesBinarias()
-        print("INSTRUCCIONES")
-        self.InstruccionesWhile.imprimirInstrucciones()
+        print("")
+        print(espacio+"-instrucciones:")
+        self.InstruccionesWhile.imprimirInstrucciones(nivelArbol)
         # while (aux!= None):
         #     if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
         #         aux.imprimirInstruccionesSimples()
@@ -153,17 +164,22 @@ class Condicional(Expr):
         self.fracaso = fracaso
         self.sig = None
 
-    def imprimirCondiional(self):
-        print(self.type)
-        print("GUARDIA")
+    def imprimirCondicional(self,nivelArbol):
+        espacio = "  "*nivelArbol
+        nivelArbol+=1
+        print(espacio+self.type)
+        espacio = "  "*nivelArbol
+        print(espacio+"-guardia :",end=" ")
+        nivelArbol+=1
         self.expresionesCondicional.imprimirExpresionesBinarias()
-        print("EXITO")
+        print("")
+        print(espacio+"-exito:")
 
-        self.exito.imprimirInstrucciones()
+        self.exito.imprimirInstrucciones(nivelArbol)
 
         if(self.fracaso!=None):
-            print("FRACASO")
-            self.fracaso.imprimirInstrucciones()
+            print(espacio+"-fracaso:")
+            self.fracaso.imprimirInstrucciones(nivelArbol)
             # while (aux!= None):
             #     if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
             #         aux.imprimirInstruccionesSimples()
@@ -256,13 +272,15 @@ class RaizAST(Expr):
         self.arbolInstruccion = ArbolInstruccion
         self.sig = None
 
-    def imprimirAST(self):
+    def imprimirAST(self,nivelArbol):
 
+        espacio = "  "*nivelArbol
+        nivelArbol+=1
         if (self.arbolInstruccion!=None):
-            print("SECUENCIACION")
+            print(espacio+"SECUENCIACION")
             aux = self.arbolInstruccion.Instrucciones
             # print(aux)
-            aux.imprimirInstrucciones()
+            aux.imprimirInstrucciones(nivelArbol)
         
         
 

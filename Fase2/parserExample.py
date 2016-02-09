@@ -461,23 +461,14 @@ MiLexer.build()               # Se construye el Lexer
 MiLexer.tokenizar() 
 tokens = MiLexer.tokens 
 
-# LexerPrueba = MiLexer.build()
-
-# print(MiLexer.build())
-# Lexer2 = Lexer()
-
-# print(Lexer2.build())
-
 if (len(MiLexer.Errores)!= 0 ) :
   # Se imprimen los errores lexicograficos
   ImprimirErrores(MiLexer.Errores)
-#else:
-  # Se imprimen los tokens
-#  ImprimirTokens(MiLexer.Tokens)
 
-parser = yacc.yacc()
+#parser = yacc.yacc(errorlog=yacc.NullLogger())
+parser = yacc.yacc(debug=False)
 parser.parse(datos)
-Raiz.imprimirAST()
+Raiz.imprimirAST(0)
 
 # print(Raiz.op)
 # print(Raiz.left.op)
