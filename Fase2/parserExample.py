@@ -281,12 +281,13 @@ def p_listaComportamientos(t):
                               | TkOn CONDICION TkDosPuntos INSTRUCCIONES_ROBOT TkEnd 
                               |'''
 
-    if (t[1] == "on"):
-        t[0] = ListaComportamiento(t[2],t[4])
+    if (len(t) != 1):                     
+        if (t[1] == "on"):
+            t[0] = ListaComportamiento(t[2],t[4])
+        else:
+            t[0] = agregarHijos(t[1],t[2])
     else:
-        t[0] = agregarHijos(t[1],t[2])
-        global Raiz
-        Raiz = t[0]
+        t[0] = None
 
 def p_condicion(t):
     ''' CONDICION : TkDeActivation
@@ -375,8 +376,9 @@ def p_SecuenciaInstruccionesControlador(t):
                                   | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
                                   | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkElse TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
                                   | TkWhile EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkEnd
-
-    '''
+                                  | TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
+                                  | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd  '''
+   
     if (t[1]=="activate"):
         t[0] = Activate(t[2])
         # global Raiz
@@ -398,6 +400,14 @@ def p_SecuenciaInstruccionesControlador(t):
     elif(t[1]=="while"):
 
         t[0]= While(t[2],t[4])
+
+    elif(t[1]=="execute"):
+
+        t[0] = RaizAST(None,Execute(t[2]))
+
+    elif (t[1] == "create"):
+
+        t[0] = RaizAST(Create(t[2]),Execute(t[4]))
     else:
         t[0] = agregarHijos(t[1],t[2])
     
@@ -535,7 +545,8 @@ def p_expression_caracter(t):
 
 
 def p_error(t):
-    print("Syntax error at '%s' in line " % t.value,t.lineno)
+    print("Error sintactico '%s' en linea " % t.value,t.lineno)
+    sys.exit()
     #print("Syntax error at ")
 
 

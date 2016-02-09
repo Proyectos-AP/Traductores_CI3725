@@ -30,11 +30,13 @@ class Expr:
         while (aux!= None):
             if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
                 aux.imprimirInstruccionesSimples()
-            else:
+            elif (aux.type in {"ITERACION INDETERMINADA","CONDICIONAL"}):
                 if (aux.type == "ITERACION INDETERMINADA"):
                     aux.imprimirWhile()
                 elif (aux.type == "CONDICIONAL"):
                     aux.imprimirCondiional()
+            else:
+                aux.imprimirAST()
             aux=aux.sig
 
     def imprimirExpresionesBinarias(self):
