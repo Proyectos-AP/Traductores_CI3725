@@ -154,6 +154,7 @@ class Condicional(Expr):
     def imprimirCondiional(self):
         print(self.type)
         print("GUARDIA")
+        self.expresionesCondicional.imprimirExpresionesBinarias()
         print("EXITO")
 
         self.exito.imprimirInstrucciones()
@@ -169,12 +170,98 @@ class Condicional(Expr):
             #     aux=aux.sig
 
 
-class RaizAST():
 
+class Store(Expr):
+    def __init__(self,listaExpresiones):
+        self.type = "STORE"
+        self.expresiones = listaExpresiones
+        self.sig = None
+
+class Recieve(Expr):
+    def __init__(self):
+        self.type = "RECIEVE"
+        self.sig = None
+
+class Send(Expr):
+    def __init__(self):
+        self.type = "SEND"
+        self.sig = None
+
+class Collect(Expr):
+    def __init__(self,identificador):
+        self.type = "COLLECT"
+        self.identificador = identificador
+        self.sig = None
+
+class Drop(Expr):
+    def __init__(self,listaExpresiones):
+        self.type = "DROP"
+        self.expresiones = listaExpresiones
+        self.sig = None
+
+class Movimiento(Expr):
+    def __init__(self,tipo,listaExpresiones):
+        self.type = tipo
+        self.expresiones = listaExpresiones
+        self.sig = None
+
+class Read(Expr):
+    def __init__(self,identificador):
+        self.type = "READ"
+        self.identificador = identificador
+        self.sig = None
+
+class Deactivation(Expr):
+    def __init__(self):
+        self.type = "DEACTIVATION"
+        self.sig = None
+
+class Activation(Expr):
+    def __init__(self):
+        self.type = "ACTIVATION"
+        self.sig = None
+
+class Default(Expr):
+    def __init__(self):
+        self.type = "DEFAULT"
+        self.sig = None
+
+class ListaComportamiento(Expr):
+    """docstring for ListaComportamiento"""
+    def __init__(self, condicion,instrucciones):
+        self.type = "Lista de comportamientos"
+        self.condicion = condicion
+        self.instrucciones = instrucciones
+        self.sig = None
+
+class Declaraciones(Expr):
+    def __init__(self,tipoRobot,identificadores,listaComportamiento):
+        self.type = "DECLARACIONES"
+        self.tipoRobot = tipoRobot
+        self.identificadores = identificadores
+        self.listaComportamiento = listaComportamiento
+        self.sig = None
+
+class Create(Expr):
+    def __init__(self,listaDeclaraciones):
+        self.type = "CREATE"
+        self.listaDeclaraciones = listaDeclaraciones
+
+class RaizAST(Expr):
     def __init__(self,ArbolDeclaracion,ArbolInstruccion):
         self.type = "RaizAST"
         self.arbolDeclaracion = ArbolDeclaracion
         self.arbolInstruccion = ArbolInstruccion
+        self.sig = None
+
+    def imprimirAST(self):
+
+        if (self.arbolInstruccion!=None):
+            print("SECUENCIACION")
+            aux = self.arbolInstruccion.Instrucciones
+            # print(aux)
+            aux.imprimirInstrucciones()
+        
         
 
 

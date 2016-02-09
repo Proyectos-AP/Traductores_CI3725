@@ -39,20 +39,20 @@ def LeerArchivoEntrada():
 
 #------------------------------------------------------------------------------#
 
-def imprimirAST(Raiz):
+# def imprimirAST(Raiz):
 
-    if (Raiz.arbolInstruccion!=None):
-        aux =Raiz.arbolInstruccion.Instrucciones
-        print("SECUENCIACION")
-        while (aux != None ):
-            if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
-                aux.imprimirInstruccionesSimples()
-            else:
-                if(aux.type == "ITERACION INDETERMINADA"):
-                    aux.imprimirWhile()
-                elif(aux.type == "CONDICIONAL"):
-                    aux.imprimirCondiional()
-            aux=aux.sig
+#     if (Raiz.arbolInstruccion!=None):
+#         aux =Raiz.arbolInstruccion.Instrucciones
+#         print("SECUENCIACION")
+#         while (aux != None ):
+#             if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
+#                 aux.imprimirInstruccionesSimples()
+#             else:
+#                 if(aux.type == "ITERACION INDETERMINADA"):
+#                     aux.imprimirWhile()
+#                 elif(aux.type == "CONDICIONAL"):
+#                     aux.imprimirCondiional()
+#             aux=aux.sig
 
 #------------------------------------------------------------------------------#
 
@@ -239,8 +239,12 @@ def p_inicioPrograma(t):
 
     if(t[1]=="execute"):
         t[0] = RaizAST(None,Execute(t[2]))
-        global Raiz
-        Raiz = t[0]
+    elif (t[1] == "create"):
+        t[0] = RaizAST(Create(t[2]),Execute(t[4]))
+
+    global Raiz
+    Raiz = t[0]
+
 
 # def p_IniciolistaDeclaraciones(t):
 #     ''' INICIO_LISTA_DECLARACIONES :  LISTA_DECLARACIONES LISTA_COMPORTAMIENTOS'''
@@ -249,8 +253,12 @@ def p_listaDeclaraciones(t):
     ''' LISTA_DECLARACIONES : LISTA_DECLARACIONES LISTA_DECLARACIONES
                             | TkInt TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd 
                             | TkBool TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd 
-                            | TkChar TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd 
-                            |'''
+                            | TkChar TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd '''
+
+    if(t[1] in {"int","bool","char"}):
+        t[0] = Declaraciones(t[1],t[3],t[4])
+    else:
+        t[0] = agregarHijos(t[1],t[2])
 
 def  p_listaIdent(t):
     ''' LISTA_IDENT : LISTA_IDENT TkComa LISTA_IDENT'''
@@ -273,11 +281,28 @@ def p_listaComportamientos(t):
                               | TkOn CONDICION TkDosPuntos INSTRUCCIONES_ROBOT TkEnd 
                               |'''
 
+    if (t[1] == "on"):
+        t[0] = ListaComportamiento(t[2],t[4])
+    else:
+        t[0] = agregarHijos(t[1],t[2])
+        global Raiz
+        Raiz = t[0]
+
 def p_condicion(t):
     ''' CONDICION : TkDeActivation
                   | TkActivation
                   | EXPRESION_BIN
                   | TkDefault''' 
+
+    if (t[1] == "deactivation"):
+        t[0]=Deactivation()
+    elif(t[1] == "activation"):
+        t[0]=Activation()
+    elif(t[1] == "default"):
+        t[0]=Default()
+    else:
+        t[0]=t[1]
+
 
 def p_instruccionRobot(t):
     ''' INSTRUCCIONES_ROBOT : INSTRUCCIONES_ROBOT INSTRUCCIONES_ROBOT
@@ -291,14 +316,56 @@ def p_instruccionRobot(t):
                             | TkDown EXPRESION_OPCIONAL TkPunto 
                             | TkRead GUARDAR_VARIABLE TkPunto 
                             | TkSend TkPunto  '''
+    if (t[1] == "store"):
+        t[0] = Store(t[2])
+        # global Raiz
+        # Raiz = t[0]
+    elif (t[1] == "recieve"):
+        t[0] = Recieve()
+        # global Raiz
+        # Raiz = t[0]
+    elif (t[1] == "collect"):
+        t[0] = Collect(t[2])
+        # global Raiz
+        # Raiz = t[0]
+    elif (t[1] == "drop"):
+        t[0] = Drop(t[2])
+        # global Raiz
+        # Raiz = t[0]
+    elif (t[1] in {"up","down","left","right"}):
+        t[0] = Movimiento(t[1],t[2])
+        # global Raiz
+        # Raiz = t[0]
+    elif (t[1] == "read"):
+        t[0] = Read(t[2])
+        # global Raiz
+        # Raiz = t[0]
+    elif (t[1] == "send"):
+        t[0] = Send()
+        # global Raiz
+        # Raiz = t[0]
+    else:
+        t[0] = agregarHijos(t[1],t[2])
+        # global Raiz
+        # Raiz = t[0]
 
+ 
 def p_expresionOpcional(t):
     ''' EXPRESION_OPCIONAL : EXPRESION_BIN
                            |'''
+    if (len(t) != 1):                    
+        t[0] = t[1]
+    else:
+        t[0] = None
 
 def p_guardarVariable(t):
     ''' GUARDAR_VARIABLE : TkAs TkIdent
                         |'''
+    if (len(t) != 1):
+        if (t[1] == "as"):                    
+            t[0] = Identificadores(t[2])
+    else:
+        t[0] = None
 
 def p_SecuenciaInstruccionesControlador(t):
     '''  INSTRUCCIONES_CONTROLADOR : INSTRUCCIONES_CONTROLADOR INSTRUCCIONES_CONTROLADOR
@@ -331,7 +398,6 @@ def p_SecuenciaInstruccionesControlador(t):
     elif(t[1]=="while"):
 
         t[0]= While(t[2],t[4])
-
     else:
         t[0] = agregarHijos(t[1],t[2])
     
@@ -486,7 +552,10 @@ parser.parse(datos)
 # print(Raiz.right.value)
 # print(Raiz.right.left.value)
 
-imprimirAST(Raiz)
+#print(Raiz.type)
+#print(Raiz.identificador)
+#Raiz.expresiones.imprimirExpresionesBinarias()
+Raiz.imprimirAST()
 
 # print(Raiz.type)
 # print(Raiz.Instrucciones.type)
@@ -504,7 +573,36 @@ imprimirAST(Raiz)
 
 
 # print(Raiz.type)
-# print(Raiz.Instrucciones.type)
+# print(Raiz.tipoRobot)
+# print(Raiz.identificadores.value)
+# print(Raiz.listaComportamiento.condicion.type)
+# print(Raiz.listaComportamiento.instrucciones.type)
+# Raiz.listaComportamiento.instrucciones.expresiones.imprimirExpresionesBinarias()
+# print(Raiz.listaComportamiento.instrucciones.sig.type)
+
+# print(Raiz.sig.type)
+# print(Raiz.sig.tipoRobot)
+# print(Raiz.sig.identificadores.value)
+# print(Raiz.sig.listaComportamiento.condicion.type)
+# print(Raiz.sig.listaComportamiento.instrucciones.type)
+# Raiz.sig.listaComportamiento.instrucciones.expresiones.imprimirExpresionesBinarias()
+# print(Raiz.sig.listaComportamiento.instrucciones.sig.type)
+
+
+
+# print(Raiz.condicion.type)
+# print(Raiz.instrucciones.type)
+# print(Raiz.instrucciones.sig.type)
+
+# print(Raiz.sig.type)
+# print(Raiz.sig.condicion.type)
+# print(Raiz.sig.instrucciones.type)
+# Raiz.sig.instrucciones.expresiones.imprimirExpresionesBinarias()
+# print(Raiz.sig.instrucciones.sig.type)
+
+
+
+# print(Raiz.sig.type)
 # print(Raiz.Instrucciones.expresiones.op)
 # print(Raiz.Instrucciones.expresiones.left.value)
 # print(Raiz.Instrucciones.expresiones.right.value)
@@ -512,7 +610,7 @@ imprimirAST(Raiz)
 # print(Raiz.Instrucciones.InstruccionesWhile.Identificadores.value)
 # print(Raiz.Instrucciones.InstruccionesWhile.sig.type)
 # print(Raiz.Instrucciones.InstruccionesWhile.sig.Identificadores.value)
-# print(Raiz.Instrucciones.sig.type)
+# print(Raiz.sig.sig.type)
 # print(Raiz.Instrucciones.sig.Identificadores.value)
 
 
