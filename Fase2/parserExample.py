@@ -1,6 +1,12 @@
 import sys
 import os
 from Arbol import *
+from Tokens import *
+from Lexer import * 
+import ply.lex as lex 
+import ply.yacc as yacc
+#from prueba import tokens
+
 
 # -----------------------------------------------------------------------------
 # calc.py
@@ -37,7 +43,68 @@ def LeerArchivoEntrada():
 
   return data
 
+  #------------------------------------------------------------------------------#
+
+def ImprimirErrores(ArregloErrores):
+
+  '''
+    Descripción de la función: Imprime la lista de tokens que almacena los errores
+        lexicograficos.
+
+    * Variables de entrada: ArregloErrores // Lista de tokens
+    * Variables de salida: Ninguna.
+
+  '''
+
+  for i in range(len(ArregloErrores)):
+
+    print("Error: Caracter inesperado \""+ArregloErrores[i].elem+"\" en la fila "\
+      +str(ArregloErrores[i].fila)+", columna "+str(ArregloErrores[i].columna) )
+
 #------------------------------------------------------------------------------#
+
+def ImprimirTokens(ArregloTokens):
+
+  '''
+    Descripción de la función: Imprime la lista de tokens que almacena
+      los tokens realizados a partir del archivo de entrada.
+
+    * Variables de entrada: ArregloTokens // Lista de tokens
+    * Variables de salida: Ninguna.
+    
+  '''
+
+  for i in range(len(ArregloTokens)):
+
+    # Se fija el fin de linea
+    if ( i==len(ArregloTokens)-1 ):
+      FinLinea ='\n'
+    elif ( i%4==0 and i!=0 ):
+      FinLinea =", \n"  
+    else :
+      FinLinea=",  "
+
+    # Se imprimen los tokens
+    if (ArregloTokens[i].tipo in {"TkNum","TkCaracter"} ):
+
+      print(ArregloTokens[i].tipo+"("+str(ArregloTokens[i].elem)+")",\
+        ArregloTokens[i].fila,ArregloTokens[i].columna,end=FinLinea)
+
+    elif (ArregloTokens[i].tipo=="TkIdent"):
+
+      print(ArregloTokens[i].tipo+"(\""+ArregloTokens[i].elem+"\")",\
+        ArregloTokens[i].fila,ArregloTokens[i].columna,end=FinLinea)
+
+    else:
+      print(ArregloTokens[i].tipo,ArregloTokens[i].fila,\
+        ArregloTokens[i].columna,end=FinLinea)
+
+#------------------------------------------------------------------------------#
+
+# datos = LeerArchivoEntrada()
+# MiLexer=Lexer(datos)          # Se crea el Lexer
+# MiLexer.build()               # Se construye el Lexer
+# MiLexer.tokenizar() 
 
 # def imprimirAST(Raiz):
 
@@ -55,169 +122,6 @@ def LeerArchivoEntrada():
 #             aux=aux.sig
 
 #------------------------------------------------------------------------------#
-
-reserved = {
-    'create'           : 'TkCreate',
-    'bot'              : 'TkBot' ,
-    'on'               : 'TkOn',
-    'activation'       : 'TkActivation' ,
-    'deactivation'     : 'TkDeActivation',
-    'store'            : 'TkStore' ,
-    'end'              : 'TkEnd'  ,
-    'execute'          : 'TkExecute' ,
-    'activate'         : 'TkActivate',
-    'deactivate'       : 'TkDeactivate' ,
-    'send'             : 'TkSend' ,   
-    'advance'          : 'TkAdvance' ,
-    'recieve'          : 'TkRecieve',
-    'default'          : 'TkDefault' ,
-    'me'               : 'TkMe' ,
-    'drop'             : 'TkDrop',
-    'collect'          : 'TkCollect',
-    'as'               : 'TkAs',
-    'int'              : 'TkInt',
-    'left'             : 'TkLeft',
-    'right'            : 'TkRight',
-    'up'               : 'TkUp' ,
-    'down'             : 'TkDown' ,
-    'read'             : 'TkRead',
-    'while'            : 'TkWhile' ,
-    'bool'             : 'TkBool',
-    'if'               : 'TkIf',
-    'else'             : 'TkElse'  ,
-    'true'             : 'TkTrue'  ,
-    'false'            : 'TkFalse',
-    'char'             : 'TkChar'
-}
-
-tokens = [
-    'TkComa',
-    'TkPunto',
-    'TkDosPuntos',
-    'TkParAbre',
-    'TkParCierra',
-    'TkSuma',
-    'TkResta',
-    'TkMult',
-    'TkDiv',
-    'TkMod',
-    'TkConjuncion',
-    'TkDisyuncion',
-    'TkNegacion',
-    'TkMenor',
-    'TkMayor',
-    'TkMenorIgual',
-    'TkMayorIgual',
-    'TkIgual',
-    'TkDesigual',
-    'TkIdent',
-    'TkNum',
-    'TkCaracter',
-    'TkErrorNum'
-] + list(reserved.values())
-
-# Expresiones regulares para tokens simples.
-t_TkComa         = r','
-t_TkPunto        = r'\.'
-t_TkDosPuntos    = r'\:'
-t_TkParAbre      = r'\('
-t_TkParCierra    = r'\)'
-t_TkSuma         = r'\+'
-t_TkResta        = r'-'
-t_TkMult         = r'\*'
-t_TkDiv          = r'/'
-t_TkMod          = r'\%'
-t_TkConjuncion   = r'/\\'
-t_TkDisyuncion   = r'\\/'
-t_TkNegacion     = r'\~'
-t_TkMenor        = r'<'
-t_TkMayor        = r'>'
-t_TkMenorIgual   = r'<='
-t_TkMayorIgual   = r'>='
-t_TkIgual        = r'='
-t_TkDesigual     = r'/='
-
-
-# Ignora los tabs y espacios
-t_ignore  = ' \t'
-
-#------------------------------------------------------------------------------#
-
-def t_TkErrorNum(t):
-
-    r'[\d_]+[a-zA-Z_]+'
-    t.value = t.value[0]
-    return t
-    
-#------------------------------------------------------------------------------#
-
-    # Descripción de la función: Regla para tokens correspondientes
-    # a numeros.
-def t_TkNum(t):
-    r'\d+'
-    t.value = int(t.value)
-    return t
-
-#------------------------------------------------------------------------------#
-
-    # Descripción de la función:    Regla para conjuntos de caracteres. 
-    # Si el caracter es igual a algun caracter reservado entonces t.type 
-    # sera igual al del caracter reservado,de no ser igual a ningun 
-    # caracter reservado entonces t.type sera igual a TkIdent.
-def t_TkIdent(t):
-
-    r'[a-zA-Z][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value,'TkIdent')
-    return t
-
-#------------------------------------------------------------------------------#
-
-# Descripción de la función:Regla para contar los numeros de linea.
-def t_newline(t):
-
-    r'\n+'
-    t.lexer.lineno += len(t.value)
-
-#------------------------------------------------------------------------------#
-
-    # Descripción de la función: Reglas para los comentarios.
-    # Los tokens obtenidos por esta expresion regular seran omitidos.
-def t_TkComment(t):
-    r'(\$-(.|\n)*?-\$)|(\$\$.*)'
-    t.lexer.lineno += t.value.count('\n')
-    pass
-
-#------------------------------------------------------------------------------#
-
-    # Descripción de la función: Reglas para caracteres. Este token solo 
-    # toma caracteres encerrados entre comillas simples.
-def t_TkCaracter(t):
-
-    r'\'.\''
-    return t
-
-#------------------------------------------------------------------------------#
-    # Descripción de la función: Funcion para localizar el numero de 
-    # columna de una palabra.
-# def NumeroColumna(input,token):
-
-#     last_cr = input.rfind('\n',0,token.lexpos)
-#     columna = (token.lexpos - last_cr) 
-#     return columna
-
-#------------------------------------------------------------------------------#
-
-    # Descripción de la función: Funcion para el manejo de errores .
-def t_error(t):
-
-    ErrorEncontrado = token(None,t.value[0],\
-        t.lineno,self.NumeroColumna(self.data,t))
-    t.lexer.skip(1)
-
-#-------------------------------------------------------------------------------#  
-# Build the lexer
-import ply.lex as lex
-lexer = lex.lex()
 
 global Raiz
 # Parsing rules
@@ -549,12 +453,31 @@ def p_error(t):
     sys.exit()
     #print("Syntax error at ")
 
-
-import ply.yacc as yacc
-parser = yacc.yacc()
+#--------------------------------------------------------------------
 
 datos = LeerArchivoEntrada()
+MiLexer=Lexer(datos)          # Se crea el Lexer
+MiLexer.build()               # Se construye el Lexer
+MiLexer.tokenizar() 
+tokens = MiLexer.tokens 
+
+# LexerPrueba = MiLexer.build()
+
+# print(MiLexer.build())
+# Lexer2 = Lexer()
+
+# print(Lexer2.build())
+
+if (len(MiLexer.Errores)!= 0 ) :
+  # Se imprimen los errores lexicograficos
+  ImprimirErrores(MiLexer.Errores)
+#else:
+  # Se imprimen los tokens
+#  ImprimirTokens(MiLexer.Tokens)
+
+parser = yacc.yacc()
 parser.parse(datos)
+Raiz.imprimirAST()
 
 # print(Raiz.op)
 # print(Raiz.left.op)
@@ -566,7 +489,6 @@ parser.parse(datos)
 #print(Raiz.type)
 #print(Raiz.identificador)
 #Raiz.expresiones.imprimirExpresionesBinarias()
-Raiz.imprimirAST()
 
 # print(Raiz.type)
 # print(Raiz.Instrucciones.type)
