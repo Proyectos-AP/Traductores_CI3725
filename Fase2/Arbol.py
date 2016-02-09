@@ -17,7 +17,34 @@ def agregarHijos(hijo1,hijo2):
 
 #------#		
 
-class Expr: pass
+class Expr: 
+    def imprimirInstruccionesSimples(self):
+        print(self.type)
+        aux = self.Identificadores
+        while (aux != None):
+            print(" - var:",aux.value)
+            aux = aux.sig
+
+    def imprimirInstrucciones(self):
+        aux = self
+        while (aux!= None):
+            if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
+                aux.imprimirInstruccionesSimples()
+            else:
+                if (aux.type == "ITERACION INDETERMINADA"):
+                    aux.imprimirWhile()
+                elif (aux.type == "CONDICIONAL"):
+                    aux.imprimirCondiional()
+            aux=aux.sig
+
+    def imprimirExpresionesBinarias(self):
+        if (self != None):
+            if (self.type=="binop"):
+                self.left.imprimirExpresionesBinarias()
+                print(self.op,end=" ")
+                self.right.imprimirExpresionesBinarias()
+            else:
+                print(self.value,end=" ")
 
 class BinOp(Expr):
     def __init__(self,left,op,right):
@@ -70,42 +97,85 @@ class Caracter(Expr):
 
 class Activate(Expr):
     def __init__(self,listaIdentificadores):
-        self.type = "Activate"
+        self.type = "ACTIVATE"
         self.Identificadores = listaIdentificadores
         self.sig = None
 
+
 class Deactivate(Expr):
     def __init__(self,listaIdentificadores):
-        self.type = "Deactivate"
+        self.type = "DEACTIVATE"
         self.Identificadores = listaIdentificadores
         self.sig = None
 
 class Advance(Expr):
     def __init__(self,listaIdentificadores):
-        self.type = "Advance"
+        self.type = "ADVANCE"
         self.Identificadores = listaIdentificadores
         self.sig = None
 
 class Execute(Expr):
     def __init__(self,listaInstrucciones):
-        self.type = "Execute"
+        self.type = "EXECUTE"
         self.Instrucciones = listaInstrucciones
         self.sig = None
 
 class While(Expr):
     def __init__(self,listaExpresiones,listaInstrucciones):
-        self.type = "While"
+        self.type = "ITERACION INDETERMINADA"
         self.expresiones = listaExpresiones
         self.InstruccionesWhile = listaInstrucciones
         self.sig = None
 
+    def imprimirWhile(self):
+        print(self.type)
+        print("GUARDIA")
+        self.expresiones.imprimirExpresionesBinarias()
+        print("INSTRUCCIONES")
+        self.InstruccionesWhile.imprimirInstrucciones()
+        # while (aux!= None):
+        #     if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
+        #         aux.imprimirInstruccionesSimples()
+        #     else:
+        #         if (aux.type == "ITERACION INDETERMINADA"):
+        #             aux.imprimirWhile()
+        #         elif (aux.type == "CONDICIONAL"):
+        #             aux.imprimirCondiional()
+        #     aux=aux.sig
+
 class Condicional(Expr):
     def __init__(self,listaExpresiones,exito,fracaso):
-        self.type = "Condicional"
+        self.type = "CONDICIONAL"
         self.expresionesCondicional = listaExpresiones
         self.exito = exito
         self.fracaso = fracaso
         self.sig = None
+
+    def imprimirCondiional(self):
+        print(self.type)
+        print("GUARDIA")
+        print("EXITO")
+
+        self.exito.imprimirInstrucciones()
+
+        if(self.fracaso!=None):
+            print("FRACASO")
+            self.fracaso.imprimirInstrucciones()
+            # while (aux!= None):
+            #     if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
+            #         aux.imprimirInstruccionesSimples()
+            #     else:
+            #         pass
+            #     aux=aux.sig
+
+
+class RaizAST():
+
+    def __init__(self,ArbolDeclaracion,ArbolInstruccion):
+        self.type = "RaizAST"
+        self.arbolDeclaracion = ArbolDeclaracion
+        self.arbolInstruccion = ArbolInstruccion
+        
 
 
 # class ListaHijos(Expr):

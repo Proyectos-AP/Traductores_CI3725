@@ -38,6 +38,24 @@ def LeerArchivoEntrada():
   return data
 
 #------------------------------------------------------------------------------#
+
+def imprimirAST(Raiz):
+
+    if (Raiz.arbolInstruccion!=None):
+        aux =Raiz.arbolInstruccion.Instrucciones
+        print("SECUENCIACION")
+        while (aux != None ):
+            if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
+                aux.imprimirInstruccionesSimples()
+            else:
+                if(aux.type == "ITERACION INDETERMINADA"):
+                    aux.imprimirWhile()
+                elif(aux.type == "CONDICIONAL"):
+                    aux.imprimirCondiional()
+            aux=aux.sig
+
+#------------------------------------------------------------------------------#
+
 reserved = {
     'create'           : 'TkCreate',
     'bot'              : 'TkBot' ,
@@ -220,7 +238,7 @@ def p_inicioPrograma(t):
                 | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd '''
 
     if(t[1]=="execute"):
-        t[0] = Execute(t[2])
+        t[0] = RaizAST(None,Execute(t[2]))
         global Raiz
         Raiz = t[0]
 
@@ -468,20 +486,21 @@ parser.parse(datos)
 # print(Raiz.right.value)
 # print(Raiz.right.left.value)
 
+imprimirAST(Raiz)
 
-print(Raiz.type)
-print(Raiz.Instrucciones.type)
-print(Raiz.Instrucciones.expresionesCondicional.op)
-print(Raiz.Instrucciones.expresionesCondicional.left.value)
-print(Raiz.Instrucciones.expresionesCondicional.right.value)
-print(Raiz.Instrucciones.exito.type)
-print(Raiz.Instrucciones.exito.Identificadores.value)
-print(Raiz.Instrucciones.fracaso.type)
-print(Raiz.Instrucciones.fracaso.Identificadores.value)
-# print(Raiz.Instrucciones.exito.sig.type)
-# print(Raiz.Instrucciones.exito.sig.Identificadores.value)
-print(Raiz.Instrucciones.sig.type)
-print(Raiz.Instrucciones.sig.Identificadores.value)
+# print(Raiz.type)
+# print(Raiz.Instrucciones.type)
+# print(Raiz.Instrucciones.expresionesCondicional.op)
+# print(Raiz.Instrucciones.expresionesCondicional.left.value)
+# print(Raiz.Instrucciones.expresionesCondicional.right.value)
+# print(Raiz.Instrucciones.exito.type)
+# print(Raiz.Instrucciones.exito.Identificadores.value)
+# print(Raiz.Instrucciones.fracaso.type)
+# print(Raiz.Instrucciones.fracaso.Identificadores.value)
+# # print(Raiz.Instrucciones.exito.sig.type)
+# # print(Raiz.Instrucciones.exito.sig.Identificadores.value)
+# print(Raiz.Instrucciones.sig.type)
+# print(Raiz.Instrucciones.sig.Identificadores.value)
 
 
 # print(Raiz.type)
