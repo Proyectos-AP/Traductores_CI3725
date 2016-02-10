@@ -356,6 +356,9 @@ def p_expression_caracter(t):
 
 
 def p_error(t):
-    print("Error sintactico '%s' en linea " % t.value,t.lineno)
+    if(t!=None):
+        print("Error sintactico '%s' en linea " % t.value,t.lineno)
+    else:
+        print("Error sintactico")
+
     sys.exit()
-    #print("Syntax error at ")
