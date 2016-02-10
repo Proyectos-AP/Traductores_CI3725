@@ -19,11 +19,11 @@ def agregarHijos(hijo1,hijo2):
 
 class Expr: 
     def imprimirInstruccionesSimples(self,nivelArbol):
-        espacio = "  "*nivelArbol
+        espacio = "   "*nivelArbol
         print(espacio+self.type)
 
         nivelArbol+=1
-        espacio = "  "*nivelArbol
+        espacio = "   "*nivelArbol
         aux = self.Identificadores
         while (aux != None):
             print(espacio+"- var:",aux.value)
@@ -135,11 +135,11 @@ class While(Expr):
 
     def imprimirWhile(self,nivelArbol):
 
-        espacio = "  "*nivelArbol
+        espacio = "   "*nivelArbol
         nivelArbol+=1
         print(espacio+self.type)
 
-        espacio = "  "*nivelArbol
+        espacio = "   "*nivelArbol
         print(espacio+"-guardia :",end=" ")
         nivelArbol+=1
         self.expresiones.imprimirExpresionesBinarias()
@@ -165,10 +165,10 @@ class Condicional(Expr):
         self.sig = None
 
     def imprimirCondicional(self,nivelArbol):
-        espacio = "  "*nivelArbol
+        espacio = "   "*nivelArbol
         nivelArbol+=1
         print(espacio+self.type)
-        espacio = "  "*nivelArbol
+        espacio = "   "*nivelArbol
         print(espacio+"-guardia :",end=" ")
         nivelArbol+=1
         self.expresionesCondicional.imprimirExpresionesBinarias()
@@ -274,7 +274,7 @@ class RaizAST(Expr):
 
     def imprimirAST(self,nivelArbol):
 
-        espacio = "  "*nivelArbol
+        espacio = "   "*nivelArbol
         nivelArbol+=1
         if (self.arbolInstruccion!=None):
             print(espacio+"SECUENCIACION")
