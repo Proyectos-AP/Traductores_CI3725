@@ -50,6 +50,7 @@ class Lexer():
 		self.Tokens = []
 		self.Errores = []
 
+
 	global reserved
 	reserved = {
 		'create'           : 'TkCreate',
@@ -215,6 +216,7 @@ class Lexer():
 	def build(self,**kwargs):
 
 		self.lexer = lex.lex(module=self, **kwargs)
+		return self.lexer
 
 #------------------------------------------------------------------------------#
 

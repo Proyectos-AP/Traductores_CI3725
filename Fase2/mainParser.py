@@ -114,7 +114,7 @@ if (len(MiLexer.Errores)!= 0 ) :
   ImprimirErrores(MiLexer.Errores)
 
 #parser = yacc.yacc(errorlog=yacc.NullLogger())
-parser = yacc.yacc(debug=False)
+parser = yacc.yacc()
 Raiz = parser.parse(datos)
 Raiz.imprimirAST(0)
 

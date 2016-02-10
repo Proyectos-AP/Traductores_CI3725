@@ -31,6 +31,9 @@ class Expr:
 
     def imprimirInstrucciones(self,nivelArbol):
         aux = self
+        if(aux.sig != None):
+            espacio = "   "*nivelArbol
+            print(espacio+"SECUENCIACION")
         while (aux!= None):
             if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
                 aux.imprimirInstruccionesSimples(nivelArbol)
@@ -45,7 +48,7 @@ class Expr:
 
     def imprimirExpresionesBinarias(self):
         if (self != None):
-            if (self.type=="binop"):
+            if (self.type=="EXPRESION_BINARIA"):
                 self.left.imprimirExpresionesBinarias()
                 print(self.op,end=" ")
                 self.right.imprimirExpresionesBinarias()
@@ -54,7 +57,7 @@ class Expr:
 
 class BinOp(Expr):
     def __init__(self,left,op,right):
-        self.type = "binop"
+        self.type = "EXPRESION_BINARIA"
         self.left = left
         self.right = right
         self.op = op
@@ -71,9 +74,9 @@ class Number(Expr):
 
 class OperadorUnario(Expr):
     def __init__(self,op,value):
-        self.type = "operador unario"
-        self.value = value
+        self.type = "OPERADOR_UNARIO"
         self.op = op
+        self.value = value
 
 class NegacionBool(Expr):
     def __init__(self,value):
@@ -142,7 +145,14 @@ class While(Expr):
         espacio = "   "*nivelArbol
         print(espacio+"-guardia :",end=" ")
         nivelArbol+=1
-        self.expresiones.imprimirExpresionesBinarias()
+
+        if(self.expresiones.type=="OPERADOR_UNARIO"):
+            expr = self.expresiones.value
+            
+        else:
+            expr = self.expresiones
+
+        expr.imprimirExpresionesBinarias()
         print("")
         print(espacio+"-instrucciones:")
         self.InstruccionesWhile.imprimirInstrucciones(nivelArbol)
@@ -169,12 +179,23 @@ class Condicional(Expr):
         nivelArbol+=1
         print(espacio+self.type)
         espacio = "   "*nivelArbol
-        print(espacio+"-guardia :",end=" ")
-        nivelArbol+=1
-        self.expresionesCondicional.imprimirExpresionesBinarias()
+        print(espacio+"-guardia :",self.expresionesCondicional.type)
+
+        nivelArbol2 = nivelArbol + 1
+        espacio2 = "   "*nivelArbol2
+        if(self.expresionesCondicional.type=="OPERADOR_UNARIO"):
+            expr = self.expresionesCondicional.value
+            print(espacio2+"-operador:",self.expresionesCondicional.op)
+        else:
+            expr = self.expresionesCondicional
+
+        print(espacio2+"-expresion:",end=" ")
+        expr.imprimirExpresionesBinarias()
         print("")
+
         print(espacio+"-exito:")
 
+        nivelArbol+=1
         self.exito.imprimirInstrucciones(nivelArbol)
 
         if(self.fracaso!=None):
@@ -277,7 +298,7 @@ class RaizAST(Expr):
         espacio = "   "*nivelArbol
         nivelArbol+=1
         if (self.arbolInstruccion!=None):
-            print(espacio+"SECUENCIACION")
+            print(espacio+"INICIO PROGRAMA")
             aux = self.arbolInstruccion.Instrucciones
             # print(aux)
             aux.imprimirInstrucciones(nivelArbol)
