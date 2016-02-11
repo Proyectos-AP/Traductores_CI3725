@@ -226,7 +226,8 @@ class Lexer():
 		self.lexer.input(self.data)
 		while True:
 			tok = self.lexer.token()
-			if not tok: 
+			if not tok:
+				self.build()
 				break
 
 			if ( tok.type=="TkErrorNum" ):
