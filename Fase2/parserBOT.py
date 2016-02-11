@@ -1,31 +1,34 @@
+'''
+*
+* Universidad Simon Bolivar
+* Departamento de Computacion y Tecnologia de la Informacion
+* Traductores e Interpretadores - CI3725 (Laboratorio)
+*
+* Archivo: PARSERBOT.py
+*
+* Nombres:
+*       Alejandra Cordero / Carnet: 12-10645
+*       Pablo Maldonado   / Carnet: 12-10561
+*
+* Descripcion: Definicion del modulo parserBot.
+*
+*
+* Ultima modificacion: 02/10/2015
+*
+'''
+
+#------------------------------------------------------------------------------#
+#                            IMPORTE DE MODULOS                                #
+#------------------------------------------------------------------------------#
+
 from Arbol import *
 from Tokens import *
 from Lexer import * 
 import ply.lex as lex 
 import ply.yacc as yacc
 
-
-
-# datos = LeerArchivoEntrada()
-# MiLexer=Lexer(datos)          # Se crea el Lexer
-# MiLexer.build()               # Se construye el Lexer
-# MiLexer.tokenizar() 
-
-# def imprimirAST(Raiz):
-
-#     if (Raiz.arbolInstruccion!=None):
-#         aux =Raiz.arbolInstruccion.Instrucciones
-#         print("SECUENCIACION")
-#         while (aux != None ):
-#             if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
-#                 aux.imprimirInstruccionesSimples()
-#             else:
-#                 if(aux.type == "ITERACION INDETERMINADA"):
-#                     aux.imprimirWhile()
-#                 elif(aux.type == "CONDICIONAL"):
-#                     aux.imprimirCondiional()
-#             aux=aux.sig
-
+#------------------------------------------------------------------------------#
+#                        DEFINICION DEL MODULO PARSERBOT                       #
 #------------------------------------------------------------------------------#
 
 global Raiz
@@ -38,9 +41,6 @@ precedence = (
     ('right','UMINUS'),
     ('right','UMNEGACION'),
     )
-
-# dictionary of names
-names = { }
 
 def p_inicioPrograma(t):
     ''' inicio : TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
@@ -106,12 +106,8 @@ def p_condicion(t):
                   | EXPRESION_BIN
                   | TkDefault''' 
 
-    if (t[1] == "deactivation"):
-        t[0]=Deactivation()
-    elif(t[1] == "activation"):
-        t[0]=Activation()
-    elif(t[1] == "default"):
-        t[0]=Default()
+    if (t[1] in {"deactivation","activation","default"}):
+        t[0]=Condicion(t[1])
     else:
         t[0]=t[1]
 
@@ -362,3 +358,5 @@ def p_error(t):
         print("Error sintactico")
 
     sys.exit()
+
+

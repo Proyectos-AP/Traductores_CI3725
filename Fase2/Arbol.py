@@ -1,3 +1,28 @@
+'''
+*
+* Universidad Simon Bolivar
+* Departamento de Computacion y Tecnologia de la Informacion
+* Traductores e Interpretadores - CI3725 (Laboratorio)
+*
+* Archivo: mainParser.py
+*
+* Nombres:
+*     Alejandra Cordero / Carnet: 12-10645
+*     Pablo Maldonado   / Carnet: 12-10561
+*
+* Descripcion: Codigo principal del parser.
+*
+*
+* Ultima modificacion: 02/10/2015
+*
+'''
+
+
+#------------------------------------------------------------------------------#
+#                        DEFINICION DE LA CLASE ARBOL                          #
+#------------------------------------------------------------------------------#
+
+
 def agregarHijos(hijo1,hijo2):
 
 	aux = hijo1
@@ -46,14 +71,49 @@ class Expr:
                 aux.imprimirAST(nivelArbol)
             aux=aux.sig
 
-    def imprimirExpresionesBinarias(self):
+    def imprimirExpresionesBinarias(self,nivelArbol):
+        nivelArbol+=1
+        espacio = "   "*nivelArbol
         if (self != None):
             if (self.type=="EXPRESION_BINARIA"):
-                self.left.imprimirExpresionesBinarias()
-                print(self.op,end=" ")
-                self.right.imprimirExpresionesBinarias()
+                print(espacio+"-operacion: ",self.op)
+                if (self.left.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
+                    operadorIzquierdo=self.left.op
+      
+                else:
+                    operadorIzquierdo=self.left.value
+
+                print(espacio+"-operador izquierdo:",operadorIzquierdo)
+
+                if (self.right.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
+                    operadorDerecho=self.right.op
+
+                else:
+                    operadorDerecho=self.right.value
+
+                print(espacio+"-operador derecho:",operadorDerecho)
+
+                if (self.left.type=="EXPRESION_BINARIA"):
+                    self.left.imprimirExpresionesBinarias(nivelArbol)
+                elif(self.left.type=="OPERADOR_UNARIO"):
+                    self.left.value.imprimirExpresionesBinarias(nivelArbol)
+
+                if (self.right.type=="EXPRESION_BINARIA"):
+                    self.right.imprimirExpresionesBinarias(nivelArbol)
+                elif(self.right.type=="OPERADOR_UNARIO"):
+                    self.right.value.imprimirExpresionesBinarias(nivelArbol)
+
             else:
-                print(self.value,end=" ")
+                print(espacio+"-expresion:",self.value)
+
+        # if (self != None):
+        #     if (self.type=="EXPRESION_BINARIA"):
+        #         self.left.imprimirExpresionesBinarias()
+        #         print(self.op,end=" ")
+        #         # 
+        #         self.right.imprimirExpresionesBinarias()
+        #     else:
+        #         print(self.value,end=" ")
 
 class BinOp(Expr):
     def __init__(self,left,op,right):
@@ -143,17 +203,23 @@ class While(Expr):
         print(espacio+self.type)
 
         espacio = "   "*nivelArbol
-        print(espacio+"-guardia :",end=" ")
-        nivelArbol+=1
+        print(espacio+"-guardia :",self.expresiones.type)
 
+
+        nivelArbolExpr=nivelArbol+1
         if(self.expresiones.type=="OPERADOR_UNARIO"):
             expr = self.expresiones.value
+            nivelArbol2= nivelArbol+1
+            espacio2 = "   "*nivelArbol2
+            nivelArbolExpr=nivelArbol2
+
+            print(espacio2+"-operador unario:",self.expresiones.op)
             
         else:
             expr = self.expresiones
 
-        expr.imprimirExpresionesBinarias()
-        print("")
+        expr.imprimirExpresionesBinarias(nivelArbolExpr)
+        nivelArbol+=1
         print(espacio+"-instrucciones:")
         self.InstruccionesWhile.imprimirInstrucciones(nivelArbol)
         # while (aux!= None):
@@ -176,23 +242,25 @@ class Condicional(Expr):
 
     def imprimirCondicional(self,nivelArbol):
         espacio = "   "*nivelArbol
-        nivelArbol+=1
         print(espacio+self.type)
+        nivelArbol+=1
         espacio = "   "*nivelArbol
+
         print(espacio+"-guardia :",self.expresionesCondicional.type)
 
         nivelArbol2 = nivelArbol + 1
         espacio2 = "   "*nivelArbol2
+        nivelArbolExpr = nivelArbol
+
         if(self.expresionesCondicional.type=="OPERADOR_UNARIO"):
             expr = self.expresionesCondicional.value
-            print(espacio2+"-operador:",self.expresionesCondicional.op)
+            nivelArbolExpr = nivelArbol2
+            print(espacio2+"-operador unario:",self.expresionesCondicional.op)
         else:
             expr = self.expresionesCondicional
 
-        print(espacio2+"-expresion:",end=" ")
-        expr.imprimirExpresionesBinarias()
-        print("")
 
+        expr.imprimirExpresionesBinarias(nivelArbolExpr)
         print(espacio+"-exito:")
 
         nivelArbol+=1
@@ -208,40 +276,21 @@ class Condicional(Expr):
             #         pass
             #     aux=aux.sig
 
-
-
 class Store(Expr):
     def __init__(self,listaExpresiones):
         self.type = "STORE"
         self.expresiones = listaExpresiones
         self.sig = None
-
-class Recieve(Expr):
-    def __init__(self):
-        self.type = "RECIEVE"
-        self.sig = None
-
-class Send(Expr):
-    def __init__(self):
-        self.type = "SEND"
-        self.sig = None
-
-class Collect(Expr):
-    def __init__(self,identificador):
-        self.type = "COLLECT"
-        self.identificador = identificador
-        self.sig = None
-
 class Drop(Expr):
     def __init__(self,listaExpresiones):
         self.type = "DROP"
         self.expresiones = listaExpresiones
         self.sig = None
-
-class Movimiento(Expr):
-    def __init__(self,tipo,listaExpresiones):
-        self.type = tipo
-        self.expresiones = listaExpresiones
+        
+class Collect(Expr):
+    def __init__(self,identificador):
+        self.type = "COLLECT"
+        self.identificador = identificador
         self.sig = None
 
 class Read(Expr):
@@ -250,20 +299,43 @@ class Read(Expr):
         self.identificador = identificador
         self.sig = None
 
-class Deactivation(Expr):
+class Recieve(Expr):
     def __init__(self):
-        self.type = "DEACTIVATION"
+        self.type = "RECIEVE"
+        self.sig = None
+    
+class Send(Expr):
+    def __init__(self):
+        self.type = "SEND"
         self.sig = None
 
-class Activation(Expr):
-    def __init__(self):
-        self.type = "ACTIVATION"
+class Movimiento(Expr):
+    def __init__(self,tipo,listaExpresiones):
+        self.type = tipo
+        self.expresiones = listaExpresiones
         self.sig = None
 
-class Default(Expr):
-    def __init__(self):
-        self.type = "DEFAULT"
+
+# class Deactivation(Expr):
+#     def __init__(self):
+#         self.type = "DEACTIVATION"
+#         self.sig = None
+
+# class Activation(Expr):
+#     def __init__(self):
+#         self.type = "ACTIVATION"
+#         self.sig = None
+
+# class Default(Expr):
+#     def __init__(self):
+#         self.type = "DEFAULT"
+#         self.sig = None
+
+class Condicion(Expr):
+    def __init__(self,type):
+        self.type = type
         self.sig = None
+
 
 class ListaComportamiento(Expr):
     """docstring for ListaComportamiento"""
