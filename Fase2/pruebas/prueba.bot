@@ -1,0 +1,21 @@
+create
+    int bot bar 
+        on activation: 
+            store 3.
+        end
+    end
+
+    int bot contador
+        on default:
+            store 35.
+        end
+    end
+
+execute
+    activate contador.
+    $- Asignar al conotador
+    el valor 35, si 2 bar 2 -$
+    if 3 > 2:
+        advance contador.
+    end
+end 
