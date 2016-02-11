@@ -1,0 +1,9 @@
+execute
+    activate contador.
+    $ - asignar contador.
+    el valor 35 -$
+
+    if bar > 2:
+        advance contador.
+    end
+end

@@ -73,11 +73,8 @@ def p_listaDeclaraciones(t):
 
 def  p_listaIdent(t):
     ''' LISTA_IDENT : LISTA_IDENT TkComa LISTA_IDENT'''
-    # t[0]= ListaHijos([t[1]]+[t[2]]
     t[0] = agregarHijos(t[1],t[3])
-    # print(t[1].value)
-    # global Raiz
-    # Raiz = t[0]
+
  
 def p_listaIdentUnico(t):
     '''  LISTA_IDENT : TkIdent'''
@@ -126,36 +123,28 @@ def p_instruccionRobot(t):
                             | TkSend TkPunto  '''
     if (t[1] == "store"):
         t[0] = Store(t[2])
-        # global Raiz
-        # Raiz = t[0]
+
     elif (t[1] == "recieve"):
         t[0] = Recieve()
-        # global Raiz
-        # Raiz = t[0]
+
     elif (t[1] == "collect"):
         t[0] = Collect(t[2])
-        # global Raiz
-        # Raiz = t[0]
+
     elif (t[1] == "drop"):
         t[0] = Drop(t[2])
-        # global Raiz
-        # Raiz = t[0]
+
     elif (t[1] in {"up","down","left","right"}):
         t[0] = Movimiento(t[1],t[2])
-        # global Raiz
-        # Raiz = t[0]
+
     elif (t[1] == "read"):
         t[0] = Read(t[2])
-        # global Raiz
-        # Raiz = t[0]
+
     elif (t[1] == "send"):
         t[0] = Send()
-        # global Raiz
-        # Raiz = t[0]
+
     else:
         t[0] = agregarHijos(t[1],t[2])
-        # global Raiz
-        # Raiz = t[0]
+ 
 
  
 def p_expresionOpcional(t):
@@ -296,29 +285,13 @@ def p_expression_binaria(t):
     #     print(str(t[1])+"\\/"+str(t[3]) )
     #return(Raiz)
 
-# def p_expression_bool(t):
-#     '''expressionBool : expressionBool TkConjuncion expressionBool
-#                       | expressionBool TkDisyuncion expressionBool'''
-#     if t[2] == '/\\'  : print(str(t[1])+"/\\"+str(t[3]) )
-#     elif t[2] == '\\/': print(str(t[1])+"\\/"+str(t[3]) )
-
-# def p_expression_True(t):
-#     '''expressionBool : TkTrue 
-#                         | TkFalse'''
-#     t[0] = t[2]
-
 def p_negacion_bool(t):
     '''EXPRESION_BIN : TkNegacion EXPRESION_BIN %prec UMNEGACION'''
     t[0] = OperadorUnario(t[1],t[2])
-    # global Raiz
-    # Raiz=t[0]
-
 
 def p_expression_uminus(t):
     'EXPRESION_BIN : TkResta EXPRESION_BIN %prec UMINUS'
     t[0] = OperadorUnario(t[1],t[2])
-    # global Raiz
-    # Raiz=t[0]
 
 def p_expression_group(t):
     'EXPRESION_BIN : TkParAbre EXPRESION_BIN TkParCierra'
@@ -326,8 +299,8 @@ def p_expression_group(t):
 
 def p_expression_number(t):
     'EXPRESION_BIN : TkNum'
-    # t[0] = t[1]
     t[0] = Number(t[1])
+
 def p_expression_TrueFalse(t):
     '''EXPRESION_BIN : TkTrue
                      | TkFalse '''
@@ -340,11 +313,6 @@ def p_expression_name(t):
 def p_expression_me(t):
     'EXPRESION_BIN : TkMe'
     t[0] = VariableMe(t[1])
-    # try:
-    #     t[0] = names[t[1]]
-    # except LookupError:
-    #     print("Undefined name '%s'" % t[1])
-    #     t[0] = 0
 
 def p_expression_caracter(t):
     'EXPRESION_BIN : TkCaracter'
@@ -358,5 +326,6 @@ def p_error(t):
         print("Error sintactico")
 
     sys.exit()
+
 
 

@@ -1,0 +1,13 @@
+execute
+    if ~(2+4+6+7-(6+6))/\true\/false:
+         advance a.
+    end
+
+    if -6+8:
+        advance pepe.
+    end
+
+   while -9+10/\false\/pepe:
+       advance maria.
+   end
+end

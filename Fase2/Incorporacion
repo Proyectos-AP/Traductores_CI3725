@@ -1,0 +1,35 @@
+create
+
+   int bot b
+   end
+
+execute
+    advance b.
+    if true < false:
+         deactivate c.
+    else: 
+         advance zeta.
+    end
+
+
+    while m <= n:
+        activate pepe.
+    end
+    
+    create
+       bool bot c
+       end
+    execute
+
+       activate z.
+
+       while i /= j :
+           advance i.
+           if ene=juana:
+              activate pepe.
+           end
+       end
+
+    end
+
+end
