@@ -72,7 +72,6 @@ precedence = (
 
 #------------------------------------------------------------------------------#
 
-
 def p_inicioPrograma(t):
     ''' inicio : TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
                 | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd '''

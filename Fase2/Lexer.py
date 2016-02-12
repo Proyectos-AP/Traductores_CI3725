@@ -4,7 +4,7 @@
 * Departamento de Computacion y Tecnologia de la Informacion
 * Traductores e Interpretadores - CI3725 (Laboratorio)
 *
-* Archivo: main.py
+* Archivo: Lexer.py
 *
 * Nombres:
 * 		Alejandra Cordero / Carnet: 12-10645
@@ -13,7 +13,7 @@
 * Descripcion: Definicion de la clase Lexer().
 *
 *
-* Ultima modificacion: 02/10/2015
+* Ultima modificacion: 12/02/2016
 *
 '''
 
