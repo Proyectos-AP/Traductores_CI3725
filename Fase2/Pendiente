@@ -1,0 +1,21 @@
+* Limpiar / Revisar / Actualizar encabezado los archivos de la entrega:
+	- Arbol.py (Ale)
+	- Lexer.py (Pablo - el encabezado porque se modifico lo del build)
+	- SintBot  (Listo)
+	- mainParser.py (Pablo)
+	- parserBOT.py (Pablo)
+
+* Pruebas (local - Pablo):
+	- Ejemplos de Ricardo Mena
+	- Ejemplos de Ricardo Monascal 
+	- Ejemplos nuestros. 
+
+* Probar en el LDC (Pablo / Ale por si acaso cuando ya este "listo")
+
+* Revision teorico practica 
+	- Revisar preguntas (Pablo + Ricardo si no entiendo algo #bello)
+	- Detalles de implementacion (Ale)
+
+* Detalles de implementacion:	
+	- Hacer lo del archivo vacio. (Pablo)
+	- Posible cambio de impresion? (Ale)

@@ -1,0 +1,10 @@
+SECUENCIACION
+    ACTIVAR
+        - vars: n, f
+    ITERACION
+        - guardia: BINARIA_COMPARACION
+            - operacion: 'mayor que'
+            - operando izquierdo: n
+            - operando derecho: f
+        - instruccion: AVANZAR
+            - vars: n, f
