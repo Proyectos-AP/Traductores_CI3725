@@ -31,14 +31,31 @@ import ply.yacc as yacc
 #                        DEFINICION DE FUNCIONES                               #
 #------------------------------------------------------------------------------#
 
-def crearListaEnlazada(hijo1,hijo2):
+def unirListaEnlazada(lista1,lista2):
 
-    aux = hijo1
+    '''
+      Descripción de la función: Esta funcion une dos listas enlazadas
+                                 dado dos apuntadores a la cabecera de las 
+                                 mismas.
+
+      * Variables de entrada: 
+                                - lista1: Apuntador a la cabecera de la primera 
+                                        lista enlazada
+                                - lista2: Apuntador a la cabecera de la primera 
+                                        lista enlazada.
+
+      * Variables de salida: 
+                                - lista1: apuntador a la cabecera de la lista
+                                         enlazada unida.
+
+    '''
+
+    aux = lista1
     while aux.sig != None:
         aux = aux.sig
-    aux.sig = hijo2
+    aux.sig = lista2
 
-    return hijo1
+    return lista1
 
 #------------------------------------------------------------------------------#
 #                        DEFINICION DEL MODULO PARSERBOT                       #
@@ -82,14 +99,14 @@ def p_listaDeclaraciones(t):
         t[0] = Declaraciones(t[1],t[3],t[4])
 
     else:
-        t[0] = crearListaEnlazada(t[1],t[2])
+        t[0] = unirListaEnlazada(t[1],t[2])
 
 #------------------------------------------------------------------------------#
 
 def  p_listaIdent(t):
     ''' LISTA_IDENT : LISTA_IDENT TkComa LISTA_IDENT'''
     # t[0]= ListaHijos([t[1]]+[t[2]]
-    t[0] = crearListaEnlazada(t[1],t[3])
+    t[0] = unirListaEnlazada(t[1],t[3])
 
  
 #------------------------------------------------------------------------------#
@@ -110,7 +127,7 @@ def p_listaComportamientos(t):
             t[0] = ListaComportamiento(t[2],t[4])
 
         else:
-            t[0] = crearListaEnlazada(t[1],t[2])
+            t[0] = unirListaEnlazada(t[1],t[2])
 
     else:
         t[0] = None
@@ -164,7 +181,7 @@ def p_instruccionRobot(t):
         t[0] = Send()
 
     else:
-        t[0] = crearListaEnlazada(t[1],t[2])
+        t[0] = unirListaEnlazada(t[1],t[2])
  
 
 #------------------------------------------------------------------------------#
@@ -228,7 +245,7 @@ def p_SecuenciaInstruccionesControlador(t):
 
         t[0] = RaizAST(Create(t[2]),Execute(t[4]))
     else:
-        t[0] = crearListaEnlazada(t[1],t[2])
+        t[0] = unirListaEnlazada(t[1],t[2])
     
 
 #------------------------------------------------------------------------------#
