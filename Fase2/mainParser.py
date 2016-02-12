@@ -13,10 +13,9 @@
 * Descripcion: Codigo principal del parser.
 *
 *
-* Ultima modificacion: 02/10/2015
+* Ultima modificacion: 12/02/2016
 *
 '''
-
 
 #------------------------------------------------------------------------------#
 #                               IMPORTE DE MODULOS                             #
@@ -126,21 +125,26 @@ def ImprimirTokens(ArregloTokens):
         ArregloTokens[i].columna,end=FinLinea)
 
 #------------------------------------------------------------------------------#
+#                        INICIO DEL PROGRAMA PRINCIPAL                         #
+#------------------------------------------------------------------------------#
 
-
+# Se lee el archivo de entrada:
 datos = LeerArchivoEntrada()
-datos2 = LeerArchivoEntrada()
-MiLexer=Lexer(datos)          # Se crea el Lexer
-MiLexer.build()               # Se construye el Lexer
-MiLexer.tokenizar() 
-tokens = MiLexer.tokens 
 
-if (len(MiLexer.Errores)!= 0 ) :
-  # Se imprimen los errores lexicograficos
+# Analisis Lexico:
+MiLexer = Lexer(datos)          # Se crea el Lexer
+MiLexer.build()                 # Se construye el Lexer
+MiLexer.tokenizar()              
+
+if ( len(MiLexer.Errores) != 0 ):
   ImprimirErrores(MiLexer.Errores)
 
-#parser = yacc.yacc(errorlog=yacc.NullLogger())
-parser = yacc.yacc()
-Raiz = parser.parse(datos2)
+# Analisis de Sintaxis:
+tokens = MiLexer.tokens 
+parser = yacc.yacc(debug = False)
+Raiz = parser.parse(datos)
 Raiz.imprimirAST(0)
 
+#------------------------------------------------------------------------------#
+#                          FIN DEL PROGRAMA PRINCIPAL                          #
+#------------------------------------------------------------------------------#

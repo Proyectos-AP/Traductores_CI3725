@@ -32,24 +32,16 @@ import ply.yacc as yacc
 #------------------------------------------------------------------------------#
 
 def unirListaEnlazada(lista1,lista2):
-
     '''
       Descripción de la función: Esta funcion une dos listas enlazadas
                                  dado dos apuntadores a la cabecera de las 
                                  mismas.
-
       * Variables de entrada: 
-                                - lista1: Apuntador a la cabecera de la primera 
-                                        lista enlazada
-                                - lista2: Apuntador a la cabecera de la primera 
-                                        lista enlazada.
-
+            - lista1: Apuntador a la cabecera de la primera lista enlazada
+            - lista2: Apuntador a la cabecera de la primera lista enlazada.
       * Variables de salida: 
-                                - lista1: apuntador a la cabecera de la lista
-                                         enlazada unida.
-
+            - lista1: apuntador a la cabecera de la lista enlazada unida.
     '''
-
     aux = lista1
     while aux.sig != None:
         aux = aux.sig
@@ -72,6 +64,8 @@ precedence = (
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para los posibles inicios de un programa 
+# en BOT
 def p_inicioPrograma(t):
     ''' inicio : TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
                 | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd '''
@@ -88,6 +82,7 @@ def p_inicioPrograma(t):
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para definir las declaraciones de robots.
 def p_listaDeclaraciones(t):
     ''' LISTA_DECLARACIONES : LISTA_DECLARACIONES LISTA_DECLARACIONES
                             | TkInt TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd 
@@ -102,20 +97,24 @@ def p_listaDeclaraciones(t):
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para la secuenciacion de identificadores 
+# en una declaracion de robot.
 def  p_listaIdent(t):
     ''' LISTA_IDENT : LISTA_IDENT TkComa LISTA_IDENT'''
-    # t[0]= ListaHijos([t[1]]+[t[2]]
     t[0] = unirListaEnlazada(t[1],t[3])
 
  
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para definir un identificador por declaracion.
 def p_listaIdentUnico(t):
     '''  LISTA_IDENT : TkIdent'''
     t[0] = Identificadores(t[1])
     
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para iniciar / secuenciar la lista de 
+# comportamientos de un robot.
 def p_listaComportamientos(t):
     ''' LISTA_COMPORTAMIENTOS : LISTA_COMPORTAMIENTOS LISTA_COMPORTAMIENTOS
                               | TkOn CONDICION TkDosPuntos INSTRUCCIONES_ROBOT TkEnd 
@@ -133,6 +132,8 @@ def p_listaComportamientos(t):
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla que define las posibles condiciones que 
+# pueden utilizarse para una lista de comportamientos de un robot.
 def p_condicion(t):
     ''' CONDICION : TkDeActivation
                   | TkActivation
@@ -146,6 +147,8 @@ def p_condicion(t):
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para definir / secuencias las instrucciones
+# de robot a utilizar en las listas de comportamiento.
 def p_instruccionRobot(t):
     ''' INSTRUCCIONES_ROBOT : INSTRUCCIONES_ROBOT INSTRUCCIONES_ROBOT
                             | TkStore EXPRESION_BIN TkPunto 
@@ -185,6 +188,8 @@ def p_instruccionRobot(t):
 
 #------------------------------------------------------------------------------#
  
+# Descripcion de la funcion: Regla que se utiliza cuando en una instruccion 
+# de robot de movimiento la expresion a evaluar es opcional.
 def p_expresionOpcional(t):
     ''' EXPRESION_OPCIONAL : EXPRESION_BIN
                            |'''
@@ -195,6 +200,8 @@ def p_expresionOpcional(t):
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla a utilizar en las instrucciones Collect 
+# y Read para almacenar el valor del identificador utilizado.
 def p_guardarVariable(t):
     ''' GUARDAR_VARIABLE : TkAs TkIdent
                         |'''
@@ -206,6 +213,8 @@ def p_guardarVariable(t):
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para definir / secuenciar las instrucciones
+# de controlador de un programa en BOT.
 def p_SecuenciaInstruccionesControlador(t):
     '''  INSTRUCCIONES_CONTROLADOR : INSTRUCCIONES_CONTROLADOR INSTRUCCIONES_CONTROLADOR
                                   | TkActivate LISTA_IDENT TkPunto 
@@ -249,6 +258,8 @@ def p_SecuenciaInstruccionesControlador(t):
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para definir las expresiones binarias 
+# (aritmeticas, booleanas y relacionales)
 def p_expression_binaria(t):
     '''EXPRESION_BIN : EXPRESION_BIN TkSuma EXPRESION_BIN
                   | EXPRESION_BIN TkResta EXPRESION_BIN
@@ -268,31 +279,36 @@ def p_expression_binaria(t):
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para definir la negacion booleana.
 def p_negacion_bool(t):
     '''EXPRESION_BIN : TkNegacion EXPRESION_BIN %prec UMNEGACION'''
     t[0] = OperadorUnario(t[1],t[2])
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para el operador menos unario.
 def p_expression_uminus(t):
     'EXPRESION_BIN : TkResta EXPRESION_BIN %prec UMINUS'
     t[0] = OperadorUnario(t[1],t[2])
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para definir la parentizacion.
 def p_expression_group(t):
     'EXPRESION_BIN : TkParAbre EXPRESION_BIN TkParCierra'
     t[0] = t[2]
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para almacenar el valor de un numero.
 def p_expression_number(t):
     'EXPRESION_BIN : TkNum'
-    # t[0] = t[1]
     t[0] = Number(t[1])
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para almacenar un valor booleano 
+# (True o False)
 def p_expression_TrueFalse(t):
     '''EXPRESION_BIN : TkTrue
                      | TkFalse '''
@@ -300,24 +316,29 @@ def p_expression_TrueFalse(t):
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para almacenar un identificador.
 def p_expression_name(t):
     'EXPRESION_BIN : TkIdent'
     t[0] = Identificadores(t[1])
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para almacenar la variable especial
+# me
 def p_expression_me(t):
     'EXPRESION_BIN : TkMe'
     t[0] = VariableMe(t[1])
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para almacenar un caracter.
 def p_expression_caracter(t):
     'EXPRESION_BIN : TkCaracter'
     t[0] = Caracter(t[1])
 
 #------------------------------------------------------------------------------#
 
+# Descripcion de la funcion: Regla para detectar e imprimir errores sintacticos.
 def p_error(t):
     if(t != None):
         print("Error sintactico " + str(t.value) + " en linea " + str(t.lineno))

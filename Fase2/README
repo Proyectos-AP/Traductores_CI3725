@@ -1,8 +1,4 @@
-Cosas por hacer:
-
-1) Lineas en el p_error
-2) Discutir lo de operador unario
-3) Refactorizar
+* Refactorizar
 
 * Limpiar / Revisar / Actualizar encabezado los archivos de la entrega:
 	- Arbol.py (Ale)
@@ -24,9 +20,3 @@ Cosas por hacer:
 
 * Detalles de implementacion:	
 	- Posible cambio de impresion? (Ale)
-
-Cosas por hacer:
-
-1) Lineas en el p_error
-2) Discutir lo de operador unario
-3) Refactorizar
