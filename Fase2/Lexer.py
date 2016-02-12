@@ -7,10 +7,10 @@
 * Archivo: Lexer.py
 *
 * Nombres:
-* 		Alejandra Cordero / Carnet: 12-10645
-* 		Pablo Maldonado   / Carnet: 12-10561
+*     Alejandra Cordero / Carnet: 12-10645
+* 	  Pablo Maldonado   / Carnet: 12-10561
 *
-* Descripcion: Definicion de la clase Lexer().
+* Descripcion: Definicion de la clase Lexer.
 *
 *
 * Ultima modificacion: 12/02/2016
@@ -33,7 +33,6 @@ import ply.lex as lex
 class Lexer():
 
 	def __init__(self,data=None):
-
 		'''
 		Descripción de la función: Clase Lexer.
 		Variables de entrada:
@@ -41,10 +40,9 @@ class Lexer():
 			* data : Corresponde al input del Lexer.
 
 		Variables de salida:
-
 			* Tokens : Lista de tokens correctos
-			* Errores : Lista de tokens con los errores lexicograficos encontrados
-
+			* Errores : Lista de tokens con los errores 
+			lexicograficos encontrados
 		'''
 		self.data = data
 		self.Tokens = []

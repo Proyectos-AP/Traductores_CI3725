@@ -4,16 +4,16 @@
 * Departamento de Computacion y Tecnologia de la Informacion
 * Traductores e Interpretadores - CI3725 (Laboratorio)
 *
-* Archivo: PARSERBOT.py
+* Archivo: parserBOT.py
 *
 * Nombres:
-*       Alejandra Cordero / Carnet: 12-10645
-*       Pablo Maldonado   / Carnet: 12-10561
+*     Alejandra Cordero / Carnet: 12-10645
+*     Pablo Maldonado   / Carnet: 12-10561
 *
 * Descripcion: Definicion del modulo parserBot.
 *
 *
-* Ultima modificacion: 02/10/2015
+* Ultima modificacion: 12/02/2016
 *
 '''
 
@@ -28,12 +28,12 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 #------------------------------------------------------------------------------#
-#                        DEFINICION DE FUNCIONES                               #
+#                           DEFINICION DE FUNCIONES                            #
 #------------------------------------------------------------------------------#
 
 def unirListaEnlazada(lista1,lista2):
     '''
-      Descripción de la función: Esta funcion une dos listas enlazadas
+      * Descripción de la función: Esta funcion une dos listas enlazadas
                                  dado dos apuntadores a la cabecera de las 
                                  mismas.
       * Variables de entrada: 

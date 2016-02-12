@@ -18,7 +18,7 @@
 '''
 
 #------------------------------------------------------------------------------#
-#                               IMPORTE DE MODULOS                             #
+#                            IMPORTE DE MODULOS                                #
 #------------------------------------------------------------------------------#
 
 import sys
@@ -31,98 +31,87 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 #------------------------------------------------------------------------------#
-#                          INICIO DEL PROGRAMA PRINCIPAL                       #
+#                          DEFINICION DE FUNCIONES                             #
 #------------------------------------------------------------------------------#
 
 def LeerArchivoEntrada(): 
-  '''
-    Descripción de la función: Lee el archivo de entrada.
-
-    * Variables de entrada: Ninguna
-    * Variables de salida: data// Almacena toda la informacion que se 
-                                  encuentra en el archivo de entrada.
-
-  '''
-
-  # Verificación de la correctitud de los argumentos dados.
-  try:
-  # Se verifica que se introduzcan los argumentos necesarios.
-    assert(len(sys.argv) == 2)
-    NombreArchivoEntrada = sys.argv[1]
-    # Se verifica que el archivo de entrada esté en el directorio
-    # correspondiente.
-    assert(os.path.isfile(NombreArchivoEntrada))
-  except:
-    print("Error: Los argumentos dados no son validos")
-    print("El programa se cerrará.")
-    sys.exit()
-  # Lectura del archivo de entrada.
-  with open(NombreArchivoEntrada,'r') as Archivo:
-    data = Archivo.read()
-    if not data:
-      print("Aviso: El archivo que desea utilizar esta vacio.",end=" ")
-      print("El programa se cerrara.")
-      Archivo.close
-      sys.exit()
-    Archivo.close
-
-  return data
+    '''
+    * Descripción de la función: Lee el archivo de entrada.
+    * Variables de entrada : Ninguna
+    * Variables de salida : 
+        - data : Almacena toda la informacion que se 
+      encuentra en el archivo de entrada.
+    '''
+    # Verificación de la correctitud de los argumentos dados.
+    try:
+        # Se verifica que se introduzcan los argumentos necesarios.
+        assert(len(sys.argv) == 2)
+        NombreArchivoEntrada = sys.argv[1]
+        # Se verifica que el archivo de entrada esté en el directorio
+        # correspondiente.
+        assert(os.path.isfile(NombreArchivoEntrada))
+    except:
+        print("Error: Los argumentos dados no son validos")
+        print("El programa se cerrará.")
+        sys.exit()
+    # Lectura del archivo de entrada.
+    with open(NombreArchivoEntrada,'r') as Archivo:
+        data = Archivo.read()
+        if not data:
+            print("Aviso: El archivo que desea utilizar esta vacio.",end=" ")
+            print("El programa se cerrara.")
+            Archivo.close
+            sys.exit()
+        Archivo.close
+    return data
 
   #------------------------------------------------------------------------------#
 
 def ImprimirErrores(ArregloErrores):
-
-  '''
-    Descripción de la función: Imprime la lista de tokens que almacena los errores
-        lexicograficos.
-
-    * Variables de entrada: ArregloErrores // Lista de tokens
+    '''
+    * Descripción de la función: Imprime la lista de tokens que almacena los 
+    errores lexicograficos.
+    * Variables de entrada: 
+        - ArregloErrores : Lista de tokens.
     * Variables de salida: Ninguna.
-
-  '''
-
-  for i in range(len(ArregloErrores)):
-
-    print("Error: Caracter inesperado \""+ArregloErrores[i].elem+"\" en la fila "\
-      +str(ArregloErrores[i].fila)+", columna "+str(ArregloErrores[i].columna) )
+    '''
+    for i in range(len(ArregloErrores)):
+        print("Error: Caracter inesperado \"" + ArregloErrores[i].elem + "\" en la fila "\
+            + str(ArregloErrores[i].fila) + ", columna " + str(ArregloErrores[i].columna) )
 
 #------------------------------------------------------------------------------#
 
 def ImprimirTokens(ArregloTokens):
-
-  '''
-    Descripción de la función: Imprime la lista de tokens que almacena
-      los tokens realizados a partir del archivo de entrada.
-
-    * Variables de entrada: ArregloTokens // Lista de tokens
+    '''
+    * Descripción de la función: Imprime la lista de tokens que almacena los 
+    tokens realizados a partir del archivo de entrada.
+    * Variables de entrada: 
+        - ArregloTokens : Lista de tokens
     * Variables de salida: Ninguna.
-    
-  '''
+    '''
+    for i in range(len(ArregloTokens)):
+        # Se fija el fin de linea
+        if ( i == len(ArregloTokens) - 1 ):
+            FinLinea ='\n'
+        elif ( i%4 == 0 and i != 0 ):
+            FinLinea =", \n"  
+        else:
+            FinLinea=",  "
 
-  for i in range(len(ArregloTokens)):
+        # Se imprimen los tokens
+        if (ArregloTokens[i].tipo in {"TkNum","TkCaracter"} ):
 
-    # Se fija el fin de linea
-    if ( i==len(ArregloTokens)-1 ):
-      FinLinea ='\n'
-    elif ( i%4==0 and i!=0 ):
-      FinLinea =", \n"  
-    else :
-      FinLinea=",  "
+            print(ArregloTokens[i].tipo+"("+str(ArregloTokens[i].elem)+")",\
+            ArregloTokens[i].fila,ArregloTokens[i].columna,end=FinLinea)
 
-    # Se imprimen los tokens
-    if (ArregloTokens[i].tipo in {"TkNum","TkCaracter"} ):
+        elif (ArregloTokens[i].tipo=="TkIdent"):
 
-      print(ArregloTokens[i].tipo+"("+str(ArregloTokens[i].elem)+")",\
-        ArregloTokens[i].fila,ArregloTokens[i].columna,end=FinLinea)
+            print(ArregloTokens[i].tipo+"(\""+ArregloTokens[i].elem+"\")",\
+            ArregloTokens[i].fila,ArregloTokens[i].columna,end=FinLinea)
 
-    elif (ArregloTokens[i].tipo=="TkIdent"):
-
-      print(ArregloTokens[i].tipo+"(\""+ArregloTokens[i].elem+"\")",\
-        ArregloTokens[i].fila,ArregloTokens[i].columna,end=FinLinea)
-
-    else:
-      print(ArregloTokens[i].tipo,ArregloTokens[i].fila,\
-        ArregloTokens[i].columna,end=FinLinea)
+        else:
+            print(ArregloTokens[i].tipo,ArregloTokens[i].fila,\
+            ArregloTokens[i].columna,end=FinLinea)
 
 #------------------------------------------------------------------------------#
 #                        INICIO DEL PROGRAMA PRINCIPAL                         #
@@ -146,5 +135,5 @@ Raiz = parser.parse(datos)
 Raiz.imprimirAST(0)
 
 #------------------------------------------------------------------------------#
-#                          FIN DEL PROGRAMA PRINCIPAL                          #
+#                        FIN DEL PROGRAMA PRINCIPAL                            #
 #------------------------------------------------------------------------------#

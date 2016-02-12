@@ -1,22 +1,13 @@
-* Refactorizar
+Pendiente:
 
-* Limpiar / Revisar / Actualizar encabezado los archivos de la entrega:
-	- Arbol.py (Ale)
-	- mainParser.py (Pablo)
-	- parserBOT.py (Pablo)
+* Ver si se puede quitar el warning del token ErrorNum que no se uso en el
+parser. En caso de que no se pueda, indicarlo en el informe.
 
-* Pruebas (local - Pablo):
-	- Ejemplos RM
+* posible confusion en la interpretacion del enunciado (Muestra de erores)
+
+* Probar local
 	- Ejemplos de Monascal 
-	- Ejemplos nuestros. 
-
-* Probar en el LDC (Pablo / Ale por si acaso cuando ya este "listo")
-
-* Revision final de documentacion
 
 * Revision teorico practica 
-	- Revisar preguntas (Pablo + Ricardo si no entiendo algo #bello)
+	- Revisar preguntas
 	- Detalles de implementacion (Ale)
-
-* Detalles de implementacion:	
-	- Posible cambio de impresion? (Ale)
