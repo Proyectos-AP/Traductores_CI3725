@@ -28,6 +28,19 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 #------------------------------------------------------------------------------#
+#                        DEFINICION DE FUNCIONES                               #
+#------------------------------------------------------------------------------#
+
+def crearListaEnlazada(hijo1,hijo2):
+
+    aux = hijo1
+    while aux.sig != None:
+        aux = aux.sig
+    aux.sig = hijo2
+
+    return hijo1
+
+#------------------------------------------------------------------------------#
 #                        DEFINICION DEL MODULO PARSERBOT                       #
 #------------------------------------------------------------------------------#
 
@@ -69,13 +82,15 @@ def p_listaDeclaraciones(t):
         t[0] = Declaraciones(t[1],t[3],t[4])
 
     else:
-        t[0] = agregarHijos(t[1],t[2])
+        t[0] = crearListaEnlazada(t[1],t[2])
 
 #------------------------------------------------------------------------------#
 
 def  p_listaIdent(t):
     ''' LISTA_IDENT : LISTA_IDENT TkComa LISTA_IDENT'''
-    t[0] = agregarHijos(t[1],t[3])
+    # t[0]= ListaHijos([t[1]]+[t[2]]
+    t[0] = crearListaEnlazada(t[1],t[3])
+
  
 #------------------------------------------------------------------------------#
 
@@ -95,7 +110,7 @@ def p_listaComportamientos(t):
             t[0] = ListaComportamiento(t[2],t[4])
 
         else:
-            t[0] = agregarHijos(t[1],t[2])
+            t[0] = crearListaEnlazada(t[1],t[2])
 
     else:
         t[0] = None
@@ -149,7 +164,8 @@ def p_instruccionRobot(t):
         t[0] = Send()
 
     else:
-        t[0] = agregarHijos(t[1],t[2])
+        t[0] = crearListaEnlazada(t[1],t[2])
+ 
 
 #------------------------------------------------------------------------------#
  
@@ -201,16 +217,19 @@ def p_SecuenciaInstruccionesControlador(t):
         t[0] = Condicional(t[2],t[4],t[7])
 
     elif(t[1]=="while"):
+
         t[0]= While(t[2],t[4])
 
     elif(t[1]=="execute"):
+
         t[0] = RaizAST(None,Execute(t[2]))
 
     elif (t[1] == "create"):
-        t[0] = RaizAST(Create(t[2]),Execute(t[4]))
 
+        t[0] = RaizAST(Create(t[2]),Execute(t[4]))
     else:
-        t[0] = agregarHijos(t[1],t[2])
+        t[0] = crearListaEnlazada(t[1],t[2])
+    
 
 #------------------------------------------------------------------------------#
 
@@ -253,6 +272,7 @@ def p_expression_group(t):
 
 def p_expression_number(t):
     'EXPRESION_BIN : TkNum'
+    # t[0] = t[1]
     t[0] = Number(t[1])
 
 #------------------------------------------------------------------------------#
@@ -287,6 +307,7 @@ def p_error(t):
         print("Error sintactico " + str(t.value) + " en linea " + str(t.lineno))
     else:
         print("Error sintactico")
+
     sys.exit()
 
 #------------------------------------------------------------------------------#

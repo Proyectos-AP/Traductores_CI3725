@@ -1,9 +1,26 @@
-execute
-   while true /\false:
+create int bot a end execute
+
+   while (3+5)*6/23%67:
       advance a.
-      deactivate b.
+      if false:
+         deactivate b.
+      else:
+         advance z.
+      end
    end
 deactivate c.
 $$ activate z.
 $$advance m.
+activate hola,chao.
+advance pepe.
+
+if true/\false:
+   activate prueba.
+   if true:
+     advance p.
+   end
+else:
+   deactivate me2.
+end
+
 end

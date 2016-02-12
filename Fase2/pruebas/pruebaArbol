@@ -1,5 +1,11 @@
 execute
-   if -(1+2+3):
+   if true/\2+1:
       activate b.
+      execute
+
+          while true:
+              activate b,c,f,t,y.
+          end
+      end
    end
 end
