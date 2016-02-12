@@ -86,11 +86,18 @@ def p_inicioPrograma(t):
 def p_listaDeclaraciones(t):
     ''' LISTA_DECLARACIONES : LISTA_DECLARACIONES LISTA_DECLARACIONES
                             | TkInt TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd 
-                            | TkBool TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd 
-                            | TkChar TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd '''
+                            | TkInt TkBot LISTA_IDENT TkEnd 
+                            | TkBool TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd
+                            | TkBool TkBot LISTA_IDENT TkEnd  
+                            | TkChar TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd
+                            | TkChar TkBot LISTA_IDENT TkEnd '''
 
     if(t[1] in {"int","bool","char"}):
-        t[0] = Declaraciones(t[1],t[3],t[4])
+
+        if (t[4] == "end"):
+            t[0] = Declaraciones(t[1],t[3],t[4])
+        else:
+            t[0] = Declaraciones(t[1],t[3],None)
 
     else:
         t[0] = unirListaEnlazada(t[1],t[2])
@@ -118,7 +125,7 @@ def p_listaIdentUnico(t):
 def p_listaComportamientos(t):
     ''' LISTA_COMPORTAMIENTOS : LISTA_COMPORTAMIENTOS LISTA_COMPORTAMIENTOS
                               | TkOn CONDICION TkDosPuntos INSTRUCCIONES_ROBOT TkEnd 
-                              |'''
+                              '''
 
     if (len(t) != 1):                     
         if (t[1] == "on"):
