@@ -1,0 +1,11 @@
+create
+   int bot ale, pablo 
+       on activation:
+          store 1/\2.
+          store 3.
+          left. 
+       end
+   end 
+execute
+
+end
