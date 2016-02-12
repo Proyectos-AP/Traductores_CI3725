@@ -1,9 +1,0 @@
-create
-   int bot b
-   end
-
-execute
-    if n \/p:
-        advance b.
-    end
-end
