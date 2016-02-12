@@ -10,10 +10,10 @@
 *     Alejandra Cordero / Carnet: 12-10645
 *     Pablo Maldonado   / Carnet: 12-10561
 *
-* Descripcion: Codigo principal del parser.
+* Descripcion: Definicion de la clase Arbol.
 *
 *
-* Ultima modificacion: 02/10/2015
+* Ultima modificacion: 11/02/2016
 *
 '''
 
@@ -23,40 +23,82 @@
 #------------------------------------------------------------------------------#
 
 class Expr: 
-    def imprimirInstruccionesSimples(self,nivelArbol):
-        espacio = "   "*nivelArbol
-        print(espacio+self.type)
 
-        nivelArbol+=1
-        espacio = "   "*nivelArbol
+
+    def imprimirInstrucciones(self,numeroTabs):
+        '''
+          Descripción de la función: Esta funcion imprime las instrucciones del
+                                    arbol de instrucciones.
+
+          * Variables de entrada:
+                                 - numeroTabs: Numero de tabulaciones que 
+                                                tendran las impresiones.
+          * Variables de salida: Ninguna
+
+        '''
+        aux = self
+        if(aux.sig != None):
+            espacio = "   "*numeroTabs
+            print(espacio+"SECUENCIACION")
+        while (aux!= None):
+            if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
+                aux.imprimirInstruccionesSimples(numeroTabs)
+            elif (aux.type in {"ITERACION INDETERMINADA","CONDICIONAL"}):
+                if (aux.type == "ITERACION INDETERMINADA"):
+                    aux.imprimirWhile(numeroTabs)
+                elif (aux.type == "CONDICIONAL"):
+                    aux.imprimirCondicional(numeroTabs)
+            else:
+                aux.imprimirAST(numeroTabs)
+            aux=aux.sig
+
+
+    def imprimirInstruccionesSimples(self,numeroTabs):
+        '''
+          Descripción de la función: Esta funcion imprime el conjunto de 
+                                    instrucciones que son de la forma 
+                                    INSTRUCCION LISTA_DE_IDENTIFICADORES, es 
+                                    decir, ACTIVATE,DEACTIVATE,ADVANCE.
+
+          * Variables de entrada:
+                                 - numeroTabs: Numero de tabulaciones que 
+                                                tendran las impresiones.
+          * Variables de salida: Ninguna
+
+        '''
+        espacio = "   "*numeroTabs
+
+        # Se imprime el tipo de la instruccion.
+        print(espacio+self.type)
+        # Se imprimen las identificadores de las instrucciones
+        numeroTabs+=1
+        espacio = "   "*numeroTabs
         aux = self.Identificadores
+
         while (aux != None):
             print(espacio+"- var:",aux.value)
             aux = aux.sig
 
-    def imprimirInstrucciones(self,nivelArbol):
-        aux = self
-        if(aux.sig != None):
-            espacio = "   "*nivelArbol
-            print(espacio+"SECUENCIACION")
-        while (aux!= None):
-            if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
-                aux.imprimirInstruccionesSimples(nivelArbol)
-            elif (aux.type in {"ITERACION INDETERMINADA","CONDICIONAL"}):
-                if (aux.type == "ITERACION INDETERMINADA"):
-                    aux.imprimirWhile(nivelArbol)
-                elif (aux.type == "CONDICIONAL"):
-                    aux.imprimirCondicional(nivelArbol)
-            else:
-                aux.imprimirAST(nivelArbol)
-            aux=aux.sig
 
-    def imprimirExpresionesBinarias(self,nivelArbol):
-        nivelArbol+=1
-        espacio = "   "*nivelArbol
+    def imprimirExpresionesBinarias(self,numeroTabs):
+
+        '''
+          Descripción de la función: Esta funcion imprime el arbol de 
+                                    expresiones binarias en preorder.
+
+          * Variables de entrada:
+                                 - numeroTabs: Numero de tabulaciones que 
+                                                tendran las impresiones.
+          * Variables de salida: Ninguna
+
+        '''
+
+        numeroTabs+=1
+        espacio = "   "*numeroTabs
         if (self != None):
             if (self.type=="EXPRESION_BINARIA"):
                 print(espacio+"-operacion: ",self.op)
+
                 if (self.left.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
                     operadorIzquierdo=self.left.op
       
@@ -73,15 +115,16 @@ class Expr:
 
                 print(espacio+"-operador derecho:",operadorDerecho)
 
+                # Se llama recursivamente la funcion para imprimir
                 if (self.left.type=="EXPRESION_BINARIA"):
-                    self.left.imprimirExpresionesBinarias(nivelArbol)
+                    self.left.imprimirExpresionesBinarias(numeroTabs)
                 elif(self.left.type=="OPERADOR_UNARIO"):
-                    self.left.value.imprimirExpresionesBinarias(nivelArbol)
+                    self.left.value.imprimirExpresionesBinarias(numeroTabs)
 
                 if (self.right.type=="EXPRESION_BINARIA"):
-                    self.right.imprimirExpresionesBinarias(nivelArbol)
+                    self.right.imprimirExpresionesBinarias(numeroTabs)
                 elif(self.right.type=="OPERADOR_UNARIO"):
-                    self.right.value.imprimirExpresionesBinarias(nivelArbol)
+                    self.right.value.imprimirExpresionesBinarias(numeroTabs)
 
             else:
                 print(espacio+"-expresion:",self.value)
@@ -89,21 +132,34 @@ class Expr:
 #------------------------------------------------------------------------------#
 #                               RAIZ DEL AST                                   #
 #------------------------------------------------------------------------------#
+
 class RaizAST(Expr):
+
     def __init__(self,ArbolDeclaracion,ArbolInstruccion):
         self.type = "RaizAST"
         self.arbolDeclaracion = ArbolDeclaracion
         self.arbolInstruccion = ArbolInstruccion
         self.sig = None
 
-    def imprimirAST(self,nivelArbol):
+    def imprimirAST(self,numeroTabs):
 
-        espacio = "   "*nivelArbol
-        nivelArbol+=1
+        '''
+          Descripción de la función: Esta funcion se encarga de imprimir la rama
+                                    de instrucciones del AST.
+    
+          * Variables de entrada:
+                                 - numeroTabs: Numero de tabulaciones que 
+                                                tendran las impresiones.
+          * Variables de salida: Ninguna
+
+        '''
+
+        espacio = "   "*numeroTabs
+        numeroTabs+=1
         if (self.arbolInstruccion!=None):
             print(espacio+"INICIO PROGRAMA")
             aux = self.arbolInstruccion.Instrucciones
-            aux.imprimirInstrucciones(nivelArbol)
+            aux.imprimirInstrucciones(numeroTabs)
 
 #------------------------------------------------------------------------------#
 #                      RAIZ DEL ARBOL DE DECLARACIONES                         #
@@ -129,6 +185,9 @@ class Execute(Expr):
 #------------------------------------------------------------------------------#
 
 class Store(Expr):
+
+    ''' Nodo que almacena el apuntador del arbol de expresiones de la 
+        instruccion STORE'''
     def __init__(self,listaExpresiones):
         self.type = "STORE"
         self.expresiones = listaExpresiones
@@ -137,6 +196,9 @@ class Store(Expr):
 #------------------------------------------------------------------------------#
 
 class Drop(Expr):
+
+    ''' Nodo que almacena el apuntador del arbol de expresiones de la 
+        instruccion DROP'''
     def __init__(self,listaExpresiones):
         self.type = "DROP"
         self.expresiones = listaExpresiones
@@ -145,6 +207,9 @@ class Drop(Expr):
 #------------------------------------------------------------------------------#
 
 class Collect(Expr):
+
+    ''' Nodo que almacena el apuntador de la lista de identificadores de la 
+        instruccion COLLECT '''
     def __init__(self,identificador):
         self.type = "COLLECT"
         self.identificador = identificador
@@ -153,6 +218,9 @@ class Collect(Expr):
 #------------------------------------------------------------------------------#
 
 class Read(Expr):
+
+    ''' Nodo que almacena el apuntador de la lista de identificadores de la 
+        instruccion READ '''
     def __init__(self,identificador):
         self.type = "READ"
         self.identificador = identificador
@@ -175,6 +243,8 @@ class Send(Expr):
 #------------------------------------------------------------------------------#
 
 class Movimiento(Expr):
+
+    ''' Nodo que almacena la direccion del movimiento del robot '''
     def __init__(self,tipo,listaExpresiones):
         self.type = tipo
         self.expresiones = listaExpresiones
@@ -183,6 +253,9 @@ class Movimiento(Expr):
 #------------------------------------------------------------------------------#
 
 class Condicion(Expr):
+
+    ''' Nodo que almacena el tipo de condicion de la lista de comportamiento del
+         robot '''
     def __init__(self,type):
         self.type = type
         self.sig = None
@@ -190,7 +263,8 @@ class Condicion(Expr):
 #------------------------------------------------------------------------------#
 
 class ListaComportamiento(Expr):
-    """docstring for ListaComportamiento"""
+
+    ''' Lista de comportamiento del robot'''
     def __init__(self, condicion,instrucciones):
         self.type = "Lista de comportamientos"
         self.condicion = condicion
@@ -200,6 +274,8 @@ class ListaComportamiento(Expr):
 #------------------------------------------------------------------------------#
 
 class Declaraciones(Expr):
+
+    ''' Raiz del arbol de las variables declaradas en el programa '''
     def __init__(self,tipoRobot,identificadores,listaComportamiento):
         self.type = "DECLARACIONES"
         self.tipoRobot = tipoRobot
@@ -212,6 +288,9 @@ class Declaraciones(Expr):
 #------------------------------------------------------------------------------#
 
 class Activate(Expr):
+
+    ''' Nodo que almacena el apuntador de la lista de identificadores de la 
+        instruccion ACTIVATE '''
     def __init__(self,listaIdentificadores):
         self.type = "ACTIVATE"
         self.Identificadores = listaIdentificadores
@@ -220,6 +299,9 @@ class Activate(Expr):
 #------------------------------------------------------------------------------#
 
 class Deactivate(Expr):
+
+    ''' Nodo que almacena el apuntador de la lista de identificadores de la 
+        instruccion DEACTIVATE '''
     def __init__(self,listaIdentificadores):
         self.type = "DEACTIVATE"
         self.Identificadores = listaIdentificadores
@@ -228,6 +310,9 @@ class Deactivate(Expr):
 #------------------------------------------------------------------------------#
 
 class Advance(Expr):
+
+    ''' Nodo que almacena el apuntador de la lista de identificadores de la 
+        instruccion ADVANCE '''
     def __init__(self,listaIdentificadores):
         self.type = "ADVANCE"
         self.Identificadores = listaIdentificadores
@@ -236,42 +321,65 @@ class Advance(Expr):
 #------------------------------------------------------------------------------#
 
 class While(Expr):
+
+    ''' Raiz del arbol de instrucciones y expresiones de la iteracion
+         indeterminada '''
     def __init__(self,listaExpresiones,listaInstrucciones):
         self.type = "ITERACION INDETERMINADA"
         self.expresiones = listaExpresiones
         self.InstruccionesWhile = listaInstrucciones
         self.sig = None
 
-    def imprimirWhile(self,nivelArbol):
+    def imprimirWhile(self,numeroTabs):
 
-        espacio = "   "*nivelArbol
-        nivelArbol+=1
+        '''
+          Descripción de la función: Esta funcion se encarga de imprimir
+                                    la instruccion WHILE con su guardia y sus 
+                                    instrucciones .
+
+          * Variables de entrada:
+                                 - numeroTabs: Numero de tabulaciones que 
+                                                tendran las impresiones.
+          * Variables de salida: Ninguna
+
+        '''
+        # Se calcula el numero de tabs para la instruccion WHILE
+        espacio = "   "*numeroTabs
+        numeroTabs+=1
+
+        # Se imprime un WHILE
         print(espacio+self.type)
 
-        espacio = "   "*nivelArbol
+        espacio = "   "*numeroTabs
         print(espacio+"-guardia :",self.expresiones.type)
 
-
-        nivelArbolExpr=nivelArbol+1
+        # Numero de tabs para las expresiones
+        numeroTabsExpr=numeroTabs+1         
         if(self.expresiones.type=="OPERADOR_UNARIO"):
             expr = self.expresiones.value
-            nivelArbol2= nivelArbol+1
-            espacio2 = "   "*nivelArbol2
-            nivelArbolExpr=nivelArbol2
+
+            # Se calcula una nueva cantidad de tabs para las expresiones
+            numeroTabs2= numeroTabs+1
+            espacio2 = "   "*numeroTabs2
+            numeroTabsExpr=numeroTabs2
 
             print(espacio2+"-operador unario:",self.expresiones.op)
             
         else:
             expr = self.expresiones
 
-        expr.imprimirExpresionesBinarias(nivelArbolExpr)
-        nivelArbol+=1
+        expr.imprimirExpresionesBinarias(numeroTabsExpr)
+
+        # Numero de tabs para las instrucciones
+        numeroTabs+=1
         print(espacio+"-instrucciones:")
-        self.InstruccionesWhile.imprimirInstrucciones(nivelArbol)
+        self.InstruccionesWhile.imprimirInstrucciones(numeroTabs)
 
 #------------------------------------------------------------------------------#
 
 class Condicional(Expr):
+
+    ''' Raiz del arbol de instrucciones y expresiones del condicional '''
     def __init__(self,listaExpresiones,exito,fracaso):
         self.type = "CONDICIONAL"
         self.expresionesCondicional = listaExpresiones
@@ -279,41 +387,64 @@ class Condicional(Expr):
         self.fracaso = fracaso
         self.sig = None
 
-    def imprimirCondicional(self,nivelArbol):
-        espacio = "   "*nivelArbol
+    def imprimirCondicional(self,numeroTabs):
+
+        '''
+          Descripción de la función: Esta funcion se encarga de imprimir
+                                    la instruccion IF con su guardia y sus 
+                                    instrucciones .
+
+          * Variables de entrada:
+                                 - numeroTabs: Numero de tabulaciones que 
+                                                tendran las impresiones.
+          * Variables de salida: Ninguna
+
+
+        '''
+
+        # Se calcula el numero de tabs para la instruccion IF
+        espacio = "   "*numeroTabs
         print(espacio+self.type)
-        nivelArbol+=1
-        espacio = "   "*nivelArbol
+
+        # Se calcula el numero de tabs para la guardia del IF
+        numeroTabs+=1
+        espacio = "   "*numeroTabs
 
         print(espacio+"-guardia :",self.expresionesCondicional.type)
 
-        nivelArbol2 = nivelArbol + 1
-        espacio2 = "   "*nivelArbol2
-        nivelArbolExpr = nivelArbol
+        # Se calcula el numero de tabs para las expresiones
+        numeroTabs2 = numeroTabs + 1
+        espacio2 = "   "*numeroTabs2
+        numeroTabsExpr = numeroTabs
 
         if(self.expresionesCondicional.type=="OPERADOR_UNARIO"):
+
+            # Se recalcula el numero de tabs para las expresiones
             expr = self.expresionesCondicional.value
-            nivelArbolExpr = nivelArbol2
+            numeroTabsExpr = numeroTabs2
             print(espacio2+"-operador unario:",self.expresionesCondicional.op)
+
         else:
             expr = self.expresionesCondicional
 
 
-        expr.imprimirExpresionesBinarias(nivelArbolExpr)
+        expr.imprimirExpresionesBinarias(numeroTabsExpr)
         print(espacio+"-exito:")
 
-        nivelArbol+=1
-        self.exito.imprimirInstrucciones(nivelArbol)
+        numeroTabs+=1    # Numero de tabs para las instrucciones del IF
+        self.exito.imprimirInstrucciones(numeroTabs)
 
         if(self.fracaso!=None):
             print(espacio+"-fracaso:")
-            self.fracaso.imprimirInstrucciones(nivelArbol)
+            self.fracaso.imprimirInstrucciones(numeroTabs)
 
 #------------------------------------------------------------------------------#
 #                               EXPRESIONES                                    #
 #------------------------------------------------------------------------------#
 
-class BinOp(Expr):
+class ExpresionBinaria(Expr):
+
+    ''' Raiz del arbol de las expresiones binarias '''
     def __init__(self,left,op,right):
         self.type = "EXPRESION_BINARIA"
         self.left = left
@@ -322,14 +453,9 @@ class BinOp(Expr):
 
 #------------------------------------------------------------------------------#
 
-class Number(Expr):
-    def __init__(self,value):
-        self.type = "number"
-        self.value = value
-
-#------------------------------------------------------------------------------#
-
 class OperadorUnario(Expr):
+
+    ''' Raiz del arbol de las expresiones unarias '''
     def __init__(self,op,value):
         self.type = "OPERADOR_UNARIO"
         self.op = op
@@ -337,14 +463,18 @@ class OperadorUnario(Expr):
 
 #------------------------------------------------------------------------------#
 
-class NegacionBool(Expr):
+class Number(Expr):
+
+    ''' Nodo que almacena los numeros del programa '''
     def __init__(self,value):
-        self.type = "negacion bool"
+        self.type = "number"
         self.value = value
 
 #------------------------------------------------------------------------------#
 
 class Booleano(Expr):
+
+    ''' Nodo que almacena los booleanos del programa (true y false) '''
     def __init__(self,value):
         self.type = "booleano"
         self.value = value
@@ -352,6 +482,8 @@ class Booleano(Expr):
 #------------------------------------------------------------------------------#
 
 class Identificadores(Expr):
+
+    ''' Nodo que almacena los identificadores del programa '''
     def __init__(self,value):
         self.type = "ident"
         self.value = value
@@ -360,6 +492,8 @@ class Identificadores(Expr):
 #------------------------------------------------------------------------------#
 
 class VariableMe(Expr):
+
+    ''' Nodo que almacena la variable me programa '''
     def __init__(self,value):
         self.type = "me"
         self.value = value
@@ -367,10 +501,12 @@ class VariableMe(Expr):
 #------------------------------------------------------------------------------#
 
 class Caracter(Expr):
+
+    ''' Nodo que almacena los caracteres del programa '''
     def __init__(self,value):
         self.type = "caracter"
         self.value = value
-        
+
 #------------------------------------------------------------------------------#
 
 

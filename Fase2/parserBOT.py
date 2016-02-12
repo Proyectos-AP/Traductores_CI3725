@@ -265,7 +265,7 @@ def p_expression_binaria(t):
                   | EXPRESION_BIN TkMayorIgual EXPRESION_BIN
                   | EXPRESION_BIN TkMenorIgual EXPRESION_BIN'''
 
-    t[0] = BinOp(t[1],t[2],t[3])
+    t[0] = ExpresionBinaria(t[1],t[2],t[3])
 
 #------------------------------------------------------------------------------#
 
