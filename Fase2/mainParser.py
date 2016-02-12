@@ -60,6 +60,11 @@ def LeerArchivoEntrada():
   # Lectura del archivo de entrada.
   with open(NombreArchivoEntrada,'r') as Archivo:
     data = Archivo.read()
+    if not data:
+      print("Aviso: El archivo que desea utilizar esta vacio.",end=" ")
+      print("El programa se cerrara.")
+      Archivo.close
+      sys.exit()
     Archivo.close
 
   return data
