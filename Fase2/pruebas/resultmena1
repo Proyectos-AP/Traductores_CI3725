@@ -1,0 +1,21 @@
+SECUENCIACION
+    ACTIVAR
+        - vars: contador, bar
+    CONDICIONAL
+        - guardia: BINARIA_COMPARACION
+            - operacion: 'mayor que'
+            - operando izquierdo: bar
+            - operando derecho: BINARIA_ARITMETICA
+                - operacion: 'resta'
+                - operando izquierdo: 2
+                - operando derecho: contador
+        - exito: SECUENCIACION
+            AVANZAR
+                - var: contador
+            AVANZAR
+                - var: contador
+        - fracaso: SECUENCIACION
+            AVANZAR
+                - var: bar
+            AVANZAR
+                - var: bar

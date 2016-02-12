@@ -53,7 +53,6 @@ def p_inicioPrograma(t):
     elif (t[1] == "create"):
         t[0] = RaizAST(Create(t[2]),Execute(t[4]))
 
-    global Raiz
     Raiz = t[0]
 
     return Raiz
