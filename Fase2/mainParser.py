@@ -128,11 +128,12 @@ MiLexer.tokenizar()
 if ( len(MiLexer.Errores) != 0 ):
   ImprimirErrores(MiLexer.Errores)
 
-# Analisis de Sintaxis:
-tokens = MiLexer.tokens 
-parser = yacc.yacc(debug = False)
-Raiz = parser.parse(datos)
-Raiz.imprimirAST(0)
+else:
+  # Analisis de Sintaxis:
+  tokens = MiLexer.tokens 
+  parser = yacc.yacc(errorlog=yacc.NullLogger())
+  Raiz = parser.parse(datos)
+  Raiz.imprimirAST(0)
 
 #------------------------------------------------------------------------------#
 #                        FIN DEL PROGRAMA PRINCIPAL                            #
