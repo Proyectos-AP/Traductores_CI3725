@@ -70,6 +70,17 @@ def VerificarVariableDeclarada(NodoVariable,TablaSimbolos):
             print("Error de contexto: la variable \'"+str(aux.value)+"\' no ha sido declarada en la linea",aux.numeroLinea)
             sys.exit()
         aux = aux.sig
+
+    return Existe
+
+#------------------------------------------------------------------------------#
+
+def VerificarTipoVariable(tipo,identificador,tipoVariableAevaluar):
+
+    if (tipoVariableAevaluar[0]!=tipo):
+        print("Error de contexto: Hay un error de tipos en la linea",identificador.numeroLinea)
+        sys.exit()
+    
         
 #------------------------------------------------------------------------------#
 #                        DEFINICION DEL MODULO PARSERBOT                       #
@@ -261,7 +272,7 @@ def p_guardarVariable(t):
                         |'''
     if (len(t) != 1):
         if (t[1] == "as"):                    
-            t[0] = Identificadores(t[2],t.lineno)
+            t[0] = Identificadores(t[2],t.lineno(2))
     else:
         t[0] = None
 
@@ -355,14 +366,31 @@ def p_expression_binaria(t):
 
     if (t[2] in {"-","*","/","%","<",">","/=","=","<=",">=","+"}) :
 
-        if (t[1].type != "number" or t[3].type != "number"):
+        if (t[1].type not in {"number","ident"} or t[3].type not in {"number","ident"}):
             print("Error de tipos")
             sys.exit()
 
+        if(t[1].type == "ident"):
+            Valor = VerificarVariableDeclarada(t[1],UltimaTablaSimbolos)
+            VerificarTipoVariable("int",t[1],Valor)
+ 
+        if (t[3].type == "ident"):
+            Valor = VerificarVariableDeclarada(t[3],UltimaTablaSimbolos)
+            VerificarTipoVariable("int",t[3],Valor)
+
+
     elif(t[2] in {"/\\","\\/"}):
-        if (t[1].type != "booleano" or t[3].type != "booleano"):
+        if (t[1].type not in {"booleano","ident"} or t[3].type not in {"booleano","ident"}):
             print("Error de tipos")
             sys.exit()
+
+        if(t[1].type == "ident"):
+            Valor = VerificarVariableDeclarada(t[1],UltimaTablaSimbolos)
+            VerificarTipoVariable("bool",t[1],Valor)
+
+        if (t[3].type == "ident"):
+            Valor = VerificarVariableDeclarada(t[3],UltimaTablaSimbolos)
+            VerificarTipoVariable("bool",t[3],Valor)
 
 #------------------------------------------------------------------------------#
 
@@ -412,8 +440,8 @@ def p_expression_TrueFalse(t):
 # Descripcion de la funcion: Regla para almacenar un identificador.
 def p_expression_name(t):
     'EXPRESION_BIN : TkIdent'
-    t[0] = Identificadores(t[1],t.lineno)
-
+    t[0] = Identificadores(t[1],t.lineno(1))
+    
 #------------------------------------------------------------------------------#
 
 # Descripcion de la funcion: Regla para almacenar la variable especial
