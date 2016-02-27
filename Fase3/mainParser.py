@@ -27,6 +27,7 @@ from Arbol import *
 from Tokens import *
 from Lexer import * 
 from parserBOT import *
+from TablaSimbolos import *
 import ply.lex as lex 
 import ply.yacc as yacc
 
@@ -132,8 +133,9 @@ else:
   # Analisis de Sintaxis:
   tokens = MiLexer.tokens 
   parser = yacc.yacc(errorlog=yacc.NullLogger())
-  Raiz = parser.parse(datos)
-  Raiz.imprimirAST(0)
+  Raiz = parser.parse(datos,tracking=True)
+  #Raiz.imprimirAST(0)
+  print(Raiz.tablaSimbolos.tabla)
 
 #------------------------------------------------------------------------------#
 #                        FIN DEL PROGRAMA PRINCIPAL                            #

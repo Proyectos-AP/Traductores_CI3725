@@ -123,10 +123,11 @@ class Expr:
 
 class RaizAST(Expr):
 
-    def __init__(self,ArbolDeclaracion,ArbolInstruccion):
+    def __init__(self,ArbolDeclaracion,ArbolInstruccion,tablaSimbolos):
         self.type = "RaizAST"
         self.arbolDeclaracion = ArbolDeclaracion
         self.arbolInstruccion = ArbolInstruccion
+        self.tablaSimbolos = tablaSimbolos  
         self.sig = None
 
     def imprimirAST(self,numeroTabs):
@@ -439,9 +440,10 @@ class Booleano(Expr):
 
 class Identificadores(Expr):
     ''' Nodo que almacena los identificadores del programa '''
-    def __init__(self,value):
+    def __init__(self,value,linea):
         self.type = "ident"
         self.value = value
+        self.numeroLinea = linea
         self.sig = None
 
 #------------------------------------------------------------------------------#

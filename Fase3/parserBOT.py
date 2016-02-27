@@ -24,8 +24,12 @@
 from Arbol import *
 from Tokens import *
 from Lexer import * 
+from TablaSimbolos import *
 import ply.lex as lex 
 import ply.yacc as yacc
+
+global TablaSimbolos 
+TablaSimbolos = TablaSimbolos()
 
 #------------------------------------------------------------------------------#
 #                           DEFINICION DE FUNCIONES                            #
@@ -71,14 +75,15 @@ def p_inicioPrograma(t):
                 | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd '''
 
     if (t[1] == "execute"):
-        t[0] = RaizAST(None,Execute(t[2]))
+        t[0] = RaizAST(None,Execute(t[2]),TablaSimbolos)
 
     elif (t[1] == "create"):
-        t[0] = RaizAST(Create(t[2]),Execute(t[4]))
+        t[0] = RaizAST(Create(t[2]),Execute(t[4]),TablaSimbolos)
+        #t[0] = TablaSimbolos
 
-    Raiz = t[0]
+    #Raiz = t[0]
 
-    return Raiz
+    #return None
 
 #------------------------------------------------------------------------------#
 
@@ -99,6 +104,20 @@ def p_listaDeclaraciones(t):
         else:
             t[0] = Declaraciones(t[1],t[3],None)
 
+        aux = t[3]
+
+        while (aux!=None) :
+            #print("Entre",aux.value)
+            global TablaSimbolos
+            #print("respuesta",TablaSimbolos.insertar(aux.value,t[1]))
+            redeclaracion = TablaSimbolos.insertar(aux.value,t[1])
+
+            if (redeclaracion == True):
+                print("Error de contexto: Redeclaracion de la variable","\'"+str(aux.value)+"\'","en la linea",aux.numeroLinea)
+                sys.exit()
+
+            aux = aux.sig   
+        print(TablaSimbolos.tabla)
     else:
         t[0] = unirListaEnlazada(t[1],t[2])
 
@@ -116,7 +135,7 @@ def  p_listaIdent(t):
 # Descripcion de la funcion: Regla para definir un identificador por declaracion.
 def p_listaIdentUnico(t):
     '''  LISTA_IDENT : TkIdent'''
-    t[0] = Identificadores(t[1])
+    t[0] = Identificadores(t[1],t.lineno(1))
     
 #------------------------------------------------------------------------------#
 
@@ -214,7 +233,7 @@ def p_guardarVariable(t):
                         |'''
     if (len(t) != 1):
         if (t[1] == "as"):                    
-            t[0] = Identificadores(t[2])
+            t[0] = Identificadores(t[2],t.lineno)
     else:
         t[0] = None
 
@@ -326,7 +345,7 @@ def p_expression_TrueFalse(t):
 # Descripcion de la funcion: Regla para almacenar un identificador.
 def p_expression_name(t):
     'EXPRESION_BIN : TkIdent'
-    t[0] = Identificadores(t[1])
+    t[0] = Identificadores(t[1],t.lineno)
 
 #------------------------------------------------------------------------------#
 
