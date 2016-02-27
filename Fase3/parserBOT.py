@@ -28,8 +28,13 @@ from TablaSimbolos import *
 import ply.lex as lex 
 import ply.yacc as yacc
 
-global TablaSimbolos 
-TablaSimbolos = TablaSimbolos()
+global TablaSimbolosLocal
+
+global TablaSimbolosGlobal
+TablaSimbolosGlobal = TablaSimbolos(None)
+
+global UltimaTablaSimbolos
+UltimaTablaSimbolos = TablaSimbolosGlobal
 
 #------------------------------------------------------------------------------#
 #                           DEFINICION DE FUNCIONES                            #
@@ -54,6 +59,19 @@ def unirListaEnlazada(lista1,lista2):
     return lista1
 
 #------------------------------------------------------------------------------#
+
+def VerificarVariableDeclarada(NodoVariable,TablaSimbolos):
+
+    aux = NodoVariable
+
+    while (aux!= None):
+        Existe = TablaSimbolos.buscar(aux.value)
+        if Existe == None:
+            print("Error de contexto: la variable \'"+str(aux.value)+"\' no ha sido declarada en la linea",aux.numeroLinea)
+            sys.exit()
+        aux = aux.sig
+        
+#------------------------------------------------------------------------------#
 #                        DEFINICION DEL MODULO PARSERBOT                       #
 #------------------------------------------------------------------------------#
 
@@ -74,11 +92,14 @@ def p_inicioPrograma(t):
     ''' inicio : TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
                 | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd '''
 
+    print("aaaa")
     if (t[1] == "execute"):
-        t[0] = RaizAST(None,Execute(t[2]),TablaSimbolos)
+        t[0] = RaizAST(None,Execute(t[2]),TablaSimbolosGlobal)
+        print("execute")
 
     elif (t[1] == "create"):
-        t[0] = RaizAST(Create(t[2]),Execute(t[4]),TablaSimbolos)
+        print("1create")
+        t[0] = RaizAST(Create(t[2]),Execute(t[4]),UltimaTablaSimbolos)
         #t[0] = TablaSimbolos
 
     #Raiz = t[0]
@@ -108,18 +129,23 @@ def p_listaDeclaraciones(t):
 
         while (aux!=None) :
             #print("Entre",aux.value)
-            global TablaSimbolos
             #print("respuesta",TablaSimbolos.insertar(aux.value,t[1]))
-            redeclaracion = TablaSimbolos.insertar(aux.value,t[1])
+            print(aux.value)
+            global UltimaTablaSimbolos
+            redeclaracion = UltimaTablaSimbolos.insertar(aux.value,t[1])
 
             if (redeclaracion == True):
                 print("Error de contexto: Redeclaracion de la variable","\'"+str(aux.value)+"\'","en la linea",aux.numeroLinea)
                 sys.exit()
 
             aux = aux.sig   
-        print(TablaSimbolos.tabla)
+        #print(UltimaTablaSimbolos.tabla)
+        #print(UltimaTablaSimbolos.tabla)
     else:
+        print("Pase LD")
         t[0] = unirListaEnlazada(t[1],t[2])
+
+
 
 #------------------------------------------------------------------------------#
 
@@ -187,6 +213,8 @@ def p_instruccionRobot(t):
                             | TkDown EXPRESION_OPCIONAL TkPunto 
                             | TkRead GUARDAR_VARIABLE TkPunto 
                             | TkSend TkPunto  '''
+    
+    print("IR")
     if (t[1] == "store"):
         t[0] = Store(t[2])
 
@@ -252,14 +280,22 @@ def p_SecuenciaInstruccionesControlador(t):
                                   | TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
                                   | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd  '''
    
+
+    global TablaSimbolosLocal
+    global UltimaTablaSimbolos
+    print("IC")
     if (t[1]=="activate"):
+        print("activate")
         t[0] = Activate(t[2])
+        VerificarVariableDeclarada(t[2],UltimaTablaSimbolos)
 
     elif(t[1]=="advance"):
         t[0] = Advance(t[2])
+        VerificarVariableDeclarada(t[2],UltimaTablaSimbolos)
 
     elif(t[1]=="deactivate"):
         t[0] = Deactivate(t[2])
+        VerificarVariableDeclarada(t[2],UltimaTablaSimbolos)
 
     elif (t[1]=="if" and t[5] == "end"):
         t[0] = Condicional(t[2],t[4],None)
@@ -276,9 +312,23 @@ def p_SecuenciaInstruccionesControlador(t):
         t[0] = RaizAST(None,Execute(t[2]))
 
     elif (t[1] == "create"):
+        print("create")
+        # print("Primera",UltimaTablaSimbolos.tabla)
+        # UltimaTablaSimbolos = TablaSimbolos(UltimaTablaSimbolos)
+        # print("Segundo",UltimaTablaSimbolos.tabla)
+        #UltimaTablaSimbolos = TablaSimbolosLocal
 
-        t[0] = RaizAST(Create(t[2]),Execute(t[4]))
+
+        t[0] = RaizAST(Create(t[2]),Execute(t[4]),UltimaTablaSimbolos)
+
+        #print("TABLA LOCAL",TablaSimbolosLocal.tabla)
+        #print("TABLA GLOBAL",TablaSimbolosLocal.padre.tabla)
+        #print(UltimaTablaSimbolos.tabla)
+        #UltimaTablaSimbolos = UltimaTablaSimbolos.padre
+
+
     else:
+        print("hola")
         t[0] = unirListaEnlazada(t[1],t[2])
     
 
@@ -303,12 +353,26 @@ def p_expression_binaria(t):
 
     t[0] = ExpresionBinaria(t[1],t[2],t[3])
 
+    if (t[2] in {"-","*","/","%","<",">","/=","=","<=",">=","+"}) :
+
+        if (t[1].type != "number" or t[3].type != "number"):
+            print("Error de tipos")
+            sys.exit()
+
+    elif(t[2] in {"/\\","\\/"}):
+        if (t[1].type != "booleano" or t[3].type != "booleano"):
+            print("Error de tipos")
+            sys.exit()
+
 #------------------------------------------------------------------------------#
 
 # Descripcion de la funcion: Regla para definir la negacion booleana.
 def p_negacion_bool(t):
     '''EXPRESION_BIN : TkNegacion EXPRESION_BIN %prec UMNEGACION'''
     t[0] = OperadorUnario(t[1],t[2])
+    if( t[2]!= "booleano"):
+        print("Error de tipos")
+        sys.exit()
 
 #------------------------------------------------------------------------------#
 
@@ -316,6 +380,9 @@ def p_negacion_bool(t):
 def p_expression_uminus(t):
     'EXPRESION_BIN : TkResta EXPRESION_BIN %prec UMINUS'
     t[0] = OperadorUnario(t[1],t[2])
+    if( t[2]!= "number"):
+        print("Error de tipos")
+        sys.exit()
 
 #------------------------------------------------------------------------------#
 
