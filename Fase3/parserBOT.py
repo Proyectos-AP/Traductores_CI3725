@@ -33,6 +33,8 @@ import ply.yacc as yacc
 global Top
 global Pila
 global Ultimo
+global ListaComportamiento
+ListaComportamiento = 0
 Ultimo = None
 Pila = []
 
@@ -105,23 +107,26 @@ def p_inicioPrograma(t):
 
     
     if (t[1] == "execute"):
-        t[0] = RaizAST(None,Execute(t[2]),TablaSimbolosGlobal)
+        t[0] = RaizAST(None,Execute(t[2]),Ultimo)
         print("execute")
 
-    elif (t[1] == "create"):
+    elif (t[2] == "create"):
         print("1create")
-        t[0] = RaizAST(Create(t[3]),Execute(t[5]),UltimaTablaSimbolos)
+        t[0] = RaizAST(Create(t[3]),Execute(t[5]),Ultimo)
         #t[0] = TablaSimbolos
 
 
 #------------------------------------------------------------------------------#
 
 def p_openScope(t):
-    '''OPEN_SCOPE : empty'''
+    '''OPEN_SCOPE : '''
 
     global Top
     global Ultimo
     global Pila
+    global ListaComportamiento
+    print("prendo")
+    ListaComportamiento = 1
     Top = TopeDeTablaSimbolos(Ultimo)
     Ultimo = Top
     Pila.append(Top)
@@ -131,7 +136,7 @@ def p_openScope(t):
 #------------------------------------------------------------------------------#
 
 def p_closeScope(t):
-    '''CLOSE_SCOPE : empty'''
+    '''CLOSE_SCOPE : '''
     global Ultimo
     global Top
     global Pila
@@ -156,21 +161,22 @@ def p_closeScope(t):
 
 #------------------------------------------------------------------------------#
 
-def p_empty(t):
-    '''empty : '''
-    pass
+# def p_empty(t):
+#     '''empty : '''
+#     pass
 #------------------------------------------------------------------------------#
 
 # Descripcion de la funcion: Regla para definir las declaraciones de robots.
 def p_listaDeclaraciones(t):
     ''' LISTA_DECLARACIONES : LISTA_DECLARACIONES LISTA_DECLARACIONES
-                            | TkInt TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd 
+                            | TkInt TkBot LISTA_IDENT CHECK_LISTA_DECLARACION LISTA_COMPORTAMIENTOS TkEnd 
                             | TkInt TkBot LISTA_IDENT TkEnd 
-                            | TkBool TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd
+                            | TkBool TkBot LISTA_IDENT CHECK_LISTA_DECLARACION LISTA_COMPORTAMIENTOS TkEnd
                             | TkBool TkBot LISTA_IDENT TkEnd  
-                            | TkChar TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd
+                            | TkChar TkBot LISTA_IDENT CHECK_LISTA_DECLARACION LISTA_COMPORTAMIENTOS TkEnd
                             | TkChar TkBot LISTA_IDENT TkEnd '''
 
+    print("Lista declaraciones")
     if(t[1] in {"int","bool","char"}):
 
         if (t[4] == "end"):
@@ -204,11 +210,22 @@ def p_listaDeclaraciones(t):
         #         print(Tabla.padre.tabla)
         #print(UltimaTablaSimbolos.tabla)
 
+        print("apago")
+        global ListaComportamiento
+        ListaComportamiento = 0
+
     else:
         print("Pase LD")
         t[0] = unirListaEnlazada(t[1],t[2])
 
 
+
+# #------------------------------------------------------------------------------#
+
+def p_checkListaComportamiento(t):
+    '''CHECK_LISTA_DECLARACION : '''
+    global ListaComportamiento
+    ListaComportamiento = 1
 
 #------------------------------------------------------------------------------#
 
@@ -216,6 +233,7 @@ def p_listaDeclaraciones(t):
 # en una declaracion de robot.
 def  p_listaIdent(t):
     ''' LISTA_IDENT : LISTA_IDENT TkComa LISTA_IDENT'''
+    print("ListaComportamiento")
     t[0] = unirListaEnlazada(t[1],t[3])
 
  
@@ -232,12 +250,13 @@ def p_listaIdentUnico(t):
 # comportamientos de un robot.
 def p_listaComportamientos(t):
     ''' LISTA_COMPORTAMIENTOS : LISTA_COMPORTAMIENTOS LISTA_COMPORTAMIENTOS
-                              | TkOn CONDICION TkDosPuntos INSTRUCCIONES_ROBOT TkEnd 
-                              '''
+                              | TkOn CONDICION TkDosPuntos INSTRUCCIONES_ROBOT TkEnd'''
 
+    print("Lista comportamientos")
     if (len(t) != 1):                     
         if (t[1] == "on"):
-            t[0] = ListaComportamiento(t[2],t[4])
+            #t[0] = ListaComportamiento(t[2],t[4])
+            pass
 
         else:
             t[0] = unirListaEnlazada(t[1],t[2])
@@ -412,33 +431,39 @@ def p_expression_binaria(t):
 
     t[0] = ExpresionBinaria(t[1],t[2],t[3])
 
-    if (t[2] in {"-","*","/","%","<",">","/=","=","<=",">=","+"}) :
+    if (ListaComportamiento != 1):
+        print("Chequeo tipos")
 
-        if (t[1].type not in {"number","ident"} or t[3].type not in {"number","ident"}):
-            print("Error de tipos")
-            sys.exit()
+        if (t[2] in {"-","*","/","%","<",">","/=","=","<=",">=","+"}) :
 
-        if(t[1].type == "ident"):
-            Valor = VerificarVariableDeclarada(t[1],Ultimo)
-            VerificarTipoVariable("int",t[1],Valor)
- 
-        if (t[3].type == "ident"):
-            Valor = VerificarVariableDeclarada(t[3],Ultimo)
-            VerificarTipoVariable("int",t[3],Valor)
+            if (t[1].type not in {"number","ident","me"} or t[3].type not in {"number","ident","me"}):
+                print("Error de tipos")
+                sys.exit()
+
+            if(t[1].type == "ident"):
+                Valor = VerificarVariableDeclarada(t[1],Ultimo)
+                VerificarTipoVariable("int",t[1],Valor)
+     
+            if (t[3].type == "ident"):
+                Valor = VerificarVariableDeclarada(t[3],Ultimo)
+                VerificarTipoVariable("int",t[3],Valor)
 
 
-    elif(t[2] in {"/\\","\\/"}):
-        if (t[1].type not in {"booleano","ident"} or t[3].type not in {"booleano","ident"}):
-            print("Error de tipos")
-            sys.exit()
+        elif(t[2] in {"/\\","\\/"}):
+            if (t[1].type not in {"booleano","ident","me"} or t[3].type not in {"booleano","ident","me"}):
+                print("Error de tipos")
+                sys.exit()
 
-        if(t[1].type == "ident"):
-            Valor = VerificarVariableDeclarada(t[1],Ultimo)
-            VerificarTipoVariable("bool",t[1],Valor)
+            if(t[1].type == "ident"):
+                Valor = VerificarVariableDeclarada(t[1],Ultimo)
+                VerificarTipoVariable("bool",t[1],Valor)
 
-        if (t[3].type == "ident"):
-            Valor = VerificarVariableDeclarada(t[3],Ultimo)
-            VerificarTipoVariable("bool",t[3],Valor)
+            if (t[3].type == "ident"):
+                Valor = VerificarVariableDeclarada(t[3],Ultimo)
+                VerificarTipoVariable("bool",t[3],Valor)
+
+    else:
+        pass
 
 #------------------------------------------------------------------------------#
 
