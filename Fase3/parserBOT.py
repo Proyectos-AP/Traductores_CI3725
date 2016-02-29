@@ -28,13 +28,13 @@ from TablaSimbolos import *
 import ply.lex as lex 
 import ply.yacc as yacc
 
-global TablaSimbolosLocal
 
-global TablaSimbolosGlobal
-TablaSimbolosGlobal = TablaSimbolos(None)
 
-global UltimaTablaSimbolos
-UltimaTablaSimbolos = TablaSimbolosGlobal
+global Top
+global Pila
+global Ultimo
+Ultimo = None
+Pila = []
 
 #------------------------------------------------------------------------------#
 #                           DEFINICION DE FUNCIONES                            #
@@ -100,23 +100,65 @@ precedence = (
 # Descripcion de la funcion: Regla para los posibles inicios de un programa 
 # en BOT
 def p_inicioPrograma(t):
-    ''' inicio : TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
+    ''' inicio : OPEN_SCOPE TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd CLOSE_SCOPE
                 | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd '''
 
-    print("aaaa")
+    
     if (t[1] == "execute"):
         t[0] = RaizAST(None,Execute(t[2]),TablaSimbolosGlobal)
         print("execute")
 
     elif (t[1] == "create"):
         print("1create")
-        t[0] = RaizAST(Create(t[2]),Execute(t[4]),UltimaTablaSimbolos)
+        t[0] = RaizAST(Create(t[3]),Execute(t[5]),UltimaTablaSimbolos)
         #t[0] = TablaSimbolos
 
-    #Raiz = t[0]
 
-    #return None
+#------------------------------------------------------------------------------#
 
+def p_openScope(t):
+    '''OPEN_SCOPE : empty'''
+
+    global Top
+    global Ultimo
+    global Pila
+    Top = TopeDeTablaSimbolos(Ultimo)
+    Ultimo = Top
+    Pila.append(Top)
+    # Empilo Top
+
+
+#------------------------------------------------------------------------------#
+
+def p_closeScope(t):
+    '''CLOSE_SCOPE : empty'''
+    global Ultimo
+    global Top
+    global Pila
+    aux = Ultimo
+    while (aux!= None):
+
+        if(aux.type!="top"):
+            print(aux.tabla)
+        else:
+            print("Estoy en el top")
+        aux = aux.padre
+    Ultimo =  Top.padre
+    # Desempilo top
+    Pila.pop()
+    # Asigno top al tope de la pila
+
+    if (len(Pila)==0):
+        Top = None
+    else:
+        Top = Pila[-1]
+
+
+#------------------------------------------------------------------------------#
+
+def p_empty(t):
+    '''empty : '''
+    pass
 #------------------------------------------------------------------------------#
 
 # Descripcion de la funcion: Regla para definir las declaraciones de robots.
@@ -137,21 +179,31 @@ def p_listaDeclaraciones(t):
             t[0] = Declaraciones(t[1],t[3],None)
 
         aux = t[3]
-
+        Tabla = TablaSimbolos(Ultimo)
+        global Ultimo
+        Ultimo = Tabla
         while (aux!=None) :
             #print("Entre",aux.value)
             #print("respuesta",TablaSimbolos.insertar(aux.value,t[1]))
             print(aux.value)
-            global UltimaTablaSimbolos
-            redeclaracion = UltimaTablaSimbolos.insertar(aux.value,t[1])
+            #padre = UltimaTablaSimbolos
+
+            redeclaracion = Tabla.insertar(aux.value,t[1])
 
             if (redeclaracion == True):
                 print("Error de contexto: Redeclaracion de la variable","\'"+str(aux.value)+"\'","en la linea",aux.numeroLinea)
                 sys.exit()
 
             aux = aux.sig   
+        #UltimaTablaSimbolos = tablaSimb 
+        # print("Estoy imprimiendo aqui")
+        # print(Tabla.tabla)
+        # if (Tabla.padre!=None) :
+        #     if (Tabla.padre.type!="top"):
+        #         print("papa")
+        #         print(Tabla.padre.tabla)
         #print(UltimaTablaSimbolos.tabla)
-        #print(UltimaTablaSimbolos.tabla)
+
     else:
         print("Pase LD")
         t[0] = unirListaEnlazada(t[1],t[2])
@@ -288,25 +340,32 @@ def p_SecuenciaInstruccionesControlador(t):
                                   | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
                                   | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkElse TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
                                   | TkWhile EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkEnd
-                                  | TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
+                                  | OPEN_SCOPE TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd CLOSE_SCOPE
                                   | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd  '''
    
-
-    global TablaSimbolosLocal
-    global UltimaTablaSimbolos
+    
     print("IC")
+
+    # TablaDeAlcance = UltimaTablaSimbolos
+    # tablaSimb = TablaSimbolos(UltimaTablaSimbolos)
+    # global UltimaTablaSimbolos
+    # UltimaTablaSimbolos = tablaSimb
+
     if (t[1]=="activate"):
+        #UltimaTablaSimbolos = TablaDeAlcance 
         print("activate")
         t[0] = Activate(t[2])
-        VerificarVariableDeclarada(t[2],UltimaTablaSimbolos)
+        VerificarVariableDeclarada(t[2],Ultimo) 
 
     elif(t[1]=="advance"):
+        print("advance")
         t[0] = Advance(t[2])
-        VerificarVariableDeclarada(t[2],UltimaTablaSimbolos)
+        VerificarVariableDeclarada(t[2],Ultimo)
 
     elif(t[1]=="deactivate"):
+        print("deactivate")
         t[0] = Deactivate(t[2])
-        VerificarVariableDeclarada(t[2],UltimaTablaSimbolos)
+        VerificarVariableDeclarada(t[2],Ultimo)
 
     elif (t[1]=="if" and t[5] == "end"):
         t[0] = Condicional(t[2],t[4],None)
@@ -322,24 +381,13 @@ def p_SecuenciaInstruccionesControlador(t):
 
         t[0] = RaizAST(None,Execute(t[2]))
 
-    elif (t[1] == "create"):
+    elif (t[2] == "create"):
         print("create")
-        # print("Primera",UltimaTablaSimbolos.tabla)
-        # UltimaTablaSimbolos = TablaSimbolos(UltimaTablaSimbolos)
-        # print("Segundo",UltimaTablaSimbolos.tabla)
-        #UltimaTablaSimbolos = TablaSimbolosLocal
-
-
-        t[0] = RaizAST(Create(t[2]),Execute(t[4]),UltimaTablaSimbolos)
-
-        #print("TABLA LOCAL",TablaSimbolosLocal.tabla)
-        #print("TABLA GLOBAL",TablaSimbolosLocal.padre.tabla)
-        #print(UltimaTablaSimbolos.tabla)
-        #UltimaTablaSimbolos = UltimaTablaSimbolos.padre
-
+        t[0] = RaizAST(Create(t[3]),Execute(t[5]),Ultimo)
 
     else:
         print("hola")
+        # UltimaTablaSimbolos = TablaDeAlcance
         t[0] = unirListaEnlazada(t[1],t[2])
     
 
@@ -371,11 +419,11 @@ def p_expression_binaria(t):
             sys.exit()
 
         if(t[1].type == "ident"):
-            Valor = VerificarVariableDeclarada(t[1],UltimaTablaSimbolos)
+            Valor = VerificarVariableDeclarada(t[1],Ultimo)
             VerificarTipoVariable("int",t[1],Valor)
  
         if (t[3].type == "ident"):
-            Valor = VerificarVariableDeclarada(t[3],UltimaTablaSimbolos)
+            Valor = VerificarVariableDeclarada(t[3],Ultimo)
             VerificarTipoVariable("int",t[3],Valor)
 
 
@@ -385,11 +433,11 @@ def p_expression_binaria(t):
             sys.exit()
 
         if(t[1].type == "ident"):
-            Valor = VerificarVariableDeclarada(t[1],UltimaTablaSimbolos)
+            Valor = VerificarVariableDeclarada(t[1],Ultimo)
             VerificarTipoVariable("bool",t[1],Valor)
 
         if (t[3].type == "ident"):
-            Valor = VerificarVariableDeclarada(t[3],UltimaTablaSimbolos)
+            Valor = VerificarVariableDeclarada(t[3],Ultimo)
             VerificarTipoVariable("bool",t[3],Valor)
 
 #------------------------------------------------------------------------------#
