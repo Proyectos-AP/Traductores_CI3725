@@ -9,8 +9,8 @@ create
 
 end
 execute
- activate pepe.
- advance pepe3.
+ activate pepe,j,k,u,l,r,t,e,a.
+ advance a3.
  deactivate pepe4.
  if 8+8>9+9:
    if false:
@@ -18,7 +18,7 @@ execute
    end
  end
 
-while 7>ma:
+while 9+4-1<0:
   advance n.
 end
 end

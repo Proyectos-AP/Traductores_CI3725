@@ -1,9 +1,21 @@
 create 
 
 int bot a,b,c,d,f,g 
-    on me+3:
+   on me+3:
        read as x.
        read as p.
+    end
+   
+    on deactivation:
+        read.
+    end
+
+    on default:
+        collect.
+    end
+
+    on activation:
+        collect.
     end
 end
 
@@ -15,7 +27,7 @@ end
 
 execute
 	activate m.
-   create
+  $- create
       int bot bot1,bot2 
       on activation:
           store x+1.
@@ -26,7 +38,7 @@ execute
        deactivate bot1.
    end
    advance a.
-   if (4<3)\/true/\(2/=7):
+   if (a<3)\/true/\(2/=7):
         activate b.
-   end   
+   end -$   
 end

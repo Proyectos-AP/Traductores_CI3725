@@ -215,6 +215,32 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot):
 
         # print("TABLA",Ultimo.tabla)
         instrucciones = instrucciones.sig
+#------------------------------------------------------------------------------#
+
+def VerificarInstrucciones(ArbolInstrucciones):
+
+    aux = ArbolInstrucciones
+    numActivations = 0
+    numDeactivations = 0
+
+    while (aux!=None):
+
+        if (aux.condicion.type=="activation"):
+            numActivations+=1
+        elif (aux.condicion.type=="deactivation"):
+            numDeactivations+=1
+        
+        if(numActivations>1 or numDeactivations>1):
+            print("No se puede activar o desactivar el robot mas de una vez.")
+            sys.exit()
+
+        # Verificar!!!
+        if(aux.condicion.type=="default" and aux.sig!= None):
+            print("La instruccion default debe ir al final de las instrucciones.")
+            sys.exit()
+            
+        aux = aux.sig
+
 
 #------------------------------------------------------------------------------#
 
@@ -378,9 +404,9 @@ def p_listaDeclaraciones(t):
     if(t[1] in {"int","bool","char"}):
 
         if (t[4] == "end"):
-            t[0] = Declaraciones(t[1],t[3],t[5])
-        else:
             t[0] = Declaraciones(t[1],t[3],None)
+        else:
+            t[0] = Declaraciones(t[1],t[3],t[5])
 
 
         # Se crea la tabla de simbolos
@@ -389,13 +415,18 @@ def p_listaDeclaraciones(t):
         global esListaComportamiento 
         esListaComportamiento  = 0
 
-        Arbol = t[5]
+        # Si se tiene una lista de comportamientos entonces se verifica
+        if (t[4] != "end"):
+            Arbol = t[5]
 
-        # Se verifica la condicion de la lista de declaraciones  
-        VerificarCondicionListaDeclaraciones(Arbol)
+            # Se verifica la condicion de la lista de declaraciones  
+            VerificarCondicionListaDeclaraciones(Arbol)
 
-        #Se verifican las instrucciones de la lista de declaraciones
-        VerificarInstruccionesListaDeclaraciones(Arbol,t[1])
+            #Se verifican si los tipos de las instrucciones de la lista de 
+            # son correctos declaraciones
+            VerificarInstruccionesListaDeclaraciones(Arbol,t[1])
+
+            VerificarInstrucciones(Arbol)
   
     else:
 
@@ -527,9 +558,13 @@ def p_guardarVariable(t):
     else:
         t[0] = None
 
-def p_S(t):
-    ''' S : OPEN_SCOPE TkCreate LISTA_DECLARACIONES
-          | '''
+# def p_S(t):
+#     ''' S : OPEN_SCOPE TkCreate LISTA_DECLARACIONES
+#           | '''
+
+# def p_T(t):
+#     '''T : TkExecute INSTRUCCIONES_CONTROLADOR TkEnd '''
+
 #------------------------------------------------------------------------------#
 
 # Descripcion de la funcion: Regla para definir / secuenciar las instrucciones
