@@ -108,10 +108,10 @@ def p_inicioPrograma(t):
     
     if (t[1] == "execute"):
         t[0] = RaizAST(None,Execute(t[2]),Ultimo)
-        print("execute")
+        #print("execute")
 
     elif (t[2] == "create"):
-        print("1create")
+        #print("1create")
         t[0] = RaizAST(Create(t[3]),Execute(t[5]),Ultimo)
         #t[0] = TablaSimbolos
 
@@ -125,7 +125,7 @@ def p_openScope(t):
     global Ultimo
     global Pila
     global ListaComportamiento
-    print("prendo")
+    #print("prendo")
     ListaComportamiento = 1
     Top = TopeDeTablaSimbolos(Ultimo)
     Ultimo = Top
@@ -176,11 +176,11 @@ def p_listaDeclaraciones(t):
                             | TkChar TkBot LISTA_IDENT CHECK_LISTA_DECLARACION LISTA_COMPORTAMIENTOS TkEnd
                             | TkChar TkBot LISTA_IDENT TkEnd '''
 
-    print("Lista declaraciones")
+    #print("Lista declaraciones")
     if(t[1] in {"int","bool","char"}):
 
         if (t[4] == "end"):
-            t[0] = Declaraciones(t[1],t[3],t[4])
+            t[0] = Declaraciones(t[1],t[3],t[5])
         else:
             t[0] = Declaraciones(t[1],t[3],None)
 
@@ -191,10 +191,10 @@ def p_listaDeclaraciones(t):
         while (aux!=None) :
             #print("Entre",aux.value)
             #print("respuesta",TablaSimbolos.insertar(aux.value,t[1]))
-            print(aux.value)
+            #print(aux.value)
             #padre = UltimaTablaSimbolos
 
-            redeclaracion = Tabla.insertar(aux.value,t[1])
+            redeclaracion = Tabla.insertar(aux.value,t[1],"robot")
 
             if (redeclaracion == True):
                 print("Error de contexto: Redeclaracion de la variable","\'"+str(aux.value)+"\'","en la linea",aux.numeroLinea)
@@ -210,12 +210,67 @@ def p_listaDeclaraciones(t):
         #         print(Tabla.padre.tabla)
         #print(UltimaTablaSimbolos.tabla)
 
-        print("apago")
+        #print("apago")
         global ListaComportamiento
         ListaComportamiento = 0
 
+        Arbol = t[5]
+        print("TIPO DEL ARBOL",Arbol.type)
+        # Verificar condicion 
+        if (Arbol.condicion == "EXPRESION_BINARIA"):
+            print("Debo construir una funcion que chequee los tipos de expresion binarias")
+        else:
+            pass
+
+        #Verificar instrucciones
+        instrucciones = Arbol.instrucciones
+        #print("INTRUCCION",instrucciones.type)
+        while (instrucciones!=None):
+
+            if (instrucciones.type in {"STORE","DROP","RIGHT","LEFT","UP","DOWN"}):
+                print("Debo construir una funcion que chequee los tipos de expresion binarias")
+
+            elif (instrucciones.type in {"COLLECT","READ"}):
+                print("Se Verifica identificador")
+                identificador = instrucciones.identificador
+                if (identificador!=None):
+                    resultado = Ultimo.buscar(identificador.value)
+                    print("RESULTADO",resultado)
+                    print("INTRUCCION",instrucciones.type)
+
+                    if(resultado!=None):
+
+                        if(resultado[1]=="robot"):
+                            print("Error de contexto en linea",identificador.numeroLinea ,": No se deben usar variables bot")
+                
+                        elif(resultado[1]!="robot"):
+                            print("Error de contexto en linea",identificador.numeroLinea ,": redeclaacion de variables")
+                        sys.exit()
+
+                    else:
+                        print("Insertando")
+                        Ultimo.insertar(identificador.value,t[1])
+
+            print("TABLA",Ultimo.tabla)
+            instrucciones = instrucciones.sig
+
+
+
+# INSTRUCCIONES_ROBOT INSTRUCCIONES_ROBOT
+#                             | TkSend TkPunto 
+#                             | TkRecieve TkPunto
+#                             | TkStore EXPRESION_BIN TkPunto 
+#                             | TkDrop EXPRESION_BIN TkPunto
+#                             | TkRight EXPRESION_OPCIONAL TkPunto 
+#                             | TkLeft EXPRESION_OPCIONAL TkPunto 
+#                             | TkUp EXPRESION_OPCIONAL TkPunto 
+#                             | TkDown EXPRESION_OPCIONAL TkPunto 
+#                             | TkCollect GUARDAR_VARIABLE TkPunto 
+#                             | TkRead GUARDAR_VARIABLE TkPunto 
+
+            
     else:
-        print("Pase LD")
+        #print("Pase LD")
         t[0] = unirListaEnlazada(t[1],t[2])
 
 
@@ -233,7 +288,7 @@ def p_checkListaComportamiento(t):
 # en una declaracion de robot.
 def  p_listaIdent(t):
     ''' LISTA_IDENT : LISTA_IDENT TkComa LISTA_IDENT'''
-    print("ListaComportamiento")
+    #print("ListaComportamiento")
     t[0] = unirListaEnlazada(t[1],t[3])
 
  
@@ -252,17 +307,16 @@ def p_listaComportamientos(t):
     ''' LISTA_COMPORTAMIENTOS : LISTA_COMPORTAMIENTOS LISTA_COMPORTAMIENTOS
                               | TkOn CONDICION TkDosPuntos INSTRUCCIONES_ROBOT TkEnd'''
 
-    print("Lista comportamientos")
-    if (len(t) != 1):                     
-        if (t[1] == "on"):
-            #t[0] = ListaComportamiento(t[2],t[4])
-            pass
+    #print("Lista comportamientos")
+    #print(t[2],t[4])
+                   
+    if (t[1] == "on"):
 
-        else:
-            t[0] = unirListaEnlazada(t[1],t[2])
+        t[0] = Lista(t[2],t[4])
 
     else:
-        t[0] = None
+        t[0] = unirListaEnlazada(t[1],t[2])
+
 
 #------------------------------------------------------------------------------#
 
@@ -296,7 +350,7 @@ def p_instruccionRobot(t):
                             | TkRead GUARDAR_VARIABLE TkPunto 
                             | TkSend TkPunto  '''
     
-    print("IR")
+    #print("IR")
     if (t[1] == "store"):
         t[0] = Store(t[2])
 
@@ -363,7 +417,7 @@ def p_SecuenciaInstruccionesControlador(t):
                                   | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd  '''
    
     
-    print("IC")
+    #print("IC")
 
     # TablaDeAlcance = UltimaTablaSimbolos
     # tablaSimb = TablaSimbolos(UltimaTablaSimbolos)
@@ -372,17 +426,17 @@ def p_SecuenciaInstruccionesControlador(t):
 
     if (t[1]=="activate"):
         #UltimaTablaSimbolos = TablaDeAlcance 
-        print("activate")
+        #print("activate")
         t[0] = Activate(t[2])
         VerificarVariableDeclarada(t[2],Ultimo) 
 
     elif(t[1]=="advance"):
-        print("advance")
+        #print("advance")
         t[0] = Advance(t[2])
         VerificarVariableDeclarada(t[2],Ultimo)
 
     elif(t[1]=="deactivate"):
-        print("deactivate")
+        #print("deactivate")
         t[0] = Deactivate(t[2])
         VerificarVariableDeclarada(t[2],Ultimo)
 
@@ -401,11 +455,11 @@ def p_SecuenciaInstruccionesControlador(t):
         t[0] = RaizAST(None,Execute(t[2]))
 
     elif (t[2] == "create"):
-        print("create")
+        #print("create")
         t[0] = RaizAST(Create(t[3]),Execute(t[5]),Ultimo)
 
     else:
-        print("hola")
+        #print("hola")
         # UltimaTablaSimbolos = TablaDeAlcance
         t[0] = unirListaEnlazada(t[1],t[2])
     

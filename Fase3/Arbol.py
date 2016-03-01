@@ -243,7 +243,7 @@ class Condicion(Expr):
 
 class ListaComportamiento(Expr):
     ''' Lista de comportamiento del robot'''
-    def __init__(self, condicion,instrucciones):
+    def __init__(self, condicion=None,instrucciones=None):
         self.type = "Lista de comportamientos"
         self.condicion = condicion
         self.instrucciones = instrucciones
@@ -446,6 +446,15 @@ class Identificadores(Expr):
         self.numeroLinea = linea
         self.sig = None
 
+#------------------------------------------------------------------------------#
+
+class Lista(Expr):
+    ''' Nodo que almacena los identificadores del programa '''
+    def __init__(self,cond,instr):
+        self.type = "lista"
+        self.condicion = cond
+        self.instrucciones = instr
+        self.sig = None
 #------------------------------------------------------------------------------#
 
 class VariableMe(Expr):
