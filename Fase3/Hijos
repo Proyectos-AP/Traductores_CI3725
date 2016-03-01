@@ -1,7 +1,7 @@
 create 
 
 int bot a,b,c,d,f,g 
-   on me+3:
+   on ~(true/\false)\/true\/~(true):
        read as x.
        read as p.
     end
@@ -10,13 +10,14 @@ int bot a,b,c,d,f,g
         read.
     end
 
+    on activation:
+        collect as no.
+    end
+
     on default:
         collect.
     end
 
-    on activation:
-        collect.
-    end
 end
 
 bool bot m,z  
@@ -26,7 +27,7 @@ bool bot m,z
 end 
 
 execute
-	activate m.
+	activate d.
   $- create
       int bot bot1,bot2 
       on activation:

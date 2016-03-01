@@ -460,9 +460,10 @@ class Lista(Expr):
 
 class VariableMe(Expr):
     ''' Nodo que almacena la variable me programa '''
-    def __init__(self,value):
+    def __init__(self,value,linea):
         self.type = "me"
         self.value = value
+        self.numeroLinea = linea
         self.sig = None
 
 #------------------------------------------------------------------------------#
