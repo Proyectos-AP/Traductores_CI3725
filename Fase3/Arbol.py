@@ -405,11 +405,12 @@ class Condicional(Expr):
 
 class ExpresionBinaria(Expr):
     ''' Raiz del arbol de las expresiones binarias '''
-    def __init__(self,left,op,right):
+    def __init__(self,left,op,right,linea):
         self.type = "EXPRESION_BINARIA"
         self.left = left
         self.right = right
         self.op = op
+        self.linea = linea
 
 #------------------------------------------------------------------------------#
 
@@ -425,7 +426,7 @@ class OperadorUnario(Expr):
 class Number(Expr):
     ''' Nodo que almacena los numeros del programa '''
     def __init__(self,value):
-        self.type = "number"
+        self.type = "int"
         self.value = value
 
 #------------------------------------------------------------------------------#
@@ -433,7 +434,7 @@ class Number(Expr):
 class Booleano(Expr):
     ''' Nodo que almacena los booleanos del programa (true y false) '''
     def __init__(self,value):
-        self.type = "booleano"
+        self.type = "bool"
         self.value = value
 
 #------------------------------------------------------------------------------#
@@ -462,13 +463,14 @@ class VariableMe(Expr):
     def __init__(self,value):
         self.type = "me"
         self.value = value
+        self.sig = None
 
 #------------------------------------------------------------------------------#
 
 class Caracter(Expr):
     ''' Nodo que almacena los caracteres del programa '''
     def __init__(self,value):
-        self.type = "caracter"
+        self.type = "char"
         self.value = value
 
 #------------------------------------------------------------------------------#
