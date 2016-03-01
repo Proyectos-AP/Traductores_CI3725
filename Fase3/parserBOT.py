@@ -33,8 +33,8 @@ import ply.yacc as yacc
 global Top
 global Pila
 global Ultimo
-global ListaComportamiento
-ListaComportamiento = 0
+global esListaComportamiento 
+esListaComportamiento = 0
 Ultimo = None
 Pila = []
 
@@ -241,14 +241,16 @@ def VerificarExpresionBinaria(exprBin):
 
                 Resultado = VerificarVariableDeclarada(Raiz,Ultimo)
 
-                if (Resultado[1]=="robot"):
+                if (esListaComportamiento == 1):
 
-                    print("Error de contexto en linea",Raiz.numeroLinea ,
-                        ": No se deben usar variables bot")
-                    sys.exit()
+                    if (Resultado[1]=="robot"):
 
-                else:
-                    return Resultado[0]
+                        print("Error de contexto en linea",Raiz.numeroLinea ,
+                            ": No se deben usar variables bot")
+                        sys.exit()
+
+                
+                return Resultado[0]
 
             else:
 
@@ -320,9 +322,9 @@ def p_openScope(t):
     global Top
     global Ultimo
     global Pila
-    global ListaComportamiento
+    global esListaComportamiento 
     #print("prendo")
-    ListaComportamiento = 1
+    esListaComportamiento  = 1
     Top = TopeDeTablaSimbolos(Ultimo)
     Ultimo = Top
     # Empilo Top
@@ -384,8 +386,8 @@ def p_listaDeclaraciones(t):
         # Se crea la tabla de simbolos
         CrearTablaSimbolos(t[3],t[1])
 
-        global ListaComportamiento
-        ListaComportamiento = 0
+        global esListaComportamiento 
+        esListaComportamiento  = 0
 
         Arbol = t[5]
 
@@ -403,8 +405,8 @@ def p_listaDeclaraciones(t):
 
 def p_checkListaComportamiento(t):
     '''CHECK_LISTA_DECLARACION : '''
-    global ListaComportamiento
-    ListaComportamiento = 1
+    global esListaComportamiento 
+    esListaComportamiento  = 1
 
 #------------------------------------------------------------------------------#
 
@@ -436,7 +438,7 @@ def p_listaComportamientos(t):
                    
     if (t[1] == "on"):
 
-        t[0] = Lista(t[2],t[4])
+        t[0] = ListaComportamiento(t[2],t[4])
 
     else:
         t[0] = unirListaEnlazada(t[1],t[2])
@@ -525,6 +527,9 @@ def p_guardarVariable(t):
     else:
         t[0] = None
 
+def p_S(t):
+    ''' S : OPEN_SCOPE TkCreate LISTA_DECLARACIONES
+          | '''
 #------------------------------------------------------------------------------#
 
 # Descripcion de la funcion: Regla para definir / secuenciar las instrucciones
@@ -609,7 +614,7 @@ def p_expression_binaria(t):
 
     t[0] = ExpresionBinaria(t[1],t[2],t[3],t.lineno(2))
 
-    if (ListaComportamiento != 1):
+    if (esListaComportamiento  != 1):
         print("Chequeo tipos")
         VerificarExpresionBinaria(t[0])
     else:
