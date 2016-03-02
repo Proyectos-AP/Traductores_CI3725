@@ -135,6 +135,7 @@ else:
   #parser = yacc.yacc(errorlog=yacc.NullLogger())
   parser = yacc.yacc()
   Raiz = parser.parse(datos,tracking=True)
+  print(Raiz)
   Raiz.imprimirAST(0)
   #print(Raiz.tablaSimbolos.padre.tabla)
 

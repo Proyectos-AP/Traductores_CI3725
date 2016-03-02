@@ -166,6 +166,16 @@ class Execute(Expr):
         self.sig = None
 
 #------------------------------------------------------------------------------#
+#                         RAIZ LISTA DE DECLARACIONES                          #
+#------------------------------------------------------------------------------#
+
+class Inicio_Declaracion(Expr):
+    def __init__(self,ultimo,scopeAnterior,listaDeclaraciones):
+        self.padre = ultimo
+        self.scopeAnterior = scopeAnterior
+        self.listaDeclaraciones = listaDeclaraciones
+
+#------------------------------------------------------------------------------#
 #                         LISTA DE DECLARACIONES                               #
 #------------------------------------------------------------------------------#
 

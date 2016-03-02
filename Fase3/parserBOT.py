@@ -29,13 +29,14 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 
-
+global scopeActual
 global Top
 global Pila
 global Ultimo
 global esListaComportamiento 
 esListaComportamiento = 0
 Ultimo = None
+scopeActual = None
 Pila = []
 
 #------------------------------------------------------------------------------#
@@ -81,7 +82,6 @@ def CrearTablaSimbolos(ListaIdentificadores,tipoRobot):
     Ultimo = Tabla
 
     while (aux!=None) :
-
         redeclaracion = Tabla.buscar(aux.value)
 
         if (redeclaracion != None):
@@ -94,7 +94,8 @@ def CrearTablaSimbolos(ListaIdentificadores,tipoRobot):
         aux = aux.sig
 
     # Inserto 'me' en la tabla
-    Tabla.insertar("me",tipoRobot) 
+    Tabla.insertar("me",tipoRobot)
+
 
 #------------------------------------------------------------------------------#
 
@@ -115,6 +116,7 @@ def VerificarVariableDeclarada(NodoVariable,TablaSimbolos):
 
     while (aux != None):
         Existe = TablaSimbolos.buscar(aux.value)
+
         if Existe == None:
             print("Error de contexto: la variable \'"+str(aux.value)+"\' \
                 no ha sido declarada en la linea",aux.numeroLinea)
@@ -141,19 +143,29 @@ def VerificarVariableDeclaradaE(NodoVariable,TablaSimbolos):
     '''
 
     aux = NodoVariable
-
+    Tabla = TablaSimbolos
     while (aux!= None):
-        Existe = TablaSimbolos.buscar(aux.value)
-        if Existe == None:
-            print("Error de contexto: la variable \'"+str(aux.value)+"\' \
-                no ha sido declarada en la linea",aux.numeroLinea)
-            sys.exit()
 
-        else:
-            if (Existe[1]!="robot"):
-                print("Error de contexto en la linea",aux.numeroLinea,":"" la variable \'"+str(aux.value)+"\'" +
-                    " no ha sido declarada.")
+        while (Tabla!= None):
+            
+            Existe = Tabla.padre.buscar(aux.value)
+
+            if (Existe == None and Tabla.scopeAnterior==None):
+                print("Error de contexto: la variable \'"+str(aux.value)+"\' \
+                    no ha sido declarada en la linea",aux.numeroLinea)
                 sys.exit()
+
+            elif(Existe==None and Tabla.scopeAnterior!=None):
+                Tabla = Tabla.scopeAnterior
+
+            else:
+                if (Existe[1]!="robot"):
+                    print("Error de contexto en la linea",aux.numeroLinea,":"" la variable \'"+str(aux.value)+"\'" +
+                        " no ha sido declarada.")
+                    sys.exit()
+
+                else:
+                    break
 
     
         aux = aux.sig
@@ -182,7 +194,7 @@ def VerificarTipoVariable(tipo,identificador,tipoVariableAevaluar):
     
 #------------------------------------------------------------------------------#
 
-def VerificarCondicionListaDeclaraciones(ArbolCondicion):
+def VerificarCondicionListaDeclaraciones(ArbolCondicion,TablaSimbolos):
 
     '''
       * Descripción de la función: Esta funcion une dos listas enlazadas
@@ -197,7 +209,7 @@ def VerificarCondicionListaDeclaraciones(ArbolCondicion):
 
     if (ArbolCondicion.condicion.type == "EXPRESION_BINARIA"):
 
-        Tipo = VerificarExpresionBinaria(ArbolCondicion.condicion)
+        Tipo = VerificarExpresionBinaria(ArbolCondicion.condicion,TablaSimbolos)
         print("TIPO",Tipo)
 
         if (Tipo != "bool"):
@@ -206,10 +218,9 @@ def VerificarCondicionListaDeclaraciones(ArbolCondicion):
     else:
         pass
 
-   
 #------------------------------------------------------------------------------#
 
-def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot):
+def VerificarGuardaEstructuraControl(ArbolExpr,TablaSimbolos):
 
     '''
       * Descripción de la función: Esta funcion une dos listas enlazadas
@@ -222,6 +233,29 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot):
             - lista1: apuntador a la cabecera de la lista enlazada unida.
     '''
 
+
+    Tipo = VerificarExpresionBinaria(ArbolExpr,TablaSimbolos)
+    print("TIPO",Tipo)
+
+    if (Tipo != "bool"):
+        print("Error de tipos!",Tipo)
+        sys.exit()
+
+#------------------------------------------------------------------------------#
+
+def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot,TablaSim):
+
+    '''
+      * Descripción de la función: Esta funcion une dos listas enlazadas
+                                 dado dos apuntadores a la cabecera de las 
+                                 mismas.
+      * Variables de entrada: 
+            - lista1: Apuntador a la cabecera de la primera lista enlazada
+            - lista2: Apuntador a la cabecera de la primera lista enlazada.
+      * Variables de salida: 
+            - lista1: apuntador a la cabecera de la lista enlazada unida.
+    '''
+    ListaTablas = []
     aux = ArbolInstrucciones
     #print("INTRUCCION",instrucciones.type)
 
@@ -231,39 +265,33 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot):
         while (instrucciones!=None):    
 
             print("INSTRUCCIONES", instrucciones.type) 
-
+            TablaLocal = TablaSimbolos()
+            TablaLocal.insertar("me",tipoRobot)
             if (instrucciones.type in {"STORE","DROP","RIGHT","LEFT","UP","DOWN"}):
                 print("Debo construir una funcion que chequee los tipos de expresion binarias")
-                VerificarExpresionBinaria(instrucciones.expresiones)
+                VerificarExpresionBinaria(instrucciones.expresiones,TablaSim)
 
             elif (instrucciones.type in {"COLLECT","READ"}):
 
-                # print("Se Verifica identificador")
                 identificador = instrucciones.identificador
                 if (identificador!=None):
-                    resultado = Ultimo.buscarLocal(identificador.value)
-                    # print("RESULTADO",resultado)
-                    # print("INTRUCCION",instrucciones.type)    
+                    resultado = TablaLocal.buscarLocal(identificador.value)
+ 
                     if(resultado!=None):
-
-                        if(resultado[1]=="robot"):
-                            print("Error de contexto en linea",
-                                identificador.numeroLinea ,": No se deben usar\
-                                variables bot")
                         
-                        # En duda
-                        elif(resultado[1]!="robot"):
-                            print("Error de contexto en linea",
-                                identificador.numeroLinea ,": redeclaracion de\
-                                 variables")
+                        print("Error de contexto en linea",
+                            identificador.numeroLinea ,": redeclaracion de\
+                             variables")
                         sys.exit()
 
                     else:
-                        # print("Insertando")
-                        Ultimo.insertar(identificador.value,tipoRobot,aux.condicion.type)
+           
+                        TablaLocal.insertar(identificador.value,tipoRobot,aux.condicion.type)
 
-            # print("TABLA",Ultimo.tabla)
+      
             instrucciones = instrucciones.sig
+
+        ListaTablas += [TablaLocal]    
 
         aux = aux.sig
 
@@ -281,6 +309,7 @@ def VerificarInstrucciones(ArbolInstrucciones):
 
         if (aux.condicion.type=="activation"):
             numActivations+=1
+
         elif (aux.condicion.type=="deactivation"):
             numDeactivations+=1
         
@@ -298,7 +327,7 @@ def VerificarInstrucciones(ArbolInstrucciones):
 
 #------------------------------------------------------------------------------#
 
-def VerificarExpresionBinaria(exprBin):
+def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
     '''
       * Descripción de la función: Esta funcion une dos listas enlazadas
@@ -322,7 +351,7 @@ def VerificarExpresionBinaria(exprBin):
                 operador = Raiz.op
 
                 if(operador == "-"):
-                    if(VerificarExpresionBinaria(Raiz.value)!= "int"):
+                    if(VerificarExpresionBinaria(Raiz.value,TablaSimbolos)!= "int"):
 
                         print("ERROR UNARIO INT")
                         sys.exit()
@@ -331,7 +360,7 @@ def VerificarExpresionBinaria(exprBin):
                         return "int"
 
                 elif(operador == "~"):
-                    if (VerificarExpresionBinaria(Raiz.value)!= "bool"):
+                    if (VerificarExpresionBinaria(Raiz.value,TablaSimbolos)!= "bool"):
                         print("ERROR UNARIO INT")
                         sys.exit()
                         
@@ -342,10 +371,11 @@ def VerificarExpresionBinaria(exprBin):
 
                 if (Raiz.type in {"ident","me"}):
 
-                    Resultado = VerificarVariableDeclarada(Raiz,Ultimo)
+                    print("Error",Raiz.value)
 
-                    if (esListaComportamiento == 1):
+                    if(esListaComportamiento==1):
 
+                        Resultado = VerificarVariableDeclarada(Raiz,TablaSimbolos)
                         if (Resultado[1]=="robot"):
 
                             print("Error de contexto en linea",Raiz.numeroLinea ,
@@ -353,13 +383,16 @@ def VerificarExpresionBinaria(exprBin):
                             sys.exit()
 
                     else:
+
+                        Resultado = VerificarVariableDeclaradaE(Raiz,TablaSimbolos)
                         if (Resultado[1]!="robot"):
 
                             print("Error de contexto en linea",Raiz.numeroLinea ,
                                 ": La variable no ha sido declarada")
 
                             sys.exit()
-                    
+                        
+
                     return Resultado[0]
 
                 else:
@@ -370,8 +403,8 @@ def VerificarExpresionBinaria(exprBin):
         elif(Raiz.type == "EXPRESION_BINARIA"):
 
             if (Raiz.op in {"-","*","/","%","<",">","/=","=","<=",">=","+"}) :
-                if (VerificarExpresionBinaria(Raiz.left) != "int" \
-                    or VerificarExpresionBinaria(Raiz.right) != "int"):
+                if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "int" \
+                    or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "int"):
                     print("Error de tipos en la linea",Raiz.linea)
                     sys.exit()
 
@@ -385,11 +418,11 @@ def VerificarExpresionBinaria(exprBin):
 
             elif (Raiz.op in {"/\\","\\/"}):
 
-                if (VerificarExpresionBinaria(Raiz.left) != "bool" \
-                    or VerificarExpresionBinaria(Raiz.right) != "bool"):
+                if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "bool" \
+                    or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "bool"):
                     print("Error de tipos en la linea",Raiz.linea)
-                    print(VerificarExpresionBinaria(Raiz.left))
-                    print(VerificarExpresionBinaria(Raiz.right))
+                    # print(VerificarExpresionBinaria(Raiz.left))
+                    # print(VerificarExpresionBinaria(Raiz.right))
                     sys.exit()
                 else:
                     return "bool"
@@ -412,61 +445,103 @@ precedence = (
 # Descripcion de la funcion: Regla para los posibles inicios de un programa 
 # en BOT
 def p_inicioPrograma(t):
-    ''' inicio : OPEN_SCOPE TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd CLOSE_SCOPE
+    ''' inicio :  TkCreate INICIO_LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
                 | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd '''
 
-    
+
+    global scopeActual
     if (t[1] == "execute"):
         t[0] = RaizAST(None,Execute(t[2]),Ultimo)
-        #print("execute")
 
-    elif (t[2] == "create"):
+    elif (t[1] == "create"):
         #print("1create")
-        t[0] = RaizAST(Create(t[3]),Execute(t[5]),Ultimo)
         #t[0] = TablaSimbolos
+        scopeActual = scopeActual.scopeAnterior
+        t[0] = RaizAST(Create(t[2]),Execute(t[4]),Ultimo)
 
 
-#------------------------------------------------------------------------------#
 
-def p_openScope(t):
-    '''OPEN_SCOPE : '''
+def p_inicioDeclaraciones(t):
 
-    global Top
+    '''INICIO_LISTA_DECLARACIONES : LISTA_DECLARACIONES '''
+
+    global esListaComportamiento
+    global scopeActual
     global Ultimo
-    global Pila
-    global esListaComportamiento 
-    #print("prendo")
-    esListaComportamiento  = 1
-    Top = TopeDeTablaSimbolos(Ultimo)
-    Ultimo = Top
-    # Empilo Top
-    Pila.append(Top)
 
+    Arbol = t[1]
+    # Se crea la tabla de simbolos
+    aux = Arbol
 
-#------------------------------------------------------------------------------#
-
-def p_closeScope(t):
-    '''CLOSE_SCOPE : '''
-    global Ultimo
-    global Top
-    global Pila
-    aux = Ultimo
     while (aux!= None):
+        
+        CrearTablaSimbolos(aux.identificadores,aux.tipoRobot)
+        print("Soy la tabla",Ultimo.tabla)
+        if (Ultimo.padre!= None):
+            print("Soy el padre de la tabla",Ultimo.padre.tabla)
 
-        if(aux.type!="top"):
-            print(aux.tabla)
-        else:
-            print("Estoy en el top")
-        aux = aux.padre
-    Ultimo =  Top.padre
-    # Desempilo top
-    Pila.pop()
 
-    # Asigno top al tope de la pila
-    if (len(Pila)==0):
-        Top = None
-    else:
-        Top = Pila[-1]
+        esListaComportamiento  = 1
+
+        if (aux.listaComportamiento != None):
+
+            # Se verifica la condicion de la lista de declaraciones  
+            VerificarCondicionListaDeclaraciones(aux.listaComportamiento,Ultimo)
+
+            #Se verifican si los tipos de las instrucciones de la lista de 
+            # son correctos declaraciones
+            Ultimo.hijos = VerificarInstruccionesListaDeclaraciones(aux.listaComportamiento,aux.tipoRobot,Ultimo)
+            VerificarInstrucciones(aux.listaComportamiento)
+
+        aux = aux.sig
+
+    esListaComportamiento  = 0
+
+    t[0] = Inicio_Declaracion(Ultimo,scopeActual,t[1])
+    scopeActual = t[0]
+    Ultimo = None
+
+#------------------------------------------------------------------------------#
+
+# def p_openScope(t):
+#     '''OPEN_SCOPE : '''
+
+#     global Top
+#     global Ultimo
+#     global Pila
+#     global esListaComportamiento 
+#     #print("prendo")
+#     esListaComportamiento  = 1
+#     Top = TopeDeTablaSimbolos(Ultimo)
+#     Ultimo = Top
+#     # Empilo Top
+#     Pila.append(Top)
+
+
+#------------------------------------------------------------------------------#
+
+# def p_closeScope(t):
+#     '''CLOSE_SCOPE : '''
+#     global Ultimo
+#     global Top
+#     global Pila
+#     aux = Ultimo
+#     while (aux!= None):
+
+#         if(aux.type!="top"):
+#             print(aux.tabla)
+#         else:
+#             print("Estoy en el top")
+#         aux = aux.padre
+#     Ultimo =  Top.padre
+#     # Desempilo top
+#     Pila.pop()
+
+#     # Asigno top al tope de la pila
+#     if (len(Pila)==0):
+#         Top = None
+#     else:
+#         Top = Pila[-1]
 
 
 #------------------------------------------------------------------------------#
@@ -495,25 +570,25 @@ def p_listaDeclaraciones(t):
             t[0] = Declaraciones(t[1],t[3],t[5])
 
 
-        # Se crea la tabla de simbolos
-        CrearTablaSimbolos(t[3],t[1])
+        # # Se crea la tabla de simbolos
+        # CrearTablaSimbolos(t[3],t[1])
 
 
         # Si se tiene una lista de comportamientos entonces se verifica
-        if (t[4] != "end"):
-            Arbol = t[5]
+        # if (t[4] != "end"):
+        #     Arbol = t[5]
 
-            # Se verifica la condicion de la lista de declaraciones  
-            VerificarCondicionListaDeclaraciones(Arbol)
+        #     # Se verifica la condicion de la lista de declaraciones  
+        #     VerificarCondicionListaDeclaraciones(Arbol)
 
-            #Se verifican si los tipos de las instrucciones de la lista de 
-            # son correctos declaraciones
-            VerificarInstruccionesListaDeclaraciones(Arbol,t[1])
+        #     #Se verifican si los tipos de las instrucciones de la lista de 
+        #     # son correctos declaraciones
+        #     VerificarInstruccionesListaDeclaraciones(Arbol,t[1])
 
-            VerificarInstrucciones(Arbol)
+        #     VerificarInstrucciones(Arbol)
   
-        global esListaComportamiento 
-        esListaComportamiento  = 0
+        # global esListaComportamiento 
+        # esListaComportamiento  = 0
     else:
 
         t[0] = unirListaEnlazada(t[1],t[2])
@@ -663,10 +738,10 @@ def p_SecuenciaInstruccionesControlador(t):
                                   | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
                                   | TkIf EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkElse TkDosPuntos INSTRUCCIONES_CONTROLADOR  TkEnd
                                   | TkWhile EXPRESION_BIN TkDosPuntos INSTRUCCIONES_CONTROLADOR TkEnd
-                                  | OPEN_SCOPE TkCreate LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd CLOSE_SCOPE
+                                  | TkCreate INICIO_LISTA_DECLARACIONES TkExecute INSTRUCCIONES_CONTROLADOR TkEnd
                                   | TkExecute INSTRUCCIONES_CONTROLADOR TkEnd  '''
    
-    
+    global scopeActual
     #print("IC")
 
     # TablaDeAlcance = UltimaTablaSimbolos
@@ -678,35 +753,40 @@ def p_SecuenciaInstruccionesControlador(t):
         #UltimaTablaSimbolos = TablaDeAlcance 
         #print("activate")
         t[0] = Activate(t[2])
-        VerificarVariableDeclaradaE(t[2],Ultimo) 
+        VerificarVariableDeclaradaE(t[2],scopeActual) 
 
     elif(t[1]=="advance"):
         #print("advance")
         t[0] = Advance(t[2])
-        VerificarVariableDeclaradaE(t[2],Ultimo)
+        VerificarVariableDeclaradaE(t[2],scopeActual)
 
     elif(t[1]=="deactivate"):
         #print("deactivate")
         t[0] = Deactivate(t[2])
-        VerificarVariableDeclaradaE(t[2],Ultimo)
+        VerificarVariableDeclaradaE(t[2],scopeActual)
 
     elif (t[1]=="if" and t[5] == "end"):
         t[0] = Condicional(t[2],t[4],None)
+        VerificarGuardaEstructuraControl(t[2],scopeActual)
 
     elif (t[1]=="if" and t[5] == "else"):
         t[0] = Condicional(t[2],t[4],t[7])
+        VerificarGuardaEstructuraControl(t[2],scopeActual)
 
     elif(t[1]=="while"):
 
         t[0]= While(t[2],t[4])
+        VerificarGuardaEstructuraControl(t[2],scopeActual)
 
     elif(t[1]=="execute"):
 
         t[0] = RaizAST(None,Execute(t[2]))
 
-    elif (t[2] == "create"):
+    elif (t[1] == "create"):
         #print("create")
-        t[0] = RaizAST(Create(t[3]),Execute(t[5]),Ultimo)
+        t[0] = RaizAST(Create(t[2]),Execute(t[4]),Ultimo)
+        scopeActual = scopeActual.scopeAnterior
+
 
     else:
         #print("hola")
@@ -735,11 +815,11 @@ def p_expression_binaria(t):
 
     t[0] = ExpresionBinaria(t[1],t[2],t[3],t.lineno(2))
 
-    if (esListaComportamiento  != 1):
-        print("Chequeo tipos")
-        VerificarExpresionBinaria(t[0])
-    else:
-        pass
+    # if (esListaComportamiento  != 1):
+    #     print("Chequeo tipos")
+    #     VerificarExpresionBinaria(t[0],scopeActual)
+    # else:
+    #     pass
 
 #------------------------------------------------------------------------------#
 
@@ -747,7 +827,7 @@ def p_expression_binaria(t):
 def p_negacion_bool(t):
     '''EXPRESION_BIN : TkNegacion EXPRESION_BIN %prec UMNEGACION'''
     t[0] = OperadorUnario(t[1],t[2])
-    if( VerificarExpresionBinaria(t[2])!= "bool"):
+    if( VerificarExpresionBinaria(t[2],scopeActual)!= "bool"):
         print("Error de tipos BOOL")
         sys.exit()
 
@@ -757,7 +837,7 @@ def p_negacion_bool(t):
 def p_expression_uminus(t):
     'EXPRESION_BIN : TkResta EXPRESION_BIN %prec UMINUS'
     t[0] = OperadorUnario(t[1],t[2])
-    if( VerificarExpresionBinaria(t[2])!= "int"):
+    if( VerificarExpresionBinaria(t[2],scopeActual)!= "int"):
         print("Error de tipos INT")
         sys.exit()
 

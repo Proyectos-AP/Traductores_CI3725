@@ -28,10 +28,11 @@
 
 class TopeDeTablaSimbolos():
 
-	def __init__(self,padre=None):
+	def __init__(self,padre=None,hijos=None):
 
 		self.type = "top"
 		self.padre = padre
+		self.hijos = hijos
 
 
 class TablaSimbolos():
