@@ -403,18 +403,39 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
         elif(Raiz.type == "EXPRESION_BINARIA"):
 
             if (Raiz.op in {"-","*","/","%","<",">","/=","=","<=",">=","+"}) :
-                if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "int" \
-                    or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "int"):
-                    print("Error de tipos en la linea",Raiz.linea)
-                    sys.exit()
+
+                if (Raiz.op in {"-","*","/","%","+"}):
+
+                    if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "int" \
+                        or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "int"):
+                        print("Error de tipos en la linea",Raiz.linea)
+                        sys.exit()
+
+                    else: 
+                        return "int"
+
+                elif (Raiz.op in {"=","/="}):
+
+                    if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) not in {"int","char"} \
+                        or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) not in {"int","char"}):
+
+                        print("Error de tipos en la linea",Raiz.linea)
+                        sys.exit()
+
+                    else:
+
+                        return "bool"
 
                 else:
 
-                    if (Raiz.op in {"-","*","/","%","+"}):
-                        return "int"
+                    if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "int" \
+                        or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "int"):
+                        print("Error de tipos en la linea",Raiz.linea)
+                        sys.exit()
 
-                    else:
+                    else: 
                         return "bool"
+
 
             elif (Raiz.op in {"/\\","\\/"}):
 
@@ -424,7 +445,9 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                     # print(VerificarExpresionBinaria(Raiz.left))
                     # print(VerificarExpresionBinaria(Raiz.right))
                     sys.exit()
+
                 else:
+
                     return "bool"
 
 #------------------------------------------------------------------------------#
