@@ -170,9 +170,9 @@ def VerificarVariableNoDeclarada(NodoVariable,TablaSimbolos):
     Tabla = TablaSimbolos
     while (Tabla!= None):
 
+        # print("ULTIMO SCOPE ANTERIOR",Tabla.padre.tabla)
         while (aux!= None):
 
-            print("ULTIMO SCOPE ANTERIOR",Tabla.padre.tabla)
             Existe = Tabla.padre.buscar(aux.value)
 
             if (Existe != None):
@@ -181,8 +181,9 @@ def VerificarVariableNoDeclarada(NodoVariable,TablaSimbolos):
                 sys.exit()
 
             aux = aux.sig
-
+        aux = NodoVariable
         Tabla = Tabla.scopeAnterior
+
     return Existe
 
 #------------------------------------------------------------------------------#
@@ -271,7 +272,7 @@ def VerificarCondicionListaDeclaraciones(ArbolCondicion,TablaSimbolos):
 
 
     while (aux!=None):
-        print("Condicion",aux.condicion.type)
+        #print("Condicion",aux.condicion.type)
 
         if (aux.condicion.type not in {"activation","deactivation","default"} ):
 
@@ -334,7 +335,7 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot,TablaS
             #print("INSTRUCCIONES", instrucciones.type) 
             if (instrucciones.type in {"STORE","DROP","right","left","up","down"}):
                 # print("Debo construir una funcion que chequee los tipos de expresion binarias")
-                print("Arbol expresiones",instrucciones.expresiones,instrucciones.type)
+                #print("Arbol expresiones",instrucciones.expresiones,instrucciones.type)
                 Tipo = VerificarExpresionBinaria(instrucciones.expresiones,TablaLocal)
 
                 if (instrucciones.type in {"right","left","up","down"}):
@@ -450,7 +451,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                     if(esListaComportamiento==1):
 
                         Resultado = VerificarVariableDeclarada(Raiz,TablaSimbolos)
-                        print("RESULTADO",Resultado,Raiz.value)
+                        #print("RESULTADO",Resultado,Raiz.value)
                         if (Resultado[1]=="robot"):
 
                             print("Error de contexto en linea",Raiz.numeroLinea ,
@@ -782,7 +783,7 @@ def p_instruccionRobot(t):
                             | TkRead GUARDAR_VARIABLE TkPunto 
                             | TkSend TkPunto  '''
     
-    print("IR",t[1])
+    #print("IR",t[1])
     if (t[1] == "store"):
         t[0] = Store(t[2],t.lineno(1))
 
