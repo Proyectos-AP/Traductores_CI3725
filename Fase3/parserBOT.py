@@ -90,7 +90,7 @@ def CrearTablaSimbolos(ListaIdentificadores,tipoRobot):
         redeclaracion = Tabla.buscar(aux.value)
         if (redeclaracion != None):
             print("Error de contexto: Redeclaracion de la variable","\'"+\
-                str(aux.value)+"\'","en la linea",aux.numeroLinea)
+                str(aux.value)+"\'","en la linea",aux.numeroLinea,".")
             sys.exit()
         else:
             Tabla.insertar(aux.value,tipoRobot,"robot")
@@ -123,7 +123,7 @@ def VerificarVariableDeclarada(NodoVariable,TablaSimbolos):
 
         if Existe == None:
             print("Error de contexto: la variable \'"+str(aux.value)+"\' \
-                no ha sido declarada en la linea",aux.numeroLinea)
+                no ha sido declarada en la linea",aux.numeroLinea,".")
             sys.exit()
 
         aux = aux.sig
@@ -248,7 +248,7 @@ def VerificarTipoVariable(tipo,tipoVariableAevaluar,numeroLinea):
     '''
 
     if (tipoVariableAevaluar!=tipo):
-        print("Error de contexto: Hay un error de tipos en la linea",numeroLinea)
+        print("Error de contexto: Hay un error de tipos en la linea",numeroLinea,".")
         sys.exit()
     
 #------------------------------------------------------------------------------#
@@ -279,7 +279,7 @@ def VerificarCondicionListaDeclaraciones(ArbolCondicion,TablaSimbolos):
             #print("TIPO",Tipo)
 
             if (Tipo != "bool"):
-                print("Error de contexto: Hay un error de tipos en la linea",aux.numeroLinea)
+                print("Error de contexto: Hay un error de tipos en la linea",aux.numeroLinea,".")
                 sys.exit()
 
         aux = aux.sig
@@ -303,7 +303,7 @@ def VerificarGuardaEstructuraControl(ArbolExpr,TablaSimbolos):
     #print("TIPO",Tipo)
 
     if (Tipo != "bool"):
-        print("Error de contexto: Hay un error de tipos en la linea",ArbolExpr.numeroLinea)
+        print("Error de contexto: Hay un error de tipos en la linea",ArbolExpr.numeroLinea,".")
         sys.exit()
 
 #------------------------------------------------------------------------------#
@@ -353,7 +353,7 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot,TablaS
                         
                         print("Error de contexto en linea",
                             identificador.numeroLinea ,": redeclaracion de\
-                             variables")
+                             variables.")
                         sys.exit()
 
                     else:
@@ -427,7 +427,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                 if(operador == "-"):
                     if(VerificarExpresionBinaria(Raiz.value,TablaSimbolos)!= "int"):
 
-                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
+                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea,".")
                         sys.exit()
 
                     else:
@@ -435,7 +435,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                 elif(operador == "~"):
                     if (VerificarExpresionBinaria(Raiz.value,TablaSimbolos)!= "bool"):
-                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
+                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea,".")
                         sys.exit()
                         
                     else:
@@ -454,7 +454,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                         if (Resultado[1]=="robot"):
 
                             print("Error de contexto en linea",Raiz.numeroLinea ,
-                                ": No se deben usar variables bot")
+                                ": No se deben usar variables bot.")
                             sys.exit()
 
                         # else:
@@ -466,7 +466,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                         if (Resultado[1]!="robot"):
 
                             print("Error de contexto en linea",Raiz.numeroLinea ,
-                                ": La variable no ha sido declarada")
+                                ": La variable no ha sido declarada.")
 
                             sys.exit()
                         
@@ -486,7 +486,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                     if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "int" \
                         or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "int"):
-                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
+                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea,".")
                         sys.exit()
 
                     else: 
@@ -508,7 +508,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                     if ( Izq != Der ):
 
-                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
+                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea,".")
                         sys.exit()
 
                     else:
@@ -519,7 +519,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                     if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "int" \
                         or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "int"):
-                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
+                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea,".")
                         sys.exit()
 
                     else: 
@@ -530,7 +530,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                 if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "bool" \
                     or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "bool"):
-                    print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
+                    print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea,".")
                     # print(VerificarExpresionBinaria(Raiz.left))
                     # print(VerificarExpresionBinaria(Raiz.right))
                     sys.exit()
