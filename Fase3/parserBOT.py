@@ -122,8 +122,8 @@ def VerificarVariableDeclarada(NodoVariable,TablaSimbolos):
         Existe = TablaSimbolos.buscarLocal(aux.value)
 
         if Existe == None:
-            print("Error de contexto: la variable \'"+str(aux.value)+"\' \
-                no ha sido declarada en la linea",aux.numeroLinea,".")
+            print("Error de contexto: la variable \'"+str(aux.value)+"\'" + 
+                " no ha sido declarada en la linea",aux.numeroLinea,".")
             sys.exit()
 
         aux = aux.sig
@@ -176,7 +176,8 @@ def VerificarVariableNoDeclarada(NodoVariable,TablaSimbolos):
             Existe = Tabla.padre.buscar(aux.value)
 
             if (Existe != None):
-                print("Error de contexto en la linea",aux.numeroLinea,":la variable \'"+str(aux.value)+"\'" +
+                print("Error de contexto en la linea",aux.numeroLinea,
+                    ":la variable \'"+str(aux.value)+"\'" + 
                     " ya ha sido declarada.")
                 sys.exit()
 
@@ -212,8 +213,7 @@ def VerificarVariableDeclaradaE(NodoVariable,TablaSimbolos):
             Existe = Tabla.padre.buscar(aux.value)
 
             if (Existe == None and Tabla.scopeAnterior==None):
-                print("Error de contexto en la linea",aux.numeroLinea,":la variable \'"+str(aux.value)+"\'" +
-                    " no ha sido declarada.")
+                print("Error de contexto en la linea",aux.numeroLinea,":la variable \'"+str(aux.value)+"\'"+" no ha sido declarada.")
                 sys.exit()
 
             elif(Existe==None and Tabla.scopeAnterior!=None):
@@ -221,8 +221,7 @@ def VerificarVariableDeclaradaE(NodoVariable,TablaSimbolos):
 
             else:
                 if (Existe[1]!="robot"):
-                    print("Error de contexto en la linea",aux.numeroLinea,":la variable \'"+str(aux.value)+"\'" +
-                        " no ha sido declarada.")
+                    print("Error de contexto en la linea",aux.numeroLinea,":la variable \'"+str(aux.value)+"\'"+" no ha sido declarada.")
                     sys.exit()
 
                 else:
@@ -370,7 +369,6 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot,TablaS
         aux = aux.sig
 
 
-
 #------------------------------------------------------------------------------#
 
 def VerificarInstrucciones(ArbolInstrucciones):
@@ -378,6 +376,7 @@ def VerificarInstrucciones(ArbolInstrucciones):
     aux = ArbolInstrucciones
     numActivations = 0
     numDeactivations = 0
+    numDeafault = 0
 
     while (aux!=None):
 
@@ -386,9 +385,13 @@ def VerificarInstrucciones(ArbolInstrucciones):
 
         elif (aux.condicion.type=="deactivation"):
             numDeactivations+=1
+
+        elif (aux.condicion.type == "default"):
+            numDeafault+=1
+
         
-        if(numActivations>1 or numDeactivations>1):
-            print("No se puede activar o desactivar el robot mas de una vez.")
+        if(numActivations>1 or numDeactivations>1 or numDeafault>1):
+            print("No se puede activar,desactivar o hacer default de un robot mas de una vez.")
             sys.exit()
 
         # Verificar!!!
