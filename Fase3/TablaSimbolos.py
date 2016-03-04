@@ -46,7 +46,7 @@ class TablaSimbolos():
 	def buscar(self,variable):
 
 		aux = self
-		#print(aux.tabla)
+		#print("ADENTRO DE CLASE:",aux)
 
 		while (aux!=None):
 

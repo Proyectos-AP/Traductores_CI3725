@@ -119,7 +119,7 @@ def VerificarVariableDeclarada(NodoVariable,TablaSimbolos):
     aux = NodoVariable
 
     while (aux != None):
-        Existe = TablaSimbolos.buscar(aux.value)
+        Existe = TablaSimbolos.buscarLocal(aux.value)
 
         if Existe == None:
             print("Error de contexto: la variable \'"+str(aux.value)+"\' \
@@ -183,7 +183,6 @@ def VerificarVariableNoDeclarada(NodoVariable,TablaSimbolos):
             aux = aux.sig
 
         Tabla = Tabla.scopeAnterior
-        
     return Existe
 
 #------------------------------------------------------------------------------#
@@ -204,6 +203,7 @@ def VerificarVariableDeclaradaE(NodoVariable,TablaSimbolos):
     aux = NodoVariable
     Existe = None
     Tabla = TablaSimbolos
+
     while (aux!= None):
 
         while (Tabla!= None):
@@ -227,13 +227,14 @@ def VerificarVariableDeclaradaE(NodoVariable,TablaSimbolos):
                 else:
                     break
 
+        Tabla = TablaSimbolos
         aux = aux.sig
 
     return Existe
 
 #------------------------------------------------------------------------------#
 
-def VerificarTipoVariable(tipo,identificador,tipoVariableAevaluar):
+def VerificarTipoVariable(tipo,tipoVariableAevaluar,numeroLinea):
 
     '''
       * Descripción de la función: Esta funcion une dos listas enlazadas
@@ -246,9 +247,8 @@ def VerificarTipoVariable(tipo,identificador,tipoVariableAevaluar):
             - lista1: apuntador a la cabecera de la lista enlazada unida.
     '''
 
-    if (tipoVariableAevaluar[0]!=tipo):
-        print("Error de contexto: Hay un error de tipos en la linea",\
-            identificador.numeroLinea)
+    if (tipoVariableAevaluar!=tipo):
+        print("Error de contexto: Hay un error de tipos en la linea",numeroLinea)
         sys.exit()
     
 #------------------------------------------------------------------------------#
@@ -266,16 +266,23 @@ def VerificarCondicionListaDeclaraciones(ArbolCondicion,TablaSimbolos):
             - lista1: apuntador a la cabecera de la lista enlazada unida.
     '''
 
-    if (ArbolCondicion.condicion.type == "EXPRESION_BINARIA"):
 
-        Tipo = VerificarExpresionBinaria(ArbolCondicion.condicion,TablaSimbolos)
-        print("TIPO",Tipo)
+    aux = ArbolCondicion
 
-        if (Tipo != "bool"):
-            print("Error de tipos",Tipo)
-            sys.exit()
-    else:
-        pass
+
+    while (aux!=None):
+        print("Condicion",aux.condicion.type)
+
+        if (aux.condicion.type not in {"activation","deactivation","default"} ):
+
+            Tipo = VerificarExpresionBinaria(aux.condicion,TablaSimbolos)
+            #print("TIPO",Tipo)
+
+            if (Tipo != "bool"):
+                print("Error de contexto: Hay un error de tipos en la linea",aux.numeroLinea)
+                sys.exit()
+
+        aux = aux.sig
 
 #------------------------------------------------------------------------------#
 
@@ -292,12 +299,11 @@ def VerificarGuardaEstructuraControl(ArbolExpr,TablaSimbolos):
             - lista1: apuntador a la cabecera de la lista enlazada unida.
     '''
 
-
     Tipo = VerificarExpresionBinaria(ArbolExpr,TablaSimbolos)
-    print("TIPO",Tipo)
+    #print("TIPO",Tipo)
 
     if (Tipo != "bool"):
-        print("Error de tipos!",Tipo)
+        print("Error de contexto: Hay un error de tipos en la linea",ArbolExpr.numeroLinea)
         sys.exit()
 
 #------------------------------------------------------------------------------#
@@ -319,16 +325,23 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot,TablaS
     #print("INTRUCCION",instrucciones.type)
 
     while (aux!=None):
-        print("CONDICION",aux.condicion.type)
+        #print("CONDICION",aux.condicion.type)
         instrucciones = aux.instrucciones
+        TablaLocal = TablaSimbolos()
+        TablaLocal.insertar("me",tipoRobot)
         while (instrucciones!=None):    
 
-            print("INSTRUCCIONES", instrucciones.type) 
-            TablaLocal = TablaSimbolos()
-            TablaLocal.insertar("me",tipoRobot)
-            if (instrucciones.type in {"STORE","DROP","RIGHT","LEFT","UP","DOWN"}):
-                print("Debo construir una funcion que chequee los tipos de expresion binarias")
-                VerificarExpresionBinaria(instrucciones.expresiones,TablaSim)
+            #print("INSTRUCCIONES", instrucciones.type) 
+            if (instrucciones.type in {"STORE","DROP","right","left","up","down"}):
+                # print("Debo construir una funcion que chequee los tipos de expresion binarias")
+                print("Arbol expresiones",instrucciones.expresiones,instrucciones.type)
+                Tipo = VerificarExpresionBinaria(instrucciones.expresiones,TablaLocal)
+
+                if (instrucciones.type in {"right","left","up","down"}):
+                    VerificarTipoVariable(Tipo,"int",instrucciones.numeroLinea)
+
+                elif (instrucciones.type == "STORE"):
+                    VerificarTipoVariable(Tipo,tipoRobot,instrucciones.numeroLinea)
 
             elif (instrucciones.type in {"COLLECT","READ"}):
 
@@ -344,12 +357,13 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot,TablaS
                         sys.exit()
 
                     else:
-           
+                        #print("INSERTANDO : ",identificador.value)
                         TablaLocal.insertar(identificador.value,tipoRobot,aux.condicion.type)
 
       
             instrucciones = instrucciones.sig
 
+        #print("TABLA LOCAL",TablaLocal.tabla)
         ListaTablas += [TablaLocal]    
 
         aux = aux.sig
@@ -401,6 +415,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
     Raiz = exprBin
 
+    # print("TIPO",Raiz.type,Raiz.op)
     if (Raiz != None):
 
         if (Raiz.type != "EXPRESION_BINARIA"):
@@ -412,7 +427,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                 if(operador == "-"):
                     if(VerificarExpresionBinaria(Raiz.value,TablaSimbolos)!= "int"):
 
-                        print("ERROR UNARIO INT")
+                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
                         sys.exit()
 
                     else:
@@ -420,7 +435,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                 elif(operador == "~"):
                     if (VerificarExpresionBinaria(Raiz.value,TablaSimbolos)!= "bool"):
-                        print("ERROR UNARIO INT")
+                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
                         sys.exit()
                         
                     else:
@@ -430,19 +445,23 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                 if (Raiz.type in {"ident","me"}):
 
-                    print("Error",Raiz.value)
+                    #print("Error",Raiz.value)
 
                     if(esListaComportamiento==1):
 
                         Resultado = VerificarVariableDeclarada(Raiz,TablaSimbolos)
+                        print("RESULTADO",Resultado,Raiz.value)
                         if (Resultado[1]=="robot"):
 
                             print("Error de contexto en linea",Raiz.numeroLinea ,
                                 ": No se deben usar variables bot")
                             sys.exit()
 
-                    else:
+                        # else:
+                        #     return Resultado[0]
 
+                    else:
+                            
                         Resultado = VerificarVariableDeclaradaE(Raiz,TablaSimbolos)
                         if (Resultado[1]!="robot"):
 
@@ -456,7 +475,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                 else:
 
-                    print("RESULTADO 2:",Raiz.type)
+                    #print("RESULTADO 2:",Raiz.type)
                     return Raiz.type
 
         elif(Raiz.type == "EXPRESION_BINARIA"):
@@ -467,7 +486,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                     if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "int" \
                         or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "int"):
-                        print("Error de tipos en la linea",Raiz.linea)
+                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
                         sys.exit()
 
                     else: 
@@ -475,10 +494,21 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                 elif (Raiz.op in {"=","/="}):
 
-                    if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) not in {"int","char"} \
-                        or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) not in {"int","char"}):
+                    # if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) not in {"int","char"} \
+                    #     or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) not in {"int","char"}):
 
-                        print("Error de tipos en la linea",Raiz.linea)
+                    #     print("Error de tipos en la linea",Raiz.linea)
+                    #     sys.exit()
+
+                    # else:
+
+                    #     return "bool"
+                    Izq = VerificarExpresionBinaria(Raiz.left,TablaSimbolos)
+                    Der = VerificarExpresionBinaria(Raiz.right,TablaSimbolos)
+
+                    if ( Izq != Der ):
+
+                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
                         sys.exit()
 
                     else:
@@ -489,7 +519,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                     if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "int" \
                         or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "int"):
-                        print("Error de tipos en la linea",Raiz.linea)
+                        print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
                         sys.exit()
 
                     else: 
@@ -500,7 +530,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                 if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "bool" \
                     or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "bool"):
-                    print("Error de tipos en la linea",Raiz.linea)
+                    print("Error de contexto: Hay un error de tipos en la linea",Raiz.numeroLinea)
                     # print(VerificarExpresionBinaria(Raiz.left))
                     # print(VerificarExpresionBinaria(Raiz.right))
                     sys.exit()
@@ -555,21 +585,26 @@ def p_inicioDeclaraciones(t):
     # Se crea la tabla de simbolos
     aux = Arbol
 
+    # print("Lista COMPORTAMIENTO",aux.condicion.type)
+    # if (aux.sig!=None):
+    #     print("Lista COMPORTAMIENTO SIGUIENTE",aux.sig.condicion.type)
+
+
     while (aux!= None):
         
         CrearTablaSimbolos(aux.identificadores,aux.tipoRobot)
-        print("Soy la tabla",Ultimo.tabla)
-        if (Ultimo.padre!= None):
-            print("Soy el padre de la tabla",Ultimo.padre.tabla)
+        #print("Soy la tabla",Ultimo.tabla)
+        # if (Ultimo.padre!= None):
+        #     print("Soy el padre de la tabla",Ultimo.padre.tabla)
 
 
         esListaComportamiento  = 1
 
         if (aux.listaComportamiento != None):
-            print("LISTA COMPORTAMIENTO",aux.listaComportamiento)
-            # Se verifica la condicion de la lista de declaraciones  
+            #print("LISTA COMPORTAMIENTO",aux.listaComportamiento)
+            # Se verifica la condicion de la lista de declaraciones 
+            #print(Ultimo.tabla) 
             VerificarCondicionListaDeclaraciones(aux.listaComportamiento,Ultimo)
-
             #Se verifican si los tipos de las instrucciones de la lista de 
             # son correctos declaraciones
             Ultimo.hijos = VerificarInstruccionesListaDeclaraciones(aux.listaComportamiento,aux.tipoRobot,Ultimo)
@@ -651,6 +686,10 @@ def p_listaDeclaraciones(t):
         else:
             t[0] = Declaraciones(t[1],t[3],t[4])
 
+            # aux=t[4]
+            # print("Lista COMPORTAMIENTO",aux.condicion.type)
+            # if (aux.sig!=None):
+            #     print("Lista COMPORTAMIENTO SIGUIENTE",aux.sig.condicion.type)
 
         # # Se crea la tabla de simbolos
         # CrearTablaSimbolos(t[3],t[1])
@@ -705,7 +744,7 @@ def p_listaComportamientos(t):
                    
     if (t[1] == "on"):
 
-        t[0] = ListaComportamiento(t[2],t[4])
+        t[0] = ListaComportamiento(t[2],t[4],t.lineno(1))
 
     else:
         t[0] = unirListaEnlazada(t[1],t[2])
@@ -743,9 +782,9 @@ def p_instruccionRobot(t):
                             | TkRead GUARDAR_VARIABLE TkPunto 
                             | TkSend TkPunto  '''
     
-    #print("IR")
+    print("IR",t[1])
     if (t[1] == "store"):
-        t[0] = Store(t[2])
+        t[0] = Store(t[2],t.lineno(1))
 
     elif (t[1] == "recieve"):
         t[0] = Recieve()
@@ -757,7 +796,7 @@ def p_instruccionRobot(t):
         t[0] = Drop(t[2])
 
     elif (t[1] in {"up","down","left","right"}):
-        t[0] = Movimiento(t[1],t[2])
+        t[0] = Movimiento(t[1],t[2],t.lineno(1))
 
     elif (t[1] == "read"):
         t[0] = Read(t[2])
@@ -901,20 +940,20 @@ def p_expression_binaria(t):
 # Descripcion de la funcion: Regla para definir la negacion booleana.
 def p_negacion_bool(t):
     '''EXPRESION_BIN : TkNegacion EXPRESION_BIN %prec UMNEGACION'''
-    t[0] = OperadorUnario(t[1],t[2])
-    if( VerificarExpresionBinaria(t[2],scopeActual)!= "bool"):
-        print("Error de tipos BOOL")
-        sys.exit()
+    t[0] = OperadorUnario(t[1],t[2],t.lineno(1))
+    # if( VerificarExpresionBinaria(t[2],scopeActual)!= "bool"):
+    #     #print("Error de tipos BOOL")
+    #     sys.exit()
 
 #------------------------------------------------------------------------------#
 
 # Descripcion de la funcion: Regla para el operador menos unario.
 def p_expression_uminus(t):
     'EXPRESION_BIN : TkResta EXPRESION_BIN %prec UMINUS'
-    t[0] = OperadorUnario(t[1],t[2])
-    if( VerificarExpresionBinaria(t[2],scopeActual)!= "int"):
-        print("Error de tipos INT")
-        sys.exit()
+    t[0] = OperadorUnario(t[1],t[2],t.lineno(1))
+    # if( VerificarExpresionBinaria(t[2],scopeActual)!= "int"):
+    #     print("Error de tipos INT")
+    #     sys.exit()
 
 #------------------------------------------------------------------------------#
 
@@ -928,7 +967,7 @@ def p_expression_group(t):
 # Descripcion de la funcion: Regla para almacenar el valor de un numero.
 def p_expression_number(t):
     'EXPRESION_BIN : TkNum'
-    t[0] = Number(t[1])
+    t[0] = Number(t[1],t.lineno(1))
 
 #------------------------------------------------------------------------------#
 
@@ -937,7 +976,7 @@ def p_expression_number(t):
 def p_expression_TrueFalse(t):
     '''EXPRESION_BIN : TkTrue
                      | TkFalse '''
-    t[0] = Booleano(t[1])
+    t[0] = Booleano(t[1],t.lineno(1))
 
 #------------------------------------------------------------------------------#
 
@@ -959,7 +998,7 @@ def p_expression_me(t):
 # Descripcion de la funcion: Regla para almacenar un caracter.
 def p_expression_caracter(t):
     'EXPRESION_BIN : TkCaracter'
-    t[0] = Caracter(t[1])
+    t[0] = Caracter(t[1],t.lineno(1))
 
 #------------------------------------------------------------------------------#
 
@@ -968,7 +1007,7 @@ def p_error(t):
     if(t != None):
         print("Error sintactico " + str(t.value) + " en linea " + str(t.lineno))
     else:
-        print("Error sintactico")
+        print("Error sintactico.")
 
     sys.exit()
 
