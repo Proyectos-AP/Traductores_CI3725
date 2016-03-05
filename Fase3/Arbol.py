@@ -123,11 +123,10 @@ class Expr:
 
 class RaizAST(Expr):
 
-    def __init__(self,ArbolDeclaracion,ArbolInstruccion,tablaSimbolos):
+    def __init__(self,ArbolDeclaracion,ArbolInstruccion):
         self.type = "RaizAST"
         self.arbolDeclaracion = ArbolDeclaracion
         self.arbolInstruccion = ArbolInstruccion
-        self.tablaSimbolos = tablaSimbolos  
         self.sig = None
 
     def imprimirAST(self,numeroTabs):
