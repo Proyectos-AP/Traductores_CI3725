@@ -246,8 +246,9 @@ class Movimiento(Expr):
 class Condicion(Expr):
     ''' Nodo que almacena el tipo de condicion de la lista de comportamiento 
     del robot '''
-    def __init__(self,type):
+    def __init__(self,type,numeroLinea):
         self.type = type
+        self.numeroLinea = numeroLinea
         self.sig = None
 
 #------------------------------------------------------------------------------#
