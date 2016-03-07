@@ -28,6 +28,9 @@ from TablaSimbolos import *
 import ply.lex as lex 
 import ply.yacc as yacc
 
+#------------------------------------------------------------------------------#
+#                            VARIABLES GLOBALES                                #
+#------------------------------------------------------------------------------#
 
 global scopeActual
 global Ultimo
@@ -166,7 +169,7 @@ def VerificarVariableDeclarada(NodoVariable,TablaSimbolos):
  
 #     return Existe
 
-# #------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
 
 def VerificarVariableDeclaradaExecute(NodoVariable,TablaSimbolos):
 
@@ -303,9 +306,11 @@ def VerificarGuardaEstructuraControl(ArbolExpr,TablaSimbolos):
 def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot):
 
     '''
-      * Descripción de la función: Esta funcion un arbol de instrucciones, un 
+      * Descripción de la función: Esta funcion dado un arbol de instrucciones,un 
                                     tipo y una tabla de simbolos verifica la 
-                                    correctitud semantica de las instrucciones.
+                                    correctitud semantica de las instrucciones
+                                    de la lista de declaraciones del lenguaje 
+                                    BOT.
 
       * Variables de entrada: 
             - ArbolInstrucciones: Lista enlazada de instrucciones.
@@ -325,6 +330,8 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot):
         TablaLocal.insertar("me",tipoRobot)
         while (instrucciones!=None):    
 
+            # Se verifican las expresiones de las instrucciones STORE,DROP,
+            #  RIGHT, LEFT, UP y DOWN
             if (instrucciones.type in {"STORE","DROP","right","left","up","down"}):
 
                 Tipo = VerificarExpresionBinaria(instrucciones.expresiones,
@@ -336,10 +343,14 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot):
                         VerificarTipoVariable(Tipo,"int",
                             instrucciones.numeroLinea)
 
+                # El tipo de expresion de la instruccion STORE debe ser
+                # igual al tipo del robot.
                 elif (instrucciones.type == "STORE"):
                     VerificarTipoVariable(Tipo,tipoRobot,
                         instrucciones.numeroLinea)
 
+            # Se verifican los identificadores de las instrucciones COLLECT 
+            # y READ.
             elif (instrucciones.type in {"COLLECT","READ"}):
 
                 identificador = instrucciones.identificador
@@ -354,7 +365,7 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot):
                         sys.exit()
 
                     else:
-  
+                        # Se almacenan las nuevas variables a la tabla.
                         TablaLocal.insertar(identificador.value,
                             tipoRobot,aux.condicion.type)
 
@@ -372,9 +383,9 @@ def VerificarInstrucciones(ArbolInstrucciones):
     '''
       * Descripción de la función: Funcion que verifia si el numero de 
                                   declaraciones de activation,deactivation y
-                                  default sean correctos. Ademas chequea sig
+                                  default son correctas. Ademas chequea si
                                   la declaracion default es la ultima en la
-                                  lista enlazada. 
+                                  lista enlazada de declaraciones. 
 
       * Variables de entrada: 
             - ArbolInstrucciones: Lista enlazada de comportamientos.
@@ -399,13 +410,15 @@ def VerificarInstrucciones(ArbolInstrucciones):
         elif (aux.condicion.type == "default"):
             numDeafault+=1
 
-        
+        # Se verifica si hay mas de una condicion: activation, deactivation o
+        # default.
         if(numActivations>1 or numDeactivations>1 or numDeafault>1):
             print("Error en linea",aux.numeroLinea,
                 ": No se puede utilizar el comportamiento activation,",
                 "deactivation o default mas de una vez.")
             sys.exit()
 
+        # Se verifica si default es la ultima condicion
         if(aux.condicion.type=="default" and aux.sig!= None):
             print("Error en linea",aux.numeroLinea,
                 ": El comportamiento default debe ir al final de los", 
@@ -440,10 +453,12 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
         if (Raiz.type != "EXPRESION_BINARIA"):
 
+            # Se chequean las expresiones unarias
             if (Raiz.type == "OPERADOR_UNARIO"):
 
                 operador = Raiz.op
 
+                # Expresion unaria de tipo int
                 if(operador == "-"):
                     if(VerificarExpresionBinaria(Raiz.value,TablaSimbolos)!= "int"):
 
@@ -454,6 +469,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                     else:
                         return "int"
 
+                # Expresion unaria de tipo bool
                 elif(operador == "~"):
                     if (VerificarExpresionBinaria(Raiz.value,TablaSimbolos)!= "bool"):
                         print("Error : Hay un error de tipos en la linea",
@@ -468,7 +484,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                 if (Raiz.type in {"ident","me"}):
 
                     if(esListaComportamiento==1):
-
+                        # Se verifica si la variable fue declarada
                         Resultado = VerificarVariableDeclarada(Raiz,TablaSimbolos)
 
                         if (Resultado[1]=="robot"):
@@ -478,7 +494,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                             sys.exit()
 
                     else:
-                            
+                        # Se verifica si la variable fue declarada 
                         Resultado = VerificarVariableDeclaradaExecute(Raiz,TablaSimbolos)
                         if (Resultado[1]!="robot"):
 
@@ -499,7 +515,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
             if (Raiz.op in {"-","*","/","%","<",">","/=","=","<=",">=","+"}) :
 
                 if (Raiz.op in {"-","*","/","%","+"}):
-
+                    # Chequeo de expresiones aritmeticas
                     if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "int" \
                         or VerificarExpresionBinaria(Raiz.right,TablaSimbolos) != "int"):
                         print("Error : Hay un error de tipos en la linea",
@@ -508,7 +524,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
 
                     else: 
                         return "int"
-
+                # Chequeo de comparaciones
                 elif (Raiz.op in {"=","/="}):
 
                     Izq = VerificarExpresionBinaria(Raiz.left,TablaSimbolos)
@@ -535,7 +551,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                     else: 
                         return "bool"
 
-
+            # Chequeo de expresiones booleanas
             elif (Raiz.op in {"/\\","\\/"}):
 
                 if (VerificarExpresionBinaria(Raiz.left,TablaSimbolos) != "bool" \
@@ -591,7 +607,7 @@ def p_inicioDeclaraciones(t):
     Arbol = t[1]
     # Se crea la tabla de simbolos
     aux = Arbol
-
+    # Se itera por todas las listas de declaraciones
     while (aux!= None):
         
         CrearTablaSimbolos(aux.identificadores,aux.tipoRobot)
@@ -622,7 +638,7 @@ def p_listaDeclaraciones(t):
                             | TkChar TkBot LISTA_IDENT LISTA_COMPORTAMIENTOS TkEnd
                             | TkChar TkBot LISTA_IDENT TkEnd '''
 
-    #print("Lista declaraciones")
+
     if(t[1] in {"int","bool","char"}):
 
         if (t[4] == "end"):
@@ -640,7 +656,7 @@ def p_listaDeclaraciones(t):
 # en una declaracion de robot.
 def  p_listaIdent(t):
     ''' LISTA_IDENT : LISTA_IDENT TkComa LISTA_IDENT'''
-    #print("ListaComportamiento")
+
     t[0] = unirListaEnlazada(t[1],t[3])
 
  
