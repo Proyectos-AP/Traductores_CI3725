@@ -1,0 +1,39 @@
+$- exp.bot:
+ - ========
+ - Recibe dos enteros 'a' y 'b', e imprime la exponenciación del primero (base)
+ - con el segundo (exponente).
+ - Autor: Ricardo Monascal, 2016
+ -$
+create
+  $$ Robot base.
+  int bot a
+    on activation:
+      read.
+    end
+    on default:
+      collect as x.
+      drop me * x.
+    end
+    on deactivation:
+      collect. send.
+    end
+  end
+  
+  $$ Robot exponente.
+  int bot b
+    on activation:
+      read.
+      drop 1.
+    end
+    on default:
+      store me - 1.
+    end
+  end
+
+execute
+  activate a, b.
+  while b > 0:
+    advance a, b.
+  end
+  deactivate a.
+end

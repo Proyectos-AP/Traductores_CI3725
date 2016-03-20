@@ -1,0 +1,34 @@
+$- factorial.bot:
+ - ==============
+ - Recibe un entero 'n' e imprime el factorial de 'n'.
+ - Autor: Ricardo Monascal, 2016
+ -$
+create
+  int bot n
+    on activation:
+      recieve.
+    end
+    on default:
+      drop me.
+      store me - 1.
+    end
+  end
+  int bot f
+    on activation:
+      store 1.
+    end
+    on default:
+      collect as x.
+      store me * x.
+    end
+    on deactivation:
+      send.
+    end
+
+execute
+  activate n, f.
+  while n > 1:
+    advance n, f.
+  end
+  deactivate f.
+end

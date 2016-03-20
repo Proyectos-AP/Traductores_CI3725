@@ -1,0 +1,25 @@
+$- hola-mundo.bot:
+ - ===============
+ - Imprime el famoso "Hola Mundo!".
+ - Autor: Ricardo Monascal, 2016
+ -$
+create
+  char bot b
+    on activation:
+      store 'H'. send.
+      store 'o'. send.
+      store 'l'. send.
+      store 'a'. send.
+      store ' '. send.
+      store 'M'. send.
+      store 'u'. send.
+      store 'n'. send.
+      store 'd'. send.
+      store 'o'. send.
+      store '!'. send.
+    end
+  end
+
+execute
+  activate b.
+end

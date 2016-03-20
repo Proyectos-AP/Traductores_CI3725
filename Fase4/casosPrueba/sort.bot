@@ -1,0 +1,111 @@
+$- sort.bot:
+ - =========
+ - Recibe un entero 'n' y luego 'n' enteros más, ordena estos últimos
+ - en orden no-decreciente y los imprime (implementa bubble-sort).
+ - Autor: Ricardo Monascal, 2016
+ -$
+create
+  $$ Robot contador.
+  int bot n
+    on activation:
+      read. drop me.
+    end
+    on me = 0:
+      collect.
+    end
+    on default:
+      store me - 1.
+    end
+  end
+  
+  $$ Robot lector del arreglo.
+  int bot reader
+    on activation:
+      up.
+    end
+    on default:
+      read. drop me.
+      up.
+    end
+  end
+  
+  $$ Robot impresor del arreglo.
+  int bot printer
+    on activation:
+      up.
+    end
+    on default:
+      collect. send.
+    end
+  end
+  
+  $$ Robot para imprimir espacio.
+  char bot space
+    on activation:
+      store ' '.
+    end
+    on default:
+      send.
+    end
+  end
+
+execute
+  activate n, reader.
+  
+  $$ Lectura del arreglo.
+  while n > 0:
+    advance reader, n.
+  end
+  
+  $$ Ordenamiento (usando bubble-sort).
+  advance n.
+  while n > 0:
+    create
+      $$ Iterador para el ciclo interno.
+      int bot m
+        on activation:
+          collect.
+        end
+        on default:
+          store me - 1.
+        end
+      end  
+      
+      $$ Robot comparador.
+      int bot compare
+        on activation:
+          up. collect as x.
+          up. collect as y.
+          store x - y.
+        end
+        on me <= 0:
+          up. down.
+        end
+        on me > 0:
+          collect as x. up.
+          collect as y. drop x.
+          down. drop y.
+        end
+        on deactivation:
+          down.
+        end
+      end
+    
+    execute
+      activate m.
+      while m > 0:
+        activate compare.
+        advance compare, m.
+        deactivate compare.
+      end
+    end
+    advance n.
+  end
+  
+  $$ Impresión del arreglo ordenado.
+  advance n.
+  activate printer, space.
+  while n > 0:
+    advance printer, space, n.
+  end
+end

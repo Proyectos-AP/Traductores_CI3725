@@ -1,0 +1,42 @@
+$- fibonacci.bot:
+ - ==============
+ - Recibe un entero 'n' e imprime los primeros 'n' números de fibonacci.
+ - Autor: Ricardo Monascal, 2016
+ -$
+create
+  int bot n
+    on activation:
+      recieve.
+    end
+    on default:
+      store me - 1.
+    end
+  end
+  int bot f
+    on activation:
+      store 0.
+      send.
+      drop 0.
+      store 1.
+    end
+    on default:
+      send.
+      collect as x.
+      drop me.
+      store me + x.
+    end
+  char bot endl
+    on activation:
+      store '\n'
+    end
+    on default:
+      send.
+    end
+  end
+
+execute
+  activate n, f, endl.
+  while n > 0:
+    advance n, f, endl.
+  end
+end
