@@ -1,22 +1,22 @@
 create 
 
 int bot a,b,c,d,f,g 
-   on ~(true/\false)\/true\/~(true):
+   on true:
        read as x.
        read as p.
     end
    
     on deactivation:
-        read.
+        read as x.
     end
-
+$-
     on activation:
         collect as no.
     end
 
     on default:
         collect.
-    end
+    end -$
 
 end
 
@@ -28,18 +28,21 @@ end
 
 execute
 	activate d.
-  $- create
+   create
       int bot bot1,bot2 
       on activation:
-          store x+1.
+          store me+1.
           read as y.
       end
    end
    execute
-       deactivate bot1.
-   end
+       deactivate a.
+       if ~(2<3)/\true\/false:
+           activate bot1.
+       end
+   end 
    advance a.
-   if (a<3)\/true/\(2/=7):
-        activate b.
-   end -$   
+   if 'a'/='b':
+        activate bot1. $$ Variable no declarada
+   end    
 end

@@ -123,11 +123,10 @@ class Expr:
 
 class RaizAST(Expr):
 
-    def __init__(self,ArbolDeclaracion,ArbolInstruccion,tablaSimbolos):
+    def __init__(self,ArbolDeclaracion,ArbolInstruccion):
         self.type = "RaizAST"
         self.arbolDeclaracion = ArbolDeclaracion
         self.arbolInstruccion = ArbolInstruccion
-        self.tablaSimbolos = tablaSimbolos  
         self.sig = None
 
     def imprimirAST(self,numeroTabs):
@@ -166,15 +165,26 @@ class Execute(Expr):
         self.sig = None
 
 #------------------------------------------------------------------------------#
+#                         RAIZ LISTA DE DECLARACIONES                          #
+#------------------------------------------------------------------------------#
+
+class Inicio_Declaracion(Expr):
+    def __init__(self,ultimo,scopeAnterior,listaDeclaraciones):
+        self.padre = ultimo
+        self.scopeAnterior = scopeAnterior
+        self.listaDeclaraciones = listaDeclaraciones
+
+#------------------------------------------------------------------------------#
 #                         LISTA DE DECLARACIONES                               #
 #------------------------------------------------------------------------------#
 
 class Store(Expr):
     ''' Nodo que almacena el apuntador del arbol de expresiones de la 
         instruccion STORE'''
-    def __init__(self,listaExpresiones):
+    def __init__(self,listaExpresiones,numeroLinea):
         self.type = "STORE"
         self.expresiones = listaExpresiones
+        self.numeroLinea = numeroLinea
         self.sig = None
 
 #------------------------------------------------------------------------------#
@@ -225,9 +235,10 @@ class Send(Expr):
 
 class Movimiento(Expr):
     ''' Nodo que almacena la direccion del movimiento del robot '''
-    def __init__(self,tipo,listaExpresiones):
+    def __init__(self,tipo,listaExpresiones,numeroLinea):
         self.type = tipo
         self.expresiones = listaExpresiones
+        self.numeroLinea = numeroLinea
         self.sig = None
 
 #------------------------------------------------------------------------------#
@@ -235,18 +246,20 @@ class Movimiento(Expr):
 class Condicion(Expr):
     ''' Nodo que almacena el tipo de condicion de la lista de comportamiento 
     del robot '''
-    def __init__(self,type):
+    def __init__(self,type,numeroLinea):
         self.type = type
+        self.numeroLinea = numeroLinea
         self.sig = None
 
 #------------------------------------------------------------------------------#
 
 class ListaComportamiento(Expr):
     ''' Lista de comportamiento del robot'''
-    def __init__(self, condicion=None,instrucciones=None):
+    def __init__(self,condicion,instrucciones,numeroLinea):
         self.type = "Lista de comportamientos"
         self.condicion = condicion
         self.instrucciones = instrucciones
+        self.numeroLinea = numeroLinea
         self.sig = None
 
 #------------------------------------------------------------------------------#
@@ -410,32 +423,35 @@ class ExpresionBinaria(Expr):
         self.left = left
         self.right = right
         self.op = op
-        self.linea = linea
+        self.numeroLinea = linea
 
 #------------------------------------------------------------------------------#
 
 class OperadorUnario(Expr):
     ''' Raiz del arbol de las expresiones unarias '''
-    def __init__(self,op,value):
+    def __init__(self,op,value,numeroLinea):
         self.type = "OPERADOR_UNARIO"
         self.op = op
         self.value = value
+        self.numeroLinea = numeroLinea
 
 #------------------------------------------------------------------------------#
 
 class Number(Expr):
     ''' Nodo que almacena los numeros del programa '''
-    def __init__(self,value):
+    def __init__(self,value,numeroLinea):
         self.type = "int"
         self.value = value
+        self.numeroLinea = numeroLinea
 
 #------------------------------------------------------------------------------#
 
 class Booleano(Expr):
     ''' Nodo que almacena los booleanos del programa (true y false) '''
-    def __init__(self,value):
+    def __init__(self,value,numeroLinea):
         self.type = "bool"
         self.value = value
+        self.numeroLinea = numeroLinea
 
 #------------------------------------------------------------------------------#
 
@@ -470,9 +486,10 @@ class VariableMe(Expr):
 
 class Caracter(Expr):
     ''' Nodo que almacena los caracteres del programa '''
-    def __init__(self,value):
+    def __init__(self,value,numeroLinea):
         self.type = "char"
         self.value = value
+        self.numeroLinea = numeroLinea
 
 #------------------------------------------------------------------------------#
 
