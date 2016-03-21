@@ -9,13 +9,18 @@ create
   int bot a
     on activation:
       read.
+      collect as x.
+      drop me * x.
+      store me - 1.
+      left.
+      up.
+    end
+    on deactivation:
+      collect. send.
     end
     on default:
       collect as x.
       drop me * x.
-    end
-    on deactivation:
-      collect. send.
     end
   end
   
@@ -31,9 +36,22 @@ create
   end
 
 execute
-  activate a, b.
+  activate a,b.
   while b > 0:
     advance a, b.
   end
   deactivate a.
+
+  create
+
+      char bot c
+          on activation:
+              read.
+          end
+      end
+
+  execute
+
+      activate c,a.
+  end       
 end

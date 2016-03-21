@@ -13,7 +13,7 @@
 * Descripcion: Definicion del modulo parserBot.
 *
 *
-* Ultima modificacion: 12/02/2016
+* Ultima modificacion: 7/03/2016
 *
 '''
 
@@ -63,7 +63,7 @@ def unirListaEnlazada(lista1,lista2):
 
 #------------------------------------------------------------------------------#
 
-def CrearTablaSimbolos(ListaIdentificadores,tipoRobot):
+def CrearTablaSimbolos(ListaIdentificadores,tipoRobot,instrucciones):
 
     '''
       * Descripción de la función: Esta funcion dada una lista de identificadores.
@@ -81,6 +81,7 @@ def CrearTablaSimbolos(ListaIdentificadores,tipoRobot):
     global Ultimo
     aux = ListaIdentificadores
     Tabla = TablaSimbolos(Ultimo)
+    Tabla.instrucciones = instrucciones
     Ultimo = Tabla
 
     while (aux!=None) :
@@ -135,40 +136,6 @@ def VerificarVariableDeclarada(NodoVariable,TablaSimbolos):
 
     return Resultado
 
-# #------------------------------------------------------------------------------#
-# def VerificarVariableNoDeclarada(NodoVariable,TablaSimbolos):
-
-
-#     '''
-#       * Descripción de la función: Esta funcion une dos listas enlazadas
-#                                  dado dos apuntadores a la cabecera de las 
-#                                  mismas.
-#       * Variables de entrada: 
-#             - lista1: Apuntador a la cabecera de la primera lista enlazada
-#             - lista2: Apuntador a la cabecera de la primera lista enlazada.
-#       * Variables de salida: 
-#             - lista1: apuntador a la cabecera de la lista enlazada unida.
-#     '''
-
-#     aux = NodoVariable
-#     Existe = None
-#     Tabla = TablaSimbolos
-
-#     if (Tabla!=None):
-#         while (aux!= None):
-
-#             Existe = Tabla.padre.buscarLocal(aux.value)
-#             print("Existe",Existe)
-#             if (Existe != None):
-#                 print("Error1 de contexto en la linea",aux.numeroLinea,
-#                     ":la variable \'"+str(aux.value)+"\'" + 
-#                     " ya ha sido declarada.")
-#                 sys.exit()
-
-#             aux = aux.sig
- 
-#     return Existe
-
 #------------------------------------------------------------------------------#
 
 def VerificarVariableDeclaradaExecute(NodoVariable,TablaSimbolos):
@@ -201,7 +168,13 @@ def VerificarVariableDeclaradaExecute(NodoVariable,TablaSimbolos):
 
         while (Tabla!= None):
             
-            Resultado = Tabla.padre.buscar(aux.value)
+            Resultado,tablaEncontrada = Tabla.padre.buscar(aux.value)
+
+            if (tablaEncontrada!= None):
+                print("El valor es:",aux.value)
+                print("La tabla es:",tablaEncontrada.tabla)
+                print("El tipo de las instrucciones:",tablaEncontrada.instrucciones.type)
+
             if (Resultado == None and Tabla.scopeAnterior==None):
                 print("Error en la linea",aux.numeroLinea,
                     ":la variable \'"+str(aux.value)+"\'"+" no ha sido declarada.")
@@ -360,8 +333,8 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot):
                     if(resultado!=None):
                         
                         print("Error en linea",
-                            identificador.numeroLinea ,": redeclaracion de\
-                             variables.")
+                            identificador.numeroLinea ,": La variable \'"+
+                            str(identificador.value)+"\' ha sido redeclarada.")
                         sys.exit()
 
                     else:
@@ -490,7 +463,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                         if (Resultado[1]=="robot"):
 
                             print("Error en linea",Raiz.numeroLinea ,
-                                ": No se deben usar variables bot.")
+                                ": No se deben usar variables bot en este alcance.")
                             sys.exit()
 
                     else:
@@ -595,6 +568,7 @@ def p_inicioPrograma(t):
         t[0] = RaizAST(Create(t[2]),Execute(t[4]))
 
 
+#------------------------------------------------------------------------------#
 
 def p_inicioDeclaraciones(t):
 
@@ -610,7 +584,7 @@ def p_inicioDeclaraciones(t):
     # Se itera por todas las listas de declaraciones
     while (aux!= None):
         
-        CrearTablaSimbolos(aux.identificadores,aux.tipoRobot)
+        CrearTablaSimbolos(aux.identificadores,aux.tipoRobot,aux.listaComportamiento)
         esListaComportamiento  = 1
 
         if (aux.listaComportamiento != None):
@@ -626,6 +600,7 @@ def p_inicioDeclaraciones(t):
     t[0] = Inicio_Declaracion(Ultimo,scopeActual,t[1])
     scopeActual = t[0]
     Ultimo = None
+    
 #------------------------------------------------------------------------------#
 
 # Descripcion de la funcion: Regla para definir las declaraciones de robots.

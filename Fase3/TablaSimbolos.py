@@ -26,22 +26,16 @@
 #                             DEFINICION DE CLASE                              #
 #------------------------------------------------------------------------------#
 
-class TopeDeTablaSimbolos():
-
-	def __init__(self,padre=None,hijos=None):
-
-		self.type = "top"
-		self.padre = padre
-		self.hijos = hijos
-
-
 class TablaSimbolos():
 
-	def __init__(self,padre=None):
+	def __init__(self,padre=None,hijos=None,tipo="tablaSimbolos",instrucciones=None):
 		
-		self.type = "tablaSimbolos"
-		self.tabla = {}
 		self.padre = padre
+		self.hijos = hijos
+		self.type = tipo
+		self.instrucciones = instrucciones
+		self.tabla = {}
+		
 
 	def buscar(self,variable):
 
@@ -51,11 +45,11 @@ class TablaSimbolos():
 		while (aux!=None):
 
 			try:
-				return aux.tabla[variable]
+				return aux.tabla[variable],aux
 			except:
 				aux = aux.padre
 
-		return None
+		return None,None
 
 	def buscarLocal(self,variable):
 

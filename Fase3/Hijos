@@ -43,6 +43,6 @@ execute
    end 
    advance a.
    if 'a'/='b':
-        activate bot1. $$ Variable no declarada
+        activate b. $$ Variable no declarada
    end    
 end

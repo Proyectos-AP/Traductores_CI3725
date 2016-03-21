@@ -16,12 +16,21 @@
 * Ultima modificacion: 12/02/2016
 *
 '''
+#------------------------------------------------------------------------------#
+#                            IMPORTE DE MODULOS                                #
+#------------------------------------------------------------------------------#
+
+from TablaSimbolos import *
+import sys
 
 #------------------------------------------------------------------------------#
 #                        DEFINICION DE LA CLASE ARBOL                          #
 #------------------------------------------------------------------------------#
 
 class Expr: 
+
+    ScopeActual = None
+    ultimo = None
 
     def imprimirInstrucciones(self,numeroTabs):
         '''
@@ -145,6 +154,31 @@ class RaizAST(Expr):
             aux = self.arbolInstruccion.Instrucciones
             aux.imprimirInstrucciones(numeroTabs)
 
+    def ejecutar(self):
+
+        if (self.arbolDeclaracion!= None):
+            auxDeclaracion = self.arbolDeclaracion.listaDeclaraciones
+            auxDeclaracion.actualizarScope()
+            
+        auxInstrucciones = self.arbolInstruccion.Instrucciones
+        
+
+        while (auxInstrucciones!=None):
+            auxInstrucciones.ejecutar()
+            auxInstrucciones = auxInstrucciones.sig
+
+        ultimo = Expr.ultimo
+        while (ultimo!=None):
+            print(ultimo.tabla)
+            ultimo = ultimo.padre
+            
+
+        if (self.arbolDeclaracion!= None):
+            auxDeclaracion.devolverScope()
+    
+
+
+
 #------------------------------------------------------------------------------#
 #                      RAIZ DEL ARBOL DE DECLARACIONES                         #
 #------------------------------------------------------------------------------#
@@ -169,11 +203,25 @@ class Execute(Expr):
 #------------------------------------------------------------------------------#
 
 class Inicio_Declaracion(Expr):
+
     def __init__(self,ultimo,scopeAnterior,listaDeclaraciones):
         self.padre = ultimo
         self.scopeAnterior = scopeAnterior
         self.listaDeclaraciones = listaDeclaraciones
 
+    def actualizarScope(self):
+        Expr.ScopeActual = self
+        Expr.ultimo = self.padre
+
+    def devolverScope(self):
+        Expr.ScopeActual = self.scopeAnterior
+
+        if(self.scopeAnterior!=None):
+            Expr.ultimo = self.scopeAnterior.padre
+
+        else:
+            Expr.ultimo = None
+  
 #------------------------------------------------------------------------------#
 #                         LISTA DE DECLARACIONES                               #
 #------------------------------------------------------------------------------#
@@ -187,6 +235,9 @@ class Store(Expr):
         self.numeroLinea = numeroLinea
         self.sig = None
 
+    def ejecutar(self,tabla,VariableRobot):
+        print("store")
+
 #------------------------------------------------------------------------------#
 
 class Drop(Expr):
@@ -196,6 +247,9 @@ class Drop(Expr):
         self.type = "DROP"
         self.expresiones = listaExpresiones
         self.sig = None
+
+    def ejecutar(self,tabla,VariableRobot):
+        print("Drop")
 
 #------------------------------------------------------------------------------#
 
@@ -207,6 +261,9 @@ class Collect(Expr):
         self.identificador = identificador
         self.sig = None
 
+    def ejecutar(self,tabla,VariableRobot):
+        print("Collect")
+
 #------------------------------------------------------------------------------#
 
 class Read(Expr):
@@ -217,6 +274,59 @@ class Read(Expr):
         self.identificador = identificador
         self.sig = None
 
+    def ejecutar(self,tabla,VariableRobot):
+
+
+        entrada = input("Introduzca el valor que desea guardar: ")
+
+        if (self.identificador == None):
+
+            VariableAguardar = "me"
+        else:
+            VariableAguardar= self.identificador.value
+            
+
+        # Se verifica el tipo de la entrada
+        resultado = tabla.buscarLocal(VariableAguardar)
+        tipoRobot = resultado[0]
+
+        if(tipoRobot == "int"):
+
+            try:
+                assert(int(entrada))
+            except:
+                print("Error: Entrada \'",entrada,"\' invalida para robot de tipo",tipoRobot)
+                sys.exit()
+
+
+        elif(tipoRobot == "char"):
+
+            try:
+                assert(len(entrada)==1 or entrada in {"\\n","\\t","\\'"})
+            except:
+                print("Error: Entrada \'",entrada,"\' invalida para robot de tipo",tipoRobot)
+                sys.exit()
+
+        elif (tipoRobot == "bool"):
+
+            try:
+                assert(len(entrada) in {'true','false'})
+            except:
+                print("Error: Entrada \'",entrada,"\' invalida para robot de tipo",tipoRobot)
+                sys.exit()
+
+
+        # Se modifica el valor de la variable
+        tablaPadre = tabla.padre
+        tabla.tabla[VariableAguardar][3] = entrada
+
+        if (self.identificador != None):
+            tabla.tabla["me"][3] = entrada
+
+        tablaPadre.tabla[VariableRobot][3] = entrada
+        tablaPadre.tabla["me"][3] = entrada
+        
+
 #------------------------------------------------------------------------------#
 
 class Recieve(Expr):
@@ -224,12 +334,18 @@ class Recieve(Expr):
         self.type = "RECIEVE"
         self.sig = None
 
+    def ejecutar(self,tabla,VariableRobot):
+        print("Recieve")
+
 #------------------------------------------------------------------------------#
     
 class Send(Expr):
     def __init__(self):
         self.type = "SEND"
         self.sig = None
+
+    def ejecutar(self,tabla,VariableRobot):
+        print("Send")
 
 #------------------------------------------------------------------------------#
 
@@ -240,6 +356,9 @@ class Movimiento(Expr):
         self.expresiones = listaExpresiones
         self.numeroLinea = numeroLinea
         self.sig = None
+
+    def ejecutar(self,tabla,VariableRobot):
+        print("Movimiento")
 
 #------------------------------------------------------------------------------#
 
@@ -285,6 +404,82 @@ class Activate(Expr):
         self.Identificadores = listaIdentificadores
         self.sig = None
 
+    def verificarActivacion(self):
+
+        ident = self.Identificadores
+        ultimo = Expr.ultimo
+        scope = Expr.ScopeActual
+
+
+        while (ident!= None):
+
+            while (scope!= None):
+                resultado,tablaEncontrada = ultimo.buscar(ident.value)
+
+                if (resultado!=None):
+                    break
+
+                else:
+                    scope = scope.scopeAnterior
+                    ultimo = scope.padre
+
+            if (resultado[2] == 1):
+                print("Error en la linea",ident.numeroLinea,
+                    ": activacion ilegal del robot \'"+ident.value+"\'.")
+                sys.exit()
+
+            else:
+                tablaEncontrada.tabla[ident.value][2] = 1
+
+            resultado,tablaEncontrada = ultimo.buscar(ident.value)
+            ident = ident.sig
+
+
+
+    def ejecutar(self):
+
+        ultimo = Expr.ultimo
+        tablaLocal =  None
+        scope = Expr.ScopeActual
+        self.verificarActivacion()
+        identificador = self.Identificadores
+
+
+        while (identificador!=None):
+            print("Identificador",identificador.value)
+
+            while (scope!= None):
+                resultado, tablaEncontrada = ultimo.buscar(identificador.value)
+
+                if (resultado!=None):
+                    break
+
+                else:
+                    scope = scope.scopeAnterior
+                    ultimo = scope.padre
+
+            ListaComportamiento = tablaEncontrada.instrucciones
+
+            for i in tablaEncontrada.hijos:
+                if (i.tipo == "activation"):
+                    tablaLocal = i
+                    break
+
+
+            while (ListaComportamiento!= None):
+
+                if (ListaComportamiento.condicion.type == "activation"):
+                    aux = ListaComportamiento.instrucciones
+
+                    while (aux!= None):
+                        aux.ejecutar(tablaLocal,identificador.value)
+                        aux = aux.sig
+
+                ListaComportamiento = ListaComportamiento.sig
+
+            identificador = identificador.sig
+        
+
 #------------------------------------------------------------------------------#
 
 class Deactivate(Expr):
@@ -295,6 +490,35 @@ class Deactivate(Expr):
         self.Identificadores = listaIdentificadores
         self.sig = None
 
+    def verificarDesactivacion(self):
+
+        ident = self.Identificadores
+        ultimo = Expr.ultimo
+        tablaEncontrada = None
+
+        while (ident!= None):
+
+            resultado,tablaEncontrada = ultimo.buscar(ident.value)
+
+            if (resultado[2] == 0):
+                print("Error en la linea",ident.numeroLinea,
+                    ": desactivacion ilegal del robot \'"+ident.value+"\'.")
+                sys.exit()
+
+            else:
+                tablaEncontrada.tabla[ident.value][2] = 0
+
+            resultado,tablaEncontrada = ultimo.buscar(ident.value)
+
+            ident = ident.sig
+
+        return tablaEncontrada
+
+    def ejecutar(self):
+
+        tablaEncontrada = self.verificarDesactivacion()
+        
+
 #------------------------------------------------------------------------------#
 
 class Advance(Expr):
@@ -304,6 +528,9 @@ class Advance(Expr):
         self.type = "ADVANCE"
         self.Identificadores = listaIdentificadores
         self.sig = None
+
+    def ejecutar(self):
+        print("Advance")
 
 #------------------------------------------------------------------------------#
 
@@ -355,6 +582,9 @@ class While(Expr):
         numeroTabs+=1
         print(espacio+"-instrucciones:")
         self.InstruccionesWhile.imprimirInstrucciones(numeroTabs)
+
+    def ejecutar(self):
+        print("while")
 
 #------------------------------------------------------------------------------#
 
@@ -411,6 +641,9 @@ class Condicional(Expr):
         if(self.fracaso!=None):
             print(espacio+"-fracaso:")
             self.fracaso.imprimirInstrucciones(numeroTabs)
+
+    def ejecutar(self):
+        print("if")
 
 #------------------------------------------------------------------------------#
 #                               EXPRESIONES                                    #

@@ -5,7 +5,7 @@ $- a+b.bot:
  -$
 create
   int bot a
-    on activation:
+    on default:
       read.
       drop me.
     end
@@ -14,10 +14,10 @@ create
     on activation:
       read.
       collect as a.
-      store a + b.
+      store a + me.
       send.
     end
-
+  end
 execute
   activate a, b.
 end

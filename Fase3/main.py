@@ -4,7 +4,7 @@
 * Departamento de Computacion y Tecnologia de la Informacion
 * Traductores e Interpretadores - CI3725 (Laboratorio)
 *
-* Archivo: mainParser.py
+* Archivo: main.py
 *
 * Nombres:
 *     Alejandra Cordero / Carnet: 12-10645
@@ -13,7 +13,7 @@
 * Descripcion: Codigo principal del parser.
 *
 *
-* Ultima modificacion: 12/02/2016
+* Ultima modificacion: 6/03/2016
 *
 '''
 

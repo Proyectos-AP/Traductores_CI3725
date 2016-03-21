@@ -134,7 +134,8 @@ else:
   tokens = MiLexer.tokens 
   parser = yacc.yacc(errorlog=yacc.NullLogger())
   Raiz = parser.parse(datos,tracking=True)
-  Raiz.imprimirAST(0)
+  #Raiz.imprimirAST(0)
+  Raiz.ejecutar()
 
 
 #------------------------------------------------------------------------------#
