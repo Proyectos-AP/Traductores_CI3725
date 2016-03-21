@@ -1,12 +1,12 @@
 $- fibonacci.bot:
  - ==============
- - Recibe un entero 'n' e imprime los primeros 'n' números de fibonacci.
+ - Recibe un entero 'n' e imprime los primeros 'n' numeros de fibonacci.
  - Autor: Ricardo Monascal, 2016
  -$
 create
   int bot n
     on activation:
-      recieve.
+      read.
     end
     on default:
       store me - 1.

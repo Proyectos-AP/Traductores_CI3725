@@ -1,6 +1,6 @@
-$- sort.bot:
- - =========
- - Recibe un entero 'n' y luego 'n' enteros más, suma estos últimos los imprime.
+$- sum.bot:
+ - ========
+ - Recibe un entero 'n' y luego 'n' enteros mas, suma estos ultimos los imprime.
  - Autor: Ricardo Monascal, 2016
  -$
 create

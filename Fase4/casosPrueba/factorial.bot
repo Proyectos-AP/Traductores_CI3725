@@ -6,7 +6,7 @@ $- factorial.bot:
 create
   int bot n
     on activation:
-      recieve.
+      read.
     end
     on default:
       drop me.

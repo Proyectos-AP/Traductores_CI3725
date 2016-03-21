@@ -1,6 +1,6 @@
 $- sort.bot:
  - =========
- - Recibe un entero 'n' y luego 'n' enteros más, ordena estos últimos
+ - Recibe un entero 'n' y luego 'n' enteros mas, ordena estos ultimos
  - en orden no-decreciente y los imprime (implementa bubble-sort).
  - Autor: Ricardo Monascal, 2016
  -$
@@ -102,7 +102,7 @@ execute
     advance n.
   end
   
-  $$ Impresión del arreglo ordenado.
+  $$ Impresion del arreglo ordenado.
   advance n.
   activate printer, space.
   while n > 0:

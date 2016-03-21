@@ -1,6 +1,6 @@
 $- exp.bot:
  - ========
- - Recibe dos enteros 'a' y 'b', e imprime la exponenciación del primero (base)
+ - Recibe dos enteros 'a' y 'b', e imprime la exponenciacion del primero (base)
  - con el segundo (exponente).
  - Autor: Ricardo Monascal, 2016
  -$
