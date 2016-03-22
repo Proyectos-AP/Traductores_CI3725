@@ -167,10 +167,10 @@ class RaizAST(Expr):
             auxInstrucciones.ejecutar()
             auxInstrucciones = auxInstrucciones.sig
 
-        ultimo = Expr.ultimo
-        while (ultimo!=None):
-            print(ultimo.tabla)
-            ultimo = ultimo.padre
+        # ultimo = Expr.ultimo
+        # while (ultimo!=None):
+        #     print(ultimo.tabla)
+        #     ultimo = ultimo.padre
             
 
         if (self.arbolDeclaracion!= None):
@@ -236,7 +236,11 @@ class Store(Expr):
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
-        print("store")
+
+        tabla.tabla["me"][3] = self.expresiones.value
+        tablaPadre = tabla.padre
+        tablaPadre.tabla["me"][3] = self.expresiones.value
+        tablaPadre.tabla[VariableRobot][3] = self.expresiones.value
 
 #------------------------------------------------------------------------------#
 
@@ -345,7 +349,9 @@ class Send(Expr):
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
-        print("Send")
+
+        resultado = tabla.buscarLocal("me")
+        print(str(resultado[3][1]),end="")
 
 #------------------------------------------------------------------------------#
 
@@ -397,6 +403,7 @@ class Declaraciones(Expr):
 #------------------------------------------------------------------------------#
 
 class Activate(Expr):
+
     ''' Nodo que almacena el apuntador de la lista de identificadores de la 
         instruccion ACTIVATE '''
     def __init__(self,listaIdentificadores):
@@ -435,7 +442,6 @@ class Activate(Expr):
             ident = ident.sig
 
 
-
     def ejecutar(self):
 
         ultimo = Expr.ultimo
@@ -446,8 +452,7 @@ class Activate(Expr):
 
 
         while (identificador!=None):
-            print("Identificador",identificador.value)
-
+            
             while (scope!= None):
                 resultado, tablaEncontrada = ultimo.buscar(identificador.value)
 
@@ -459,12 +464,14 @@ class Activate(Expr):
                     ultimo = scope.padre
 
             ListaComportamiento = tablaEncontrada.instrucciones
+            tablaEncontrada.tabla["me"] = resultado
 
             for i in tablaEncontrada.hijos:
                 if (i.tipo == "activation"):
                     tablaLocal = i
                     break
 
+            tablaLocal.tabla["me"] = resultado
 
             while (ListaComportamiento!= None):
 
@@ -475,6 +482,7 @@ class Activate(Expr):
                         aux.ejecutar(tablaLocal,identificador.value)
                         aux = aux.sig
 
+                    print()
                 ListaComportamiento = ListaComportamiento.sig
 
             identificador = identificador.sig
