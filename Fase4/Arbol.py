@@ -31,6 +31,7 @@ class Expr:
 
     ScopeActual = None
     ultimo = None
+    Matriz = {}
 
     def imprimirInstrucciones(self,numeroTabs):
         '''
@@ -292,7 +293,7 @@ class Store(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
 
-        if(self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
+        if (self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
 
             variableParaAlmacenar = self.expresiones.evaluar(VariableRobot)
             print("RESULTADO EVALUACION",variableParaAlmacenar)
@@ -318,7 +319,43 @@ class Drop(Expr):
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
+
         print("Drop")
+
+        if (self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
+
+            variableParaAlmacenar = self.expresiones.evaluar(VariableRobot)
+            print("RESULTADO DROP",variableParaAlmacenar)
+
+        else:
+            variableParaAlmacenar = self.expresiones.value 
+
+        # VariableRobot = identificador.value
+        # esto es lo que tengo que cambiar yo para actualizar lo de la 
+        # matriz.
+
+        tablaPadre = tabla.padre
+        posicionRobot = tablaPadre.tabla[VariableRobot][4]
+        valorRobot = tablaPadre.tabla[VariableRobot][3]
+
+        #print("La posicion actual del robot es",posicionRobot)
+
+        # Aca se debe verificar si el robot tiene un valor asociado
+        if (valorRobot == None):
+            print("Error: El robot '" + VariableRobot + "' no tiene valor",
+                end="")
+            print(" asociado para almacenar en la posición " + 
+                str(posicionRobot))
+            print("de la Matriz.")
+            sys.exit()
+        else:
+            Expr.Matriz[posicionRobot] = valorRobot
+            print("El nuevo estado de la matriz es",Expr.Matriz)
+
+        # tabla.tabla["me"][3] = variableParaAlmacenar
+        # tablaPadre = tabla.padre
+        # tablaPadre.tabla["me"][3] = variableParaAlmacenar
+        # tablaPadre.tabla[VariableRobot][3] = variableParaAlmacenar
 
 #------------------------------------------------------------------------------#
 
