@@ -346,7 +346,6 @@ class Read(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
 
-        print("VariableRobot",VariableRobot)
         entrada = input("Introduzca el valor que desea guardar: ")
 
         if (self.identificador == None):
@@ -364,7 +363,7 @@ class Read(Expr):
 
             try:
                 assert(int(entrada) or entrada == "0")
-                #entrada = int(entrada)
+                entrada = int(entrada)
             except:
                 print("Error: Entrada \'",entrada,"\' invalida para robot de tipo",tipoRobot)
                 sys.exit()
@@ -381,7 +380,7 @@ class Read(Expr):
         elif (tipoRobot == "bool"):
 
             try:
-                assert(len(entrada) in {'true','false'})
+                assert(entrada in {'true','false'})
             except:
                 print("Error: Entrada \'",entrada,"\' invalida para robot de tipo",tipoRobot)
                 sys.exit()
@@ -573,7 +572,6 @@ class Activate(Expr):
 
                 ListaComportamiento = ListaComportamiento.sig
 
-            print()
             if (comportamientoEncontrado == 0):
                 print("Error: Comportamiento activation no encontrado.")
                 sys.exit()
@@ -663,7 +661,6 @@ class Deactivate(Expr):
 
                 ListaComportamiento = ListaComportamiento.sig
 
-            print()
             if (comportamientoEncontrado == 0):
                 print("Error: Comportamiento deactivation no encontrado.")
                 sys.exit()
@@ -813,7 +810,6 @@ class Condicional(Expr):
     def ejecutar(self):
 
         resultado = self.expresionesCondicional.evaluar(None)
-        print("RESULTADO",resultado)
         aux = None
         if (resultado == True):
             aux = self.exito
@@ -897,7 +893,15 @@ class OperadorUnario(Expr):
         self.numeroLinea = numeroLinea
 
     def evaluar(self,VariableRobot):
-        return 100
+
+        resultado = self.value.evaluar(VariableRobot)
+
+        if (self.op == "-"):
+            return (- resultado)
+
+        elif (self.op == "~"):
+            return not(resultado)
+
 
 
 #------------------------------------------------------------------------------#
@@ -929,7 +933,7 @@ class Booleano(Expr):
 
         if (resultado == "true"):
             return True
-        else:
+        elif (resultado == "false"):
             return False
 
 #------------------------------------------------------------------------------#
@@ -979,7 +983,6 @@ class VariableMe(Expr):
     def evaluar(self,VariableRobot):
 
         result,tabla = self.buscar(VariableRobot)
-        print("El result es:",result)
         tipo = result[0]
         resultado = result[3]
 
@@ -991,7 +994,7 @@ class VariableMe(Expr):
 
                 if (resultado == "true"):
                     return True
-                else:
+                if (resultado == "false"):
                     return False
 
             elif (tipo == "char"):
