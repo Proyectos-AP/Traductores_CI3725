@@ -345,11 +345,11 @@ class Drop(Expr):
             print("Error: El robot '" + VariableRobot + "' no tiene valor",
                 end="")
             print(" asociado para almacenar en la posición " + 
-                str(posicionRobot))
+                str(tuple(posicionRobot)))
             print("de la Matriz.")
             sys.exit()
         else:
-            Expr.Matriz[posicionRobot] = valorRobot
+            Expr.Matriz[tuple(posicionRobot)] = valorRobot
             print("El nuevo estado de la matriz es",Expr.Matriz)
 
         # tabla.tabla["me"][3] = variableParaAlmacenar
@@ -485,6 +485,55 @@ class Movimiento(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
         print("Movimiento")
+
+        # Verificar si hay una expresion presente, sino mover uno
+        # Actualizar la posicion del robot en su variable 
+
+        # aca hay que verificar que sea una expresion numerica 
+        # no se si eso se hacia de antes 
+
+        if (self.expresiones != None):
+
+            if (self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
+
+                numeroPasos = self.expresiones.evaluar(VariableRobot)
+
+                if (numeroPasos < 0 or not(isinstance(numeroPasos,int))):
+                    print("Error: La expresión calculada para realizar el" +
+                        "movimiento del robot" + VariableRobot + " no es válida.")
+                    sys.exit()
+
+        else:
+            numeroPasos = 1
+
+        print("RESULTADO MOVIMIENTO",numeroPasos)
+
+        # VariableRobot = identificador.value
+
+        tablaPadre = tabla.padre
+        posicionAnteriorRobot = tablaPadre.tabla[VariableRobot][4]
+
+        print("La posicion anterior del robot es",posicionAnteriorRobot)
+
+        # Se actualiza la posición del robot:
+
+        if (self.type == "up"):
+
+            tablaPadre.tabla[VariableRobot][4][1] += numeroPasos
+
+        elif (self.type == "down"):
+
+            tablaPadre.tabla[VariableRobot][4][1] -= numeroPasos
+
+        elif (self.type == "left"):
+
+            tablaPadre.tabla[VariableRobot][4][0] -= numeroPasos
+
+        elif (self.type == "right"):
+
+            tablaPadre.tabla[VariableRobot][4][0] += numeroPasos
+
+        print("La nueva posicion del robot es", tablaPadre.tabla[VariableRobot][4])
 
 #------------------------------------------------------------------------------#
 

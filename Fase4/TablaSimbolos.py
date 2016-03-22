@@ -58,7 +58,7 @@ class TablaSimbolos():
 		except:
 			return None
 
-	def insertar(self,variable,tipo,valorAsociado=None,activado=0,valor=None,coordenada=(0,0)):
+	def insertar(self,variable,tipo,valorAsociado=None,activado=0,valor=None,coordenada=[0,0]):
 
 		if self.buscarLocal(variable) == None:
 			self.tabla[variable] = [tipo,valorAsociado,activado,valor,coordenada]
