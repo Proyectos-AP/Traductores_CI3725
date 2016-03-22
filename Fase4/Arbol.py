@@ -196,6 +196,8 @@ class Expr:
 
         return mismoTipo
 
+
+
 #------------------------------------------------------------------------------#
 #                               RAIZ DEL AST                                   #
 #------------------------------------------------------------------------------#
@@ -669,7 +671,6 @@ class Activate(Expr):
             resultado,tablaEncontrada = ultimo.buscar(ident.value)
             ident = ident.sig
 
-
     def ejecutar(self):
 
         ultimo = Expr.ultimo
@@ -822,11 +823,88 @@ class Advance(Expr):
     def __init__(self,listaIdentificadores):
         self.type = "ADVANCE"
         self.Identificadores = listaIdentificadores
+
         self.sig = None
+
+    def verificarActivacion(self):
+
+        ident = self.Identificadores
+        ultimo = Expr.ultimo
+        scope = Expr.ScopeActual
+
+        while (ident!= None):
+
+            while (scope!= None):
+                resultado,tablaEncontrada = ultimo.buscar(ident.value)
+
+                if (resultado!=None):
+                    break
+
+                else:
+                    scope = scope.scopeAnterior
+                    ultimo = scope.padre
+
+            if (resultado[2] == 0):
+                print("Error en la línea " + str(ident.numeroLinea) +
+                    ": el robot \'"+ident.value+"\' no está activado.")
+                sys.exit()
 
     def ejecutar(self):
         print("Advance")
 
+        ultimo = Expr.ultimo
+        tablaLocal =  None
+        scope = Expr.ScopeActual
+        # Los robots que se avanzaran deben estar activados:
+        self.verificarActivacion()
+        identificador = self.Identificadores
+
+        # while (identificador!=None):
+
+        #     comportamientoEncontrado = 0
+
+        #     while (scope!= None):
+        #         resultado, tablaEncontrada = ultimo.buscar(identificador.value)
+
+        #         if (resultado!=None):
+        #             break
+
+        #         else:
+        #             scope = scope.scopeAnterior
+        #             ultimo = scope.padre
+
+        #     ListaComportamiento = tablaEncontrada.instrucciones
+        #     tablaEncontrada.tabla["me"] = resultado
+
+        #     for i in tablaEncontrada.hijos:
+        #         if (i.tipo == "deactivation"):
+        #             tablaLocal = i
+        #             break
+
+        #     if (tablaLocal != None):
+        #         tablaLocal.tabla["me"] = resultado
+
+        #     while (ListaComportamiento!= None):
+
+        #         if (ListaComportamiento.condicion.type == "deactivation"):
+
+        #             aux = ListaComportamiento.instrucciones
+        #             comportamientoEncontrado = 1
+        #             while (aux!= None):
+        #                 aux.ejecutar(tablaLocal,identificador.value)
+        #                 aux = aux.sig
+
+        #             break
+
+        #         ListaComportamiento = ListaComportamiento.sig
+
+        #     if (comportamientoEncontrado == 0):
+        #         print("Error: Comportamiento para Advance no encontrado.")
+        #         sys.exit()
+
+
+        #     identificador = identificador.sig
+        
 #------------------------------------------------------------------------------#
 
 class While(Expr):
