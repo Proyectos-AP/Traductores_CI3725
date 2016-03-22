@@ -378,6 +378,7 @@ def VerificarInstrucciones(ArbolInstrucciones):
     numDeactivations = 0
     numDeafault = 0
 
+    # Verificacion antes de encontrar un default
     while (aux!=None):
 
         if (aux.condicion.type=="activation"):
@@ -398,12 +399,38 @@ def VerificarInstrucciones(ArbolInstrucciones):
             sys.exit()
 
         # Se verifica si default es la ultima condicion
-        if(aux.condicion.type=="default" and aux.sig!= None):
+        if(aux.condicion.type=="default"):
+            numDeafault-=1
+            break
+            
+        aux = aux.sig
+
+    # Verificacion despues de encontrar un default
+    while (aux!=None):
+
+        if (aux.condicion.type=="activation"):
+            numActivations+=1
+
+        elif (aux.condicion.type=="deactivation"):
+            numDeactivations+=1
+
+        elif (aux.condicion.type == "default"):
+            numDeafault+=1
+
+        else:
             print("Error en linea",aux.numeroLinea,
                 ": El comportamiento default debe ir al final de los", 
-                "comportamientos.")
+                "comportamientos de avance.")
             sys.exit()
-            
+
+        # Se verifica si hay mas de una condicion: activation, deactivation o
+        # default.
+        if(numActivations>1 or numDeactivations>1 or numDeafault>1):
+            print("Error en linea",aux.numeroLinea,
+                ": No se puede utilizar el comportamiento activation,",
+                "deactivation o default mas de una vez.")
+            sys.exit()
+
         aux = aux.sig
 
 
