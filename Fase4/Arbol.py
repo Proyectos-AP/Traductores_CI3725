@@ -126,6 +126,40 @@ class Expr:
             else:
                 print(espacio+"-expresion:",self.value)
 
+    def buscar(self,identificador):
+
+        ultimo = Expr.ultimo
+        scope = Expr.ScopeActual
+        ident = identificador
+
+        # while (ident!= None):
+
+        #     while (scope!= None):
+        #         print("VALOR A BUSCAR",ident.value)
+        #         resultado,tablaEncontrada = ultimo.buscar(ident.value)
+
+        #         if (resultado!=None):
+        #             return resultado,tablaEncontrada
+        #             break
+
+        #         else:
+        #             scope = scope.scopeAnterior
+        #             ultimo = scope.padre
+
+        #     ident = ident.sig
+
+        while (scope!= None):
+            print("VALOR A BUSCAR",ident)
+            resultado,tablaEncontrada = ultimo.buscar(ident)
+
+            if (resultado!=None):
+                return resultado,tablaEncontrada
+                break
+
+            else:
+                scope = scope.scopeAnterior
+                ultimo = scope.padre
+
 #------------------------------------------------------------------------------#
 #                               RAIZ DEL AST                                   #
 #------------------------------------------------------------------------------#
@@ -237,10 +271,24 @@ class Store(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
 
-        tabla.tabla["me"][3] = self.expresiones.value
+        if(self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
+
+            variableParaAlmacenar = self.expresiones.evaluar(VariableRobot)
+            print("RESULTADO EVALUACION",variableParaAlmacenar)
+
+        else:
+            variableParaAlmacenar = self.expresiones.value 
+
+
+        print
+        tabla.tabla["me"][3] = variableParaAlmacenar
         tablaPadre = tabla.padre
-        tablaPadre.tabla["me"][3] = self.expresiones.value
-        tablaPadre.tabla[VariableRobot][3] = self.expresiones.value
+        tablaPadre.tabla["me"][3] = variableParaAlmacenar
+        tablaPadre.tabla[VariableRobot][3] = variableParaAlmacenar
+
+        print("Tabla hijo",tabla.tabla)
+        print("Tabla padre",tablaPadre.tabla)
+
 
 #------------------------------------------------------------------------------#
 
@@ -271,6 +319,7 @@ class Collect(Expr):
 #------------------------------------------------------------------------------#
 
 class Read(Expr):
+
     ''' Nodo que almacena el apuntador de la lista de identificadores de la 
         instruccion READ '''
     def __init__(self,identificador):
@@ -297,7 +346,8 @@ class Read(Expr):
         if(tipoRobot == "int"):
 
             try:
-                assert(int(entrada))
+                assert(int(entrada) or entrada == "0")
+                #entrada = int(entrada)
             except:
                 print("Error: Entrada \'",entrada,"\' invalida para robot de tipo",tipoRobot)
                 sys.exit()
@@ -355,7 +405,7 @@ class Send(Expr):
         tipoVariable = resultado[0]
 
         if (tipoVariable == "char"):
-            
+
             if (valor == "\'\\n\'"):
                 print()
             elif (valor == "\'\\t\'"):
@@ -549,7 +599,7 @@ class Deactivate(Expr):
         ultimo = Expr.ultimo
         tablaLocal =  None
         scope = Expr.ScopeActual
-        self.verificarActivacion()
+        self.verificarDesactivacion()
         identificador = self.Identificadores
 
 
@@ -666,7 +716,23 @@ class While(Expr):
         self.InstruccionesWhile.imprimirInstrucciones(numeroTabs)
 
     def ejecutar(self):
-        print("while")
+
+        resultado = self.expresiones.evaluar()
+
+        if (resultado == True):
+            while True:
+                aux = self.InstruccionesWhile
+                
+                while (aux!=None):
+                    aux.ejecutar()
+                    aux = aux.sig
+
+                resultado = self.expresiones.evaluar()
+
+                if (resultado != True):
+                    break
+
+                    
 
 #------------------------------------------------------------------------------#
 
@@ -725,7 +791,19 @@ class Condicional(Expr):
             self.fracaso.imprimirInstrucciones(numeroTabs)
 
     def ejecutar(self):
-        print("if")
+
+        resultado = self.expresionesCondicional.evaluar()
+        if (resultado == True):
+            aux = self.exito
+
+        else:
+            if (self.fracaso != None):
+                aux = self.fracaso
+
+        while (aux != None):
+            aux.ejecutar()
+            aux = aux.sig
+
 
 #------------------------------------------------------------------------------#
 #                               EXPRESIONES                                    #
@@ -740,6 +818,52 @@ class ExpresionBinaria(Expr):
         self.op = op
         self.numeroLinea = linea
 
+    def evaluar(self,VariableRobot):
+
+      
+        resultadoIzq = self.left.evaluar(VariableRobot)
+        resultadoDer = self.right.evaluar(VariableRobot)
+        
+        if (self.op == "+"):
+            return resultadoIzq + resultadoDer
+
+        elif (self.op == "-"):
+            return resultadoIzq - resultadoDer
+
+        elif (self.op == "/"): 
+            return resultadoIzq / resultadoDer
+
+        elif (self.op == "*"):
+            return resultadoIzq * resultadoDer
+
+        elif (self.op == "%"):
+            return resultadoIzq % resultadoDer
+
+        elif (self.op == "<"):
+            return resultadoIzq < resultadoDer
+
+        elif (self.op == ">"):
+            return resultadoIzq > resultadoDer
+
+        elif (self.op == "/="):
+            return resultadoIzq != resultadoDer
+
+        elif (self.op == "="):
+            return resultadoIzq == resultadoDer
+
+        elif (self.op == "<="):
+            return resultadoIzq <= resultadoDer
+
+        elif (self.op == ">="): 
+            return resultadoIzq >= resultadoDer
+
+        elif (self.op == "/\\"):
+            return resultadoIzq and resultadoDer
+
+        elif (self.op == "\\/"):
+            return resultadoIzq or resultadoDer
+
+    
 #------------------------------------------------------------------------------#
 
 class OperadorUnario(Expr):
@@ -750,6 +874,10 @@ class OperadorUnario(Expr):
         self.value = value
         self.numeroLinea = numeroLinea
 
+    def evaluar(self,VariableRobot):
+        return 100
+
+
 #------------------------------------------------------------------------------#
 
 class Number(Expr):
@@ -759,6 +887,11 @@ class Number(Expr):
         self.value = value
         self.numeroLinea = numeroLinea
 
+    def evaluar(self,VariableRobot):
+
+        resultado = self.value
+        return int(resultado)
+
 #------------------------------------------------------------------------------#
 
 class Booleano(Expr):
@@ -767,6 +900,15 @@ class Booleano(Expr):
         self.type = "bool"
         self.value = value
         self.numeroLinea = numeroLinea
+
+    def evaluar(self,VariableRobot):
+
+        resultado = self.value
+
+        if (resultado == "true"):
+            return True
+        else:
+            return False
 
 #------------------------------------------------------------------------------#
 
@@ -778,15 +920,30 @@ class Identificadores(Expr):
         self.numeroLinea = linea
         self.sig = None
 
-#------------------------------------------------------------------------------#
+    def evaluar(self,VariableRobot):
 
-class Lista(Expr):
-    ''' Nodo que almacena los identificadores del programa '''
-    def __init__(self,cond,instr):
-        self.type = "lista"
-        self.condicion = cond
-        self.instrucciones = instr
-        self.sig = None
+        result,tabla = self.buscar(VariableRobot)
+        tipo = result[0]
+        resultado = result[3]
+
+        if (resultado != None):
+            if (tipo== "int"):
+                return int(resultado)
+
+            elif (tipo == "bool"):
+
+                if (resultado == "true"):
+                    return True
+                else:
+                    return False
+
+            elif (tipo == "char"):
+                return resultado
+
+        else:
+            print("Error en la linea",self.numeroLinea,": la variable \'"
+                +self.value+"\' no tiene valor asociado")
+
 #------------------------------------------------------------------------------#
 
 class VariableMe(Expr):
@@ -797,6 +954,31 @@ class VariableMe(Expr):
         self.numeroLinea = linea
         self.sig = None
 
+    def evaluar(self,VariableRobot):
+
+        result,tabla = self.buscar(VariableRobot)
+        print("El result es:",result)
+        tipo = result[0]
+        resultado = result[3]
+
+        if (resultado != None):
+            if (tipo== "int"):
+                return int(resultado)
+
+            elif (tipo == "bool"):
+
+                if (resultado == "true"):
+                    return True
+                else:
+                    return False
+
+            elif (tipo == "char"):
+                return resultado
+
+        else:
+            print("Error en la linea",self.numeroLinea,": la variable \'"
+                +self.value+"\' no tiene valor asociado")
+
 #------------------------------------------------------------------------------#
 
 class Caracter(Expr):
@@ -805,6 +987,13 @@ class Caracter(Expr):
         self.type = "char"
         self.value = value
         self.numeroLinea = numeroLinea
+
+    def evaluar(self):
+
+        resultado = self.value
+        return resultado
+
+
 
 #------------------------------------------------------------------------------#
 
