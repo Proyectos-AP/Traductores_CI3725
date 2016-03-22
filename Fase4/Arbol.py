@@ -452,7 +452,9 @@ class Activate(Expr):
 
 
         while (identificador!=None):
-            
+
+            comportamientoEncontrado = 0
+
             while (scope!= None):
                 resultado, tablaEncontrada = ultimo.buscar(identificador.value)
 
@@ -471,19 +473,27 @@ class Activate(Expr):
                     tablaLocal = i
                     break
 
-            tablaLocal.tabla["me"] = resultado
+            if (tablaLocal != None):
+                tablaLocal.tabla["me"] = resultado
 
             while (ListaComportamiento!= None):
 
                 if (ListaComportamiento.condicion.type == "activation"):
                     aux = ListaComportamiento.instrucciones
-
+                    comportamientoEncontrado = 1
                     while (aux!= None):
                         aux.ejecutar(tablaLocal,identificador.value)
                         aux = aux.sig
 
-                    print()
+                    break
+
                 ListaComportamiento = ListaComportamiento.sig
+
+            print()
+            if (comportamientoEncontrado == 0):
+                print("Error: Comportamiento activation no encontrado.")
+                sys.exit()
+
 
             identificador = identificador.sig
         
