@@ -351,7 +351,20 @@ class Send(Expr):
     def ejecutar(self,tabla,VariableRobot):
 
         resultado = tabla.buscarLocal("me")
-        print(str(resultado[3][1]),end="")
+        valor = resultado[3]
+        tipoVariable = resultado[0]
+
+        if (tipoVariable == "char"):
+            
+            if (valor == "\'\\n\'"):
+                print()
+            elif (valor == "\'\\t\'"):
+                print("    ")
+            else:
+                print(str(valor[1]),end="")
+        else:
+            print(valor[1],end="")
+
 
 #------------------------------------------------------------------------------#
 
@@ -527,14 +540,65 @@ class Deactivate(Expr):
                 tablaEncontrada.tabla[ident.value][2] = 0
 
             resultado,tablaEncontrada = ultimo.buscar(ident.value)
-
             ident = ident.sig
 
         return tablaEncontrada
 
     def ejecutar(self):
 
-        tablaEncontrada = self.verificarDesactivacion()
+        ultimo = Expr.ultimo
+        tablaLocal =  None
+        scope = Expr.ScopeActual
+        self.verificarActivacion()
+        identificador = self.Identificadores
+
+
+        while (identificador!=None):
+
+            comportamientoEncontrado = 0
+
+            while (scope!= None):
+                resultado, tablaEncontrada = ultimo.buscar(identificador.value)
+
+                if (resultado!=None):
+                    break
+
+                else:
+                    scope = scope.scopeAnterior
+                    ultimo = scope.padre
+
+            ListaComportamiento = tablaEncontrada.instrucciones
+            tablaEncontrada.tabla["me"] = resultado
+
+            for i in tablaEncontrada.hijos:
+                if (i.tipo == "deactivation"):
+                    tablaLocal = i
+                    break
+
+            if (tablaLocal != None):
+                tablaLocal.tabla["me"] = resultado
+
+            while (ListaComportamiento!= None):
+
+                if (ListaComportamiento.condicion.type == "deactivation"):
+
+                    aux = ListaComportamiento.instrucciones
+                    comportamientoEncontrado = 1
+                    while (aux!= None):
+                        aux.ejecutar(tablaLocal,identificador.value)
+                        aux = aux.sig
+
+                    break
+
+                ListaComportamiento = ListaComportamiento.sig
+
+            print()
+            if (comportamientoEncontrado == 0):
+                print("Error: Comportamiento deactivation no encontrado.")
+                sys.exit()
+
+
+            identificador = identificador.sig
         
 
 #------------------------------------------------------------------------------#

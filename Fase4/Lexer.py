@@ -187,7 +187,7 @@ class Lexer():
 	# toma caracteres encerrados entre comillas simples.
 	def t_TkCaracter(self,t):
 
-		r'\'.\''
+		r'\'.\'| \'\\n\'| \'\\t\' '
 		return t
 
 #------------------------------------------------------------------------------#
