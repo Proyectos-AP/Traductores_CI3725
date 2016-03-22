@@ -158,7 +158,29 @@ class Expr:
 
             else:
                 scope = scope.scopeAnterior
-                ultimo = scope.padre
+                if (scope != None):
+                    ultimo = scope.padre
+
+    def busqueda(self):
+
+        ultimo = Expr.ultimo
+        scope = Expr.ScopeActual
+        ident = self
+
+        while (ident!= None):
+
+            while (scope!= None):
+                resultado,tablaEncontrada = ultimo.buscar(ident.value)
+
+                if (resultado!=None):
+                    return resultado,tablaEncontrada
+                    break
+
+                else:
+                    scope = scope.scopeAnterior
+                    ultimo = scope.padre
+
+            ident = ident.sig
 
 #------------------------------------------------------------------------------#
 #                               RAIZ DEL AST                                   #
@@ -201,10 +223,9 @@ class RaizAST(Expr):
             auxInstrucciones.ejecutar()
             auxInstrucciones = auxInstrucciones.sig
 
-        # ultimo = Expr.ultimo
-        # while (ultimo!=None):
-        #     print(ultimo.tabla)
-        #     ultimo = ultimo.padre
+        ultimo = Expr.ultimo
+        while (ultimo!=None):
+            ultimo = ultimo.padre
             
 
         if (self.arbolDeclaracion!= None):
@@ -280,14 +301,10 @@ class Store(Expr):
             variableParaAlmacenar = self.expresiones.value 
 
 
-        print
         tabla.tabla["me"][3] = variableParaAlmacenar
         tablaPadre = tabla.padre
         tablaPadre.tabla["me"][3] = variableParaAlmacenar
         tablaPadre.tabla[VariableRobot][3] = variableParaAlmacenar
-
-        print("Tabla hijo",tabla.tabla)
-        print("Tabla padre",tablaPadre.tabla)
 
 
 #------------------------------------------------------------------------------#
@@ -329,7 +346,7 @@ class Read(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
 
-
+        print("VariableRobot",VariableRobot)
         entrada = input("Introduzca el valor que desea guardar: ")
 
         if (self.identificador == None):
@@ -410,10 +427,14 @@ class Send(Expr):
                 print()
             elif (valor == "\'\\t\'"):
                 print("    ")
-            else:
+
+            elif (len(valor)>1):
                 print(str(valor[1]),end="")
+
+            else:
+                print(valor,end="")
         else:
-            print(valor[1],end="")
+            print(valor,end="")
 
 
 #------------------------------------------------------------------------------#
@@ -717,17 +738,16 @@ class While(Expr):
 
     def ejecutar(self):
 
-        resultado = self.expresiones.evaluar()
+        resultado = self.expresiones.evaluar(None)
 
         if (resultado == True):
             while True:
                 aux = self.InstruccionesWhile
-                
                 while (aux!=None):
                     aux.ejecutar()
                     aux = aux.sig
 
-                resultado = self.expresiones.evaluar()
+                resultado = self.expresiones.evaluar(None)
 
                 if (resultado != True):
                     break
@@ -792,7 +812,9 @@ class Condicional(Expr):
 
     def ejecutar(self):
 
-        resultado = self.expresionesCondicional.evaluar()
+        resultado = self.expresionesCondicional.evaluar(None)
+        print("RESULTADO",resultado)
+        aux = None
         if (resultado == True):
             aux = self.exito
 
@@ -922,7 +944,7 @@ class Identificadores(Expr):
 
     def evaluar(self,VariableRobot):
 
-        result,tabla = self.buscar(VariableRobot)
+        result,tabla = self.busqueda()
         tipo = result[0]
         resultado = result[3]
 
