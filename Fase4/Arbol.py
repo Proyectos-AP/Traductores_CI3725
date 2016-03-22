@@ -508,6 +508,12 @@ class Send(Expr):
 
         resultado = tabla.buscarLocal("me")
         valor = resultado[3]
+
+        if (valor == None):
+            print("Error: El robot '" + VariableRobot + "' no tiene valor"
+                 +  " asociado para imprimir en pantalla.")
+            sys.exit()
+
         tipoVariable = resultado[0]
 
         if (tipoVariable == "char"):
