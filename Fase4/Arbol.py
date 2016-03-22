@@ -183,6 +183,19 @@ class Expr:
 
             ident = ident.sig
 
+    def verificarTipos(self,tipo,elemento):
+
+        mismoTipo = False
+
+        if (tipo == "int" and  isinstance(elemento,int)):
+            mismoTipo = True
+        elif (tipo == "bool" and isinstance(elemento,bool)):
+            mismoTipo = True
+        elif (tipo == "char" and isinstance(elemento,str) and len(elemento) == 1):
+            mismoTipo = True
+
+        return mismoTipo
+
 #------------------------------------------------------------------------------#
 #                               RAIZ DEL AST                                   #
 #------------------------------------------------------------------------------#
@@ -320,37 +333,33 @@ class Drop(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
 
-        print("Drop")
+        tablaPadre = tabla.padre
+        posicionRobot = tablaPadre.tabla[VariableRobot][4]
 
         if (self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
 
             variableParaAlmacenar = self.expresiones.evaluar(VariableRobot)
-            print("RESULTADO DROP",variableParaAlmacenar)
+            #print("RESULTADO DROP",variableParaAlmacenar)
 
         else:
-            variableParaAlmacenar = self.expresiones.value 
+            variableParaAlmacenar = self.expresiones.value
 
-        # VariableRobot = identificador.value
-        # esto es lo que tengo que cambiar yo para actualizar lo de la 
-        # matriz.
+            if (variableParaAlmacenar == "me"):
 
-        tablaPadre = tabla.padre
-        posicionRobot = tablaPadre.tabla[VariableRobot][4]
-        valorRobot = tablaPadre.tabla[VariableRobot][3]
+                # Se debe verificar si el robot tenia un valor asociado o no:
 
-        #print("La posicion actual del robot es",posicionRobot)
+                variableParaAlmacenar = tablaPadre.tabla[VariableRobot][3]
 
-        # Aca se debe verificar si el robot tiene un valor asociado
-        if (valorRobot == None):
-            print("Error: El robot '" + VariableRobot + "' no tiene valor",
-                end="")
-            print(" asociado para almacenar en la posición " + 
-                str(tuple(posicionRobot)))
-            print("de la Matriz.")
-            sys.exit()
-        else:
-            Expr.Matriz[tuple(posicionRobot)] = valorRobot
-            print("El nuevo estado de la matriz es",Expr.Matriz)
+                if (variableParaAlmacenar == None):
+                    print("Error: El robot '" + VariableRobot + "' no tiene valor",
+                        end="")
+                    print(" asociado para almacenar en la posición " + 
+                        str(tuple(posicionRobot)))
+                    print("de la Matriz.")
+                    sys.exit()
+
+        Expr.Matriz[tuple(posicionRobot)] = variableParaAlmacenar
+        #print("El nuevo estado de la matriz es",Expr.Matriz)
 
         # tabla.tabla["me"][3] = variableParaAlmacenar
         # tablaPadre = tabla.padre
@@ -368,7 +377,51 @@ class Collect(Expr):
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
-        print("Collect")
+
+        # Se busca la posición actual del robot:
+        tablaPadre = tabla.padre
+        posicionRobot = tablaPadre.tabla[VariableRobot][4]
+        identificadorPresente = False
+
+        # Se verifica si hay un identificador:
+        if (self.identificador != None):
+            # Si hay presente un identificador, el tipo de este debe
+            # coincidir con el tipo del robot:
+            #print("El identificador es",self.identificador.value)
+            identificadorPresente = True
+            variableParaActualizar = self.identificador.value
+            tipoVariableParaActualizar = tabla.tabla[variableParaActualizar][0]
+
+        else:
+            variableParaActualizar = VariableRobot
+            tipoVariableParaActualizar = tablaPadre.tabla[variableParaActualizar][0]
+
+        if (not(tuple(posicionRobot) in Expr.Matriz)):
+            print("Error: La posición " + str(tuple(posicionRobot)) + 
+                " de la Matriz no tiene valor almacenado para hacer collect.")
+            sys.exit()
+        else:
+            # Se verifica que el tipo del elemento de la matriz coincida 
+            # con el tipo de elemento a actualizar (valor robot / variable):
+            valorMatriz = Expr.Matriz[tuple(posicionRobot)]
+            if (not(self.verificarTipos(tipoVariableParaActualizar,valorMatriz))):
+                print("Error: El elemento almacenado en la posición " + 
+                    str(tuple(posicionRobot)) + 
+                " de la Matriz no corresponde con el tipo del robot '" +
+                VariableRobot +"'.")
+                sys.exit()
+            else:
+
+                if (identificadorPresente):
+                    tabla.tabla[variableParaActualizar][3] = valorMatriz
+                    #print("La tabla actualizada es",tabla.tabla)
+                else:
+                    # Se actualiza el valor del robot:
+                    tabla.tabla["me"][3] = valorMatriz
+                    tablaPadre.tabla["me"][3] = valorMatriz
+                    tablaPadre.tabla[VariableRobot][3] = valorMatriz
+
+        #("EL ROBOT ACTUALIZADO ES",tablaPadre.tabla[VariableRobot])
 
 #------------------------------------------------------------------------------#
 
@@ -484,7 +537,7 @@ class Movimiento(Expr):
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
-        print("Movimiento")
+        #print("Movimiento")
 
         # Verificar si hay una expresion presente, sino mover uno
         # Actualizar la posicion del robot en su variable 
@@ -506,14 +559,14 @@ class Movimiento(Expr):
         else:
             numeroPasos = 1
 
-        print("RESULTADO MOVIMIENTO",numeroPasos)
+        # print("RESULTADO MOVIMIENTO",numeroPasos)
 
         # VariableRobot = identificador.value
 
         tablaPadre = tabla.padre
         posicionAnteriorRobot = tablaPadre.tabla[VariableRobot][4]
 
-        print("La posicion anterior del robot es",posicionAnteriorRobot)
+        #print("La posicion anterior del robot es",posicionAnteriorRobot)
 
         # Se actualiza la posición del robot:
 
@@ -533,7 +586,7 @@ class Movimiento(Expr):
 
             tablaPadre.tabla[VariableRobot][4][0] += numeroPasos
 
-        print("La nueva posicion del robot es", tablaPadre.tabla[VariableRobot][4])
+        #print("La nueva posicion del robot es", tablaPadre.tabla[VariableRobot][4])
 
 #------------------------------------------------------------------------------#
 
