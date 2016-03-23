@@ -1,12 +1,10 @@
-$- sum.bot:
- - ========
+$- sort.bot:
+ - =========
  - Recibe un entero 'n' y luego 'n' enteros mas, suma estos ultimos los imprime.
  - Autor: Ricardo Monascal, 2016
  -$
 create
   $$ Robot contador.
-  
-  int bot pepe end
   int bot n
     on activation:
       read.
@@ -24,7 +22,7 @@ create
     end
     on default:
       read as next.
-      store 5/0.
+      store me + next.
     end
     on deactivation:
       send.
@@ -33,7 +31,7 @@ create
 
 execute
   activate n, adder.
-  while pepe > 0:
+  while n > 0:
     advance adder, n.
   end
   deactivate adder.
