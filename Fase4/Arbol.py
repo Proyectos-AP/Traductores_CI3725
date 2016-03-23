@@ -313,8 +313,21 @@ class Store(Expr):
             variableParaAlmacenar = self.expresiones.evaluar(VariableRobot,tabla)
 
         else:
-            variableParaAlmacenar = self.expresiones.value
-            
+
+            if (self.expresiones.type == "me"):
+
+                resultado, tablaEncontrada = self.buscar(VariableRobot)
+                variableParaAlmacenar = resultado[3]
+
+                # La variable me no tiene un valor asociado
+                if (variableParaAlmacenar == None):
+                    print("Error en la linea",self.expresiones.numeroLinea,
+                        ": la variable \'"+self.expresiones.value+
+                        "\' no tiene valor asociado.")
+                    sys.exit()
+
+            else:
+                variableParaAlmacenar = self.expresiones.value
 
         # print("Voy a guardar el valor",variableParaAlmacenar,"en la tabla",tabla.tabla,"con el robot",VariableRobot)
         tabla.tabla["me"][3] = variableParaAlmacenar
@@ -684,8 +697,6 @@ class Activate(Expr):
 
         while (identificador!=None):
 
-            comportamientoEncontrado = 0
-
             while (scope!= None):
                 resultado, tablaEncontrada = ultimo.buscar(identificador.value)
 
@@ -711,7 +722,6 @@ class Activate(Expr):
 
                 if (ListaComportamiento.condicion.type == "activation"):
                     aux = ListaComportamiento.instrucciones
-                    comportamientoEncontrado = 1
                     while (aux!= None):
                         aux.ejecutar(tablaLocal,identificador.value)
                         aux = aux.sig
@@ -719,11 +729,6 @@ class Activate(Expr):
                     break
 
                 ListaComportamiento = ListaComportamiento.sig
-
-            if (comportamientoEncontrado == 0):
-                print("Error: Comportamiento activation no encontrado.")
-                sys.exit()
-
 
             identificador = identificador.sig
         
@@ -772,7 +777,6 @@ class Deactivate(Expr):
 
         while (identificador!=None):
 
-            comportamientoEncontrado = 0
 
             while (scope!= None):
                 resultado, tablaEncontrada = ultimo.buscar(identificador.value)
@@ -800,7 +804,6 @@ class Deactivate(Expr):
                 if (ListaComportamiento.condicion.type == "deactivation"):
 
                     aux = ListaComportamiento.instrucciones
-                    comportamientoEncontrado = 1
                     while (aux!= None):
                         aux.ejecutar(tablaLocal,identificador.value)
                         aux = aux.sig
@@ -808,11 +811,6 @@ class Deactivate(Expr):
                     break
 
                 ListaComportamiento = ListaComportamiento.sig
-
-            if (comportamientoEncontrado == 0):
-                print("Error: Comportamiento deactivation no encontrado.")
-                sys.exit()
-
 
             identificador = identificador.sig
         
@@ -1217,7 +1215,8 @@ class Identificadores(Expr):
 
         else:
             print("Error en la linea",self.numeroLinea,": la variable \'"
-                +self.value+"\' no tiene valor asociado")
+                +self.value+"\' no tiene valor asociado.")
+            sys.exit()
 
 #------------------------------------------------------------------------------#
 
@@ -1250,7 +1249,8 @@ class VariableMe(Expr):
 
         else:
             print("Error en la linea",self.numeroLinea,": la variable \'"
-                +self.value+"\' no tiene valor asociado")
+                +self.value+"\' no tiene valor asociado.")
+            sys.exit()
 
 #------------------------------------------------------------------------------#
 
