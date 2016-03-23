@@ -849,6 +849,9 @@ class Advance(Expr):
                     ": el robot \'"+ident.value+"\' no está activado.")
                 sys.exit()
 
+            resultado,tablaEncontrada = ultimo.buscar(ident.value)
+            ident = ident.sig
+
     def ejecutar(self):
         print("Advance")
 
@@ -859,51 +862,54 @@ class Advance(Expr):
         self.verificarActivacion()
         identificador = self.Identificadores
 
-        # while (identificador!=None):
 
-        #     comportamientoEncontrado = 0
+        while (identificador!=None):
 
-        #     while (scope!= None):
-        #         resultado, tablaEncontrada = ultimo.buscar(identificador.value)
+            comportamientoEncontrado = 0
 
-        #         if (resultado!=None):
-        #             break
+            while (scope!= None):
+                resultado, tablaEncontrada = ultimo.buscar(identificador.value)
 
-        #         else:
-        #             scope = scope.scopeAnterior
-        #             ultimo = scope.padre
+                if (resultado!=None):
+                    break
 
-        #     ListaComportamiento = tablaEncontrada.instrucciones
-        #     tablaEncontrada.tabla["me"] = resultado
+                else:
+                    scope = scope.scopeAnterior
+                    ultimo = scope.padre
 
-        #     for i in tablaEncontrada.hijos:
-        #         if (i.tipo == "deactivation"):
-        #             tablaLocal = i
-        #             break
+            ListaComportamiento = tablaEncontrada.instrucciones
+            tablaEncontrada.tabla["me"] = resultado
 
-        #     if (tablaLocal != None):
-        #         tablaLocal.tabla["me"] = resultado
+            for i in tablaEncontrada.hijos:
+                if (i.tipo == "deactivation"):
+                    tablaLocal = i
+                    break
 
-        #     while (ListaComportamiento!= None):
+            if (tablaLocal != None):
+                tablaLocal.tabla["me"] = resultado
 
-        #         if (ListaComportamiento.condicion.type == "deactivation"):
+            while (ListaComportamiento!= None):
 
-        #             aux = ListaComportamiento.instrucciones
-        #             comportamientoEncontrado = 1
-        #             while (aux!= None):
-        #                 aux.ejecutar(tablaLocal,identificador.value)
-        #                 aux = aux.sig
+                # Primero se verifican si se cumple alguna condicion, 
+                # en caso de que no sea asi, se busca el default
+                # si no hay no se ejecuta ninguna accion (NO DA ERROR)
 
-        #             break
+                if (ListaComportamiento.condicion.type == "EXPRESION_BINARIA"):
 
-        #         ListaComportamiento = ListaComportamiento.sig
+                    print("HAY UN ON CON EXPRESION BINARIA")
+                    # aux = ListaComportamiento.instrucciones
+                    # comportamientoEncontrado = 1
+                    # while (aux!= None):
+                    #     aux.ejecutar(tablaLocal,identificador.value)
+                    #     aux = aux.sig
 
-        #     if (comportamientoEncontrado == 0):
-        #         print("Error: Comportamiento para Advance no encontrado.")
-        #         sys.exit()
+                    # break
 
 
-        #     identificador = identificador.sig
+
+                ListaComportamiento = ListaComportamiento.sig
+
+            identificador = identificador.sig
         
 #------------------------------------------------------------------------------#
 
