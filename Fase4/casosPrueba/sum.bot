@@ -5,6 +5,8 @@ $- sum.bot:
  -$
 create
   $$ Robot contador.
+  
+  int bot pepe end
   int bot n
     on activation:
       read.
@@ -22,7 +24,7 @@ create
     end
     on default:
       read as next.
-      store me + next.
+      store 5/0.
     end
     on deactivation:
       send.
@@ -31,7 +33,7 @@ create
 
 execute
   activate n, adder.
-  while n > 0:
+  while pepe > 0:
     advance adder, n.
   end
   deactivate adder.

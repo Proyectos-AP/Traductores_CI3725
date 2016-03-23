@@ -1102,7 +1102,7 @@ class ExpresionBinaria(Expr):
             if (resultadoDer == 0):
                 print("Error en la linea",self.numeroLinea,": division entre 0.")
                 sys.exit()
-                
+
             return resultadoIzq / resultadoDer
 
         elif (self.op == "*"):
@@ -1219,9 +1219,18 @@ class Identificadores(Expr):
                 return resultado
 
         else:
-            print("Error en la linea",self.numeroLinea,": la variable \'"
-                +self.value+"\' no tiene valor asociado.")
-            sys.exit()
+
+            # El robot no esta activo. 
+            if (result[1]=="robot" and result[2]!=1):
+                print("Error en la linea",self.numeroLinea,": el robot \'"+
+                    self.value+"\' no ha sido activado.")
+                sys.exit()
+
+            # No hay un valor asociado a la variable.
+            else:
+                print("Error en la linea",self.numeroLinea,": la variable \'"
+                    +self.value+"\' no tiene valor asociado.")
+                sys.exit()
 
 #------------------------------------------------------------------------------#
 
@@ -1253,6 +1262,7 @@ class VariableMe(Expr):
                 return resultado
 
         else:
+
             print("Error en la linea",self.numeroLinea,": la variable \'"
                 +self.value+"\' no tiene valor asociado.")
             sys.exit()
