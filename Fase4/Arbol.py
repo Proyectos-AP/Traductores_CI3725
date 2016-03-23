@@ -852,6 +852,7 @@ class Advance(Expr):
 
         while (identificador != None):
 
+            comportamientoEncontrado = 0
             while (scope != None):
                 resultado, tablaEncontrada = ultimo.buscar(identificador.value)
 
@@ -876,6 +877,8 @@ class Advance(Expr):
                     resultadoExpresion = ListaComportamiento.condicion.evaluar(identificador.value,tablaEncontrada )
 
                     if (resultadoExpresion):
+                        comportamientoEncontrado = 1
+
                         for i in tablaEncontrada.hijos:
                             if (i.tipo == "EXPRESION_BINARIA" and tablaEncontrada.hijos.index(i) == indiceTablaComportamiento):
                                tablaLocal = i
@@ -899,6 +902,7 @@ class Advance(Expr):
                 # En caso de que no hayan, se busca el comportamiento default.
                 if (ListaComportamiento.condicion.type == "default"):
 
+                        comportamientoEncontrado = 1
                         for i in tablaEncontrada.hijos:
                             if (i.tipo == "default"):
                                 tablaLocal = i
@@ -914,6 +918,11 @@ class Advance(Expr):
                             aux = aux.sig
 
                 ListaComportamiento = ListaComportamiento.sig
+
+            if (comportamientoEncontrado == 0):
+                print("Error: El robot \'"+identificador.value+
+                    "\' no posee comportamientos para realizar un \'advance\'.")
+                sys.exit()
 
             identificador = identificador.sig
         
