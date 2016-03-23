@@ -1097,7 +1097,12 @@ class ExpresionBinaria(Expr):
         elif (self.op == "-"):
             return resultadoIzq - resultadoDer
 
-        elif (self.op == "/"): 
+        elif (self.op == "/"):
+
+            if (resultadoDer == 0):
+                print("Error en la linea",self.numeroLinea,": division entre 0.")
+                sys.exit()
+                
             return resultadoIzq / resultadoDer
 
         elif (self.op == "*"):
