@@ -226,15 +226,28 @@ class RaizAST(Expr):
             aux = self.arbolInstruccion.Instrucciones
             aux.imprimirInstrucciones(numeroTabs)
 
+    def inicializarTablas(self,tabla):
+        
+        aux = tabla
+
+        while (aux!=None):
+            
+            for i in aux.tabla:
+                aux.tabla[i][2] = 0
+                aux.tabla[i][3] = None
+                aux.tabla[i][4] = [0,0]
+
+            aux = aux.padre
+
     def ejecutar(self):
 
         if (self.arbolDeclaracion!= None):
             auxDeclaracion = self.arbolDeclaracion.listaDeclaraciones
             auxDeclaracion.actualizarScope()
+            self.inicializarTablas(Expr.ultimo)
             
         auxInstrucciones = self.arbolInstruccion.Instrucciones
         
-
         while (auxInstrucciones!=None):
             auxInstrucciones.ejecutar()
             auxInstrucciones = auxInstrucciones.sig
@@ -570,8 +583,6 @@ class Movimiento(Expr):
         else:
             numeroPasos = 1
 
-        # print("RESULTADO MOVIMIENTO",numeroPasos)
-
         # VariableRobot = identificador.value
 
         tablaPadre = tabla.padre
@@ -869,9 +880,6 @@ class Advance(Expr):
 
             while (ListaComportamiento!= None):
 
-                # Nota: Si no se encuentra ninguna expresión que se cumpla
-                # ni comportamiento default, el programa NO dará error.
-
                 if (ListaComportamiento.condicion.type == "EXPRESION_BINARIA"):
                     # Se verifica si se cumple alguna de las condiciones:
                     resultadoExpresion = ListaComportamiento.condicion.evaluar(identificador.value,tablaEncontrada )
@@ -1118,6 +1126,7 @@ class ExpresionBinaria(Expr):
             return resultadoIzq != resultadoDer
 
         elif (self.op == "="):
+
             return resultadoIzq == resultadoDer
 
         elif (self.op == "<="):
