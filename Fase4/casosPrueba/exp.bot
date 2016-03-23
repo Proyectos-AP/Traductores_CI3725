@@ -6,7 +6,7 @@ $- exp.bot:
  -$
 create
   $$ Robot base.
-  int bot a
+  int bot a,d
     on activation:
       read.
       collect as x.

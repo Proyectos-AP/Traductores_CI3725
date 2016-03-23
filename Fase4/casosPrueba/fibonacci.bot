@@ -25,9 +25,10 @@ create
       drop me.
       store me + x.
     end
+  end
   char bot endl
     on activation:
-      store '\n'
+      store '\n'.
     end
     on default:
       send.
@@ -36,6 +37,7 @@ create
 
 execute
   activate n, f, endl.
+  advance endl.
   while n > 0:
     advance n, f, endl.
   end
