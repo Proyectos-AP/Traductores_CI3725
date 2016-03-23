@@ -17,7 +17,7 @@ create
       store me - 1.
     end
   end
-  
+
   $$ Robot lector del arreglo.
   int bot reader
     on activation:
@@ -28,17 +28,17 @@ create
       up.
     end
   end
-  
+
   $$ Robot impresor del arreglo.
   int bot printer
     on activation:
       up.
     end
     on default:
-      collect. send.
+      collect. send. up.
     end
   end
-  
+
   $$ Robot para imprimir espacio.
   char bot space
     on activation:
@@ -51,15 +51,15 @@ create
 
 execute
   activate n, reader.
-  
+
   $$ Lectura del arreglo.
   while n > 0:
     advance reader, n.
   end
-  
+
   $$ Ordenamiento (usando bubble-sort).
   advance n.
-  while n > 0:
+  while n > 1:
     create
       $$ Iterador para el ciclo interno.
       int bot m
@@ -69,8 +69,8 @@ execute
         on default:
           store me - 1.
         end
-      end  
-      
+      end
+
       $$ Robot comparador.
       int bot compare
         on activation:
@@ -82,18 +82,18 @@ execute
           up. down.
         end
         on me > 0:
-          collect as x. up.
+          collect as x. down.
           collect as y. drop x.
-          down. drop y.
+          up. drop y.
         end
         on deactivation:
           down.
         end
       end
-    
+
     execute
       activate m.
-      while m > 0:
+      while m > 1:
         activate compare.
         advance compare, m.
         deactivate compare.
@@ -101,8 +101,9 @@ execute
     end
     advance n.
   end
-  
+
   $$ Impresion del arreglo ordenado.
+  advance n.
   advance n.
   activate printer, space.
   while n > 0:

@@ -24,6 +24,7 @@ create
     on deactivation:
       send.
     end
+  end
 
 execute
   activate n, f.
