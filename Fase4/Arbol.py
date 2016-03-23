@@ -187,7 +187,7 @@ class Expr:
 
         mismoTipo = False
 
-        if (tipo == "int" and  isinstance(elemento,int)):
+        if (tipo == "int" and isinstance(elemento,int) and not(isinstance(elemento,bool))):
             mismoTipo = True
         elif (tipo == "bool" and isinstance(elemento,bool)):
             mismoTipo = True
@@ -248,8 +248,6 @@ class RaizAST(Expr):
             auxDeclaracion.devolverScope()
     
 
-
-
 #------------------------------------------------------------------------------#
 #                      RAIZ DEL ARBOL DE DECLARACIONES                         #
 #------------------------------------------------------------------------------#
@@ -308,34 +306,25 @@ class Store(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
 
-        if (self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
+        if (self.expresiones.type == "me"):
 
-            variableParaAlmacenar = self.expresiones.evaluar(VariableRobot,tabla)
+            resultado, tablaEncontrada = self.buscar(VariableRobot)
+            variableParaAlmacenar = resultado[3]
+
+            # La variable me no tiene un valor asociado
+            if (variableParaAlmacenar == None):
+                print("Error en la linea",self.expresiones.numeroLinea,
+                    ": la variable \'"+self.expresiones.value+
+                    "\' no tiene valor asociado.")
+                sys.exit()
 
         else:
+            variableParaAlmacenar = self.expresiones.evaluar(VariableRobot,tabla)
 
-            if (self.expresiones.type == "me"):
-
-                resultado, tablaEncontrada = self.buscar(VariableRobot)
-                variableParaAlmacenar = resultado[3]
-
-                # La variable me no tiene un valor asociado
-                if (variableParaAlmacenar == None):
-                    print("Error en la linea",self.expresiones.numeroLinea,
-                        ": la variable \'"+self.expresiones.value+
-                        "\' no tiene valor asociado.")
-                    sys.exit()
-
-            else:
-                variableParaAlmacenar = self.expresiones.value
-
-        # print("Voy a guardar el valor",variableParaAlmacenar,"en la tabla",tabla.tabla,"con el robot",VariableRobot)
         tabla.tabla["me"][3] = variableParaAlmacenar
         tablaPadre = tabla.padre
         tablaPadre.tabla["me"][3] = variableParaAlmacenar
         tablaPadre.tabla[VariableRobot][3] = variableParaAlmacenar
-        # print("Tabla guardad hijo",tabla.tabla)
-        # print("Tabla guardada papa",tablaPadre.tabla)
 
 #------------------------------------------------------------------------------#
 
@@ -350,38 +339,37 @@ class Drop(Expr):
     def ejecutar(self,tabla,VariableRobot):
 
         tablaPadre = tabla.padre
-        posicionRobot = tablaPadre.tabla[VariableRobot][4]
+        tablaRobot = tablaPadre.tabla[VariableRobot]
+        posicionRobot = tablaRobot[4]
+        tipoRobot = tablaRobot[0]
 
-        if (self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
+        if (self.expresiones.type == "me"):
+            # Se debe verificar si el robot tenia un valor asociado o no:
+            variableParaAlmacenar = tablaRobot[3]
 
+            if (variableParaAlmacenar == None):
+                print("Error: El robot '" + VariableRobot + "' no tiene valor",
+                    end="")
+                print(" asociado para almacenar en la posición " + 
+                    str(tuple(posicionRobot)))
+                print("de la Matriz.")
+                sys.exit()
+
+        else:
             variableParaAlmacenar = self.expresiones.evaluar(VariableRobot,tabla)
 
 
+        tipoCorrecto = self.verificarTipos(tipoRobot,variableParaAlmacenar)
+
+        # Se verifica soltado inadecuado.
+        if(tipoCorrecto):
+            Expr.Matriz[tuple(posicionRobot)] = variableParaAlmacenar
         else:
-            variableParaAlmacenar = self.expresiones.value
+            print("Error en la linea",self.expresiones.numeroLinea,
+                ": soltado inadecuado.")
+            sys.exit()
 
 
-            if (variableParaAlmacenar == "me"):
-
-                # Se debe verificar si el robot tenia un valor asociado o no:
-
-                variableParaAlmacenar = tablaPadre.tabla[VariableRobot][3]
-
-                if (variableParaAlmacenar == None):
-                    print("Error: El robot '" + VariableRobot + "' no tiene valor",
-                        end="")
-                    print(" asociado para almacenar en la posición " + 
-                        str(tuple(posicionRobot)))
-                    print("de la Matriz.")
-                    sys.exit()
-
-        Expr.Matriz[tuple(posicionRobot)] = variableParaAlmacenar
-        #print("El nuevo estado de la matriz es",Expr.Matriz)
-
-        # tabla.tabla["me"][3] = variableParaAlmacenar
-        # tablaPadre = tabla.padre
-        # tablaPadre.tabla["me"][3] = variableParaAlmacenar
-        # tablaPadre.tabla[VariableRobot][3] = variableParaAlmacenar
 
 #------------------------------------------------------------------------------#
 
@@ -1262,7 +1250,6 @@ class VariableMe(Expr):
                 return resultado
 
         else:
-
             print("Error en la linea",self.numeroLinea,": la variable \'"
                 +self.value+"\' no tiene valor asociado.")
             sys.exit()
