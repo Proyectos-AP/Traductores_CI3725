@@ -32,7 +32,7 @@ class TablaSimbolos():
 		
 		self.padre = padre
 		self.hijos = hijos
-		self.type = tipo
+		self.tipo = tipo
 		self.instrucciones = instrucciones
 		self.tabla = {}
 		

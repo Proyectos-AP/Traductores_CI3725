@@ -150,7 +150,6 @@ class Expr:
         #     ident = ident.sig
 
         while (scope!= None):
-            print("VALOR A BUSCAR",ident)
             resultado,tablaEncontrada = ultimo.buscar(ident)
 
             if (resultado!=None):
@@ -162,12 +161,11 @@ class Expr:
                 if (scope != None):
                     ultimo = scope.padre
 
-    def busqueda(self):
+    def busqueda(self,tablaSimbolos):
 
-        ultimo = Expr.ultimo
+        ultimo = tablaSimbolos
         scope = Expr.ScopeActual
         ident = self
-
         while (ident!= None):
 
             while (scope!= None):
@@ -179,7 +177,9 @@ class Expr:
 
                 else:
                     scope = scope.scopeAnterior
-                    ultimo = scope.padre
+
+                    if (scope!=None):
+                        ultimo = scope.padre
 
             ident = ident.sig
 
@@ -310,8 +310,7 @@ class Store(Expr):
 
         if (self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
 
-            variableParaAlmacenar = self.expresiones.evaluar(VariableRobot)
-            print("RESULTADO EVALUACION",variableParaAlmacenar)
+            variableParaAlmacenar = self.expresiones.evaluar(VariableRobot,tabla)
 
         else:
             variableParaAlmacenar = self.expresiones.value 
@@ -340,11 +339,12 @@ class Drop(Expr):
 
         if (self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
 
-            variableParaAlmacenar = self.expresiones.evaluar(VariableRobot)
-            #print("RESULTADO DROP",variableParaAlmacenar)
+            variableParaAlmacenar = self.expresiones.evaluar(VariableRobot,tabla)
+            print("Expresion del DROP",variableParaAlmacenar)
 
         else:
             variableParaAlmacenar = self.expresiones.value
+            print("Expresion del DROP value",variableParaAlmacenar)
 
             if (variableParaAlmacenar == "me"):
 
@@ -379,7 +379,6 @@ class Collect(Expr):
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
-
         # Se busca la posición actual del robot:
         tablaPadre = tabla.padre
         posicionRobot = tablaPadre.tabla[VariableRobot][4]
@@ -557,7 +556,7 @@ class Movimiento(Expr):
 
             if (self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
 
-                numeroPasos = self.expresiones.evaluar(VariableRobot)
+                numeroPasos = self.expresiones.evaluar(VariableRobot,tabla)
 
                 if (numeroPasos < 0 or not(isinstance(numeroPasos,int))):
                     print("Error: La expresión calculada para realizar el" +
@@ -853,7 +852,6 @@ class Advance(Expr):
             ident = ident.sig
 
     def ejecutar(self):
-        print("Advance")
 
         ultimo = Expr.ultimo
         tablaLocal =  None
@@ -884,11 +882,9 @@ class Advance(Expr):
                 # Nota: Si no se encuentra ninguna expresión que se cumpla
                 # ni comportamiento default, el programa NO dará error.
 
-                
-
                 if (ListaComportamiento.condicion.type == "EXPRESION_BINARIA"):
                     # Se verifica si se cumple alguna de las condiciones:
-                    resultadoExpresion = ListaComportamiento.condicion.evaluar(None)
+                    resultadoExpresion = ListaComportamiento.condicion.evaluar(identificador.value,tablaEncontrada )
 
                     if (resultadoExpresion):
                         for i in tablaEncontrada.hijos:
@@ -904,9 +900,15 @@ class Advance(Expr):
                             aux.ejecutar(tablaLocal,identificador.value)
                             aux = aux.sig
                         break
+                ListaComportamiento = ListaComportamiento.sig
+                indiceTablaComportamiento = indiceTablaComportamiento + 1
+
+
+            ListaComportamiento = tablaEncontrada.instrucciones
+            while (ListaComportamiento!=None):
+  
                 # En caso de que no hayan, se busca el comportamiento default.
-                if (ListaComportamiento.sig == None and 
-                    ListaComportamiento.condicion.type == "default"):
+                if (ListaComportamiento.condicion.type == "default"):
 
                         for i in tablaEncontrada.hijos:
                             if (i.tipo == "default"):
@@ -923,9 +925,6 @@ class Advance(Expr):
                             aux = aux.sig
 
                 ListaComportamiento = ListaComportamiento.sig
-                indiceTablaComportamiento = indiceTablaComportamiento + 1
-
-
 
             identificador = identificador.sig
         
@@ -982,7 +981,8 @@ class While(Expr):
 
     def ejecutar(self):
 
-        resultado = self.expresiones.evaluar(None)
+        tabla = Expr.ultimo
+        resultado = self.expresiones.evaluar(None,tabla)
 
         if (resultado == True):
             while True:
@@ -991,7 +991,7 @@ class While(Expr):
                     aux.ejecutar()
                     aux = aux.sig
 
-                resultado = self.expresiones.evaluar(None)
+                resultado = self.expresiones.evaluar(None,tabla)
 
                 if (resultado != True):
                     break
@@ -1056,7 +1056,8 @@ class Condicional(Expr):
 
     def ejecutar(self):
 
-        resultado = self.expresionesCondicional.evaluar(None)
+        tabla = Expr.ultimo
+        resultado = self.expresionesCondicional.evaluar(None,tabla)
         aux = None
         if (resultado == True):
             aux = self.exito
@@ -1083,11 +1084,11 @@ class ExpresionBinaria(Expr):
         self.op = op
         self.numeroLinea = linea
 
-    def evaluar(self,VariableRobot):
+    def evaluar(self,VariableRobot,tablaSimbolos):
 
       
-        resultadoIzq = self.left.evaluar(VariableRobot)
-        resultadoDer = self.right.evaluar(VariableRobot)
+        resultadoIzq = self.left.evaluar(VariableRobot,tablaSimbolos)
+        resultadoDer = self.right.evaluar(VariableRobot,tablaSimbolos)
         
         if (self.op == "+"):
             return resultadoIzq + resultadoDer
@@ -1139,17 +1140,15 @@ class OperadorUnario(Expr):
         self.value = value
         self.numeroLinea = numeroLinea
 
-    def evaluar(self,VariableRobot):
+    def evaluar(self,VariableRobot,tablaSimbolos):
 
-        resultado = self.value.evaluar(VariableRobot)
+        resultado = self.value.evaluar(VariableRobot,tablaSimbolos)
 
         if (self.op == "-"):
             return (- resultado)
 
         elif (self.op == "~"):
             return not(resultado)
-
-
 
 #------------------------------------------------------------------------------#
 
@@ -1160,7 +1159,7 @@ class Number(Expr):
         self.value = value
         self.numeroLinea = numeroLinea
 
-    def evaluar(self,VariableRobot):
+    def evaluar(self,VariableRobot,tablaSimbolos):
 
         resultado = self.value
         return int(resultado)
@@ -1174,7 +1173,7 @@ class Booleano(Expr):
         self.value = value
         self.numeroLinea = numeroLinea
 
-    def evaluar(self,VariableRobot):
+    def evaluar(self,VariableRobot,tablaSimbolos):
 
         resultado = self.value
 
@@ -1187,15 +1186,16 @@ class Booleano(Expr):
 
 class Identificadores(Expr):
     ''' Nodo que almacena los identificadores del programa '''
+
     def __init__(self,value,linea):
         self.type = "ident"
         self.value = value
         self.numeroLinea = linea
         self.sig = None
 
-    def evaluar(self,VariableRobot):
+    def evaluar(self,VariableRobot,tablaSimbolos):
 
-        result,tabla = self.busqueda()
+        result,tabla = self.busqueda(tablaSimbolos)
         tipo = result[0]
         resultado = result[3]
 
@@ -1227,7 +1227,7 @@ class VariableMe(Expr):
         self.numeroLinea = linea
         self.sig = None
 
-    def evaluar(self,VariableRobot):
+    def evaluar(self,VariableRobot,tablaSimbolos):
 
         result,tabla = self.buscar(VariableRobot)
         tipo = result[0]
@@ -1260,7 +1260,7 @@ class Caracter(Expr):
         self.value = value
         self.numeroLinea = numeroLinea
 
-    def evaluar(self):
+    def evaluar(self,VariableRobot,tablaSimbolos):
 
         resultado = self.value
         return resultado

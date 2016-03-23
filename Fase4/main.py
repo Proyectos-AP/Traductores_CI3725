@@ -136,7 +136,8 @@ else:
   Raiz = parser.parse(datos,tracking=True)
   #Raiz.imprimirAST(0)
   Raiz.ejecutar()
-  print("El estado actual de la matriz es",Expr.Matriz)
+  print()
+  #print("El estado actual de la matriz es",Expr.Matriz)
 
 #------------------------------------------------------------------------------#
 #                        FIN DEL PROGRAMA PRINCIPAL                            #
