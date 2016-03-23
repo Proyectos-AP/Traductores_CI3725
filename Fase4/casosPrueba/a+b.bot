@@ -6,27 +6,19 @@ $- a+b.bot:
 create
   int bot a
     on activation:
-      store 1.
-      drop 2.
-      collect as x.
+      read.
+      drop me.
     end
   end
   int bot b
     on activation:
-      collect.
-    end
-    on 2 + 5 = 8:
       read.
+      collect as a.
+      store a + me.
       send.
     end
-    on 1 + 3 = 4:
-      store 1.
-      drop 3.
-    end
   end
-execute
-  activate a,b.
-  advance a, b.
-end
 
-$$ puedes cambiar el 1 de la linea 22 por me y explota
+execute
+  activate a, b.
+end
