@@ -505,8 +505,7 @@ def VerificarExpresionBinaria(exprBin,TablaSimbolos):
                         if (Resultado[1]!="robot"):
 
                             print("Error en linea",Raiz.numeroLinea ,
-                                ": La variable no ha sido declarada.")
-
+                                ": La variable \'"+Raiz.value+"\' no ha sido declarada.")
                             sys.exit()
                         
 
