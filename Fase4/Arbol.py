@@ -863,11 +863,9 @@ class Advance(Expr):
         identificador = self.Identificadores
 
 
-        while (identificador!=None):
+        while (identificador != None):
 
-            comportamientoEncontrado = 0
-
-            while (scope!= None):
+            while (scope != None):
                 resultado, tablaEncontrada = ultimo.buscar(identificador.value)
 
                 if (resultado!=None):
@@ -879,35 +877,55 @@ class Advance(Expr):
 
             ListaComportamiento = tablaEncontrada.instrucciones
             tablaEncontrada.tabla["me"] = resultado
-
-            for i in tablaEncontrada.hijos:
-                if (i.tipo == "deactivation"):
-                    tablaLocal = i
-                    break
-
-            if (tablaLocal != None):
-                tablaLocal.tabla["me"] = resultado
+            indiceTablaComportamiento = 0 
 
             while (ListaComportamiento!= None):
 
-                # Primero se verifican si se cumple alguna condicion, 
-                # en caso de que no sea asi, se busca el default
-                # si no hay no se ejecuta ninguna accion (NO DA ERROR)
+                # Nota: Si no se encuentra ninguna expresión que se cumpla
+                # ni comportamiento default, el programa NO dará error.
+
+                
 
                 if (ListaComportamiento.condicion.type == "EXPRESION_BINARIA"):
+                    # Se verifica si se cumple alguna de las condiciones:
+                    resultadoExpresion = ListaComportamiento.condicion.evaluar(None)
 
-                    print("HAY UN ON CON EXPRESION BINARIA")
-                    # aux = ListaComportamiento.instrucciones
-                    # comportamientoEncontrado = 1
-                    # while (aux!= None):
-                    #     aux.ejecutar(tablaLocal,identificador.value)
-                    #     aux = aux.sig
+                    if (resultadoExpresion):
+                        for i in tablaEncontrada.hijos:
+                            if (i.tipo == "EXPRESION_BINARIA" and tablaEncontrada.hijos.index(i) == indiceTablaComportamiento):
+                               tablaLocal = i
+                               break
 
-                    # break
+                        if (tablaLocal != None):
+                            tablaLocal.tabla["me"] = resultado
+
+                        aux = ListaComportamiento.instrucciones
+                        while (aux!= None):
+                            aux.ejecutar(tablaLocal,identificador.value)
+                            aux = aux.sig
+                        break
+                # En caso de que no hayan, se busca el comportamiento default.
+                if (ListaComportamiento.sig == None and 
+                    ListaComportamiento.condicion.type == "default"):
+
+                        for i in tablaEncontrada.hijos:
+                            if (i.tipo == "default"):
+                                tablaLocal = i
+                                break
+
+                        if (tablaLocal != None):
+                            tablaLocal.tabla["me"] = resultado
 
 
+                        aux = ListaComportamiento.instrucciones
+                        while (aux != None):
+                            aux.ejecutar(tablaLocal,identificador.value)
+                            aux = aux.sig
 
                 ListaComportamiento = ListaComportamiento.sig
+                indiceTablaComportamiento = indiceTablaComportamiento + 1
+
+
 
             identificador = identificador.sig
         
