@@ -313,14 +313,16 @@ class Store(Expr):
             variableParaAlmacenar = self.expresiones.evaluar(VariableRobot,tabla)
 
         else:
-            variableParaAlmacenar = self.expresiones.value 
+            variableParaAlmacenar = self.expresiones.value
+            
 
-
+        # print("Voy a guardar el valor",variableParaAlmacenar,"en la tabla",tabla.tabla,"con el robot",VariableRobot)
         tabla.tabla["me"][3] = variableParaAlmacenar
         tablaPadre = tabla.padre
         tablaPadre.tabla["me"][3] = variableParaAlmacenar
         tablaPadre.tabla[VariableRobot][3] = variableParaAlmacenar
-
+        # print("Tabla guardad hijo",tabla.tabla)
+        # print("Tabla guardada papa",tablaPadre.tabla)
 
 #------------------------------------------------------------------------------#
 
@@ -340,11 +342,11 @@ class Drop(Expr):
         if (self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
 
             variableParaAlmacenar = self.expresiones.evaluar(VariableRobot,tabla)
-            print("Expresion del DROP",variableParaAlmacenar)
+
 
         else:
             variableParaAlmacenar = self.expresiones.value
-            print("Expresion del DROP value",variableParaAlmacenar)
+
 
             if (variableParaAlmacenar == "me"):
 
@@ -442,6 +444,7 @@ class Read(Expr):
         if (self.identificador == None):
 
             VariableAguardar = "me"
+
         else:
             VariableAguardar= self.identificador.value
             
@@ -478,16 +481,16 @@ class Read(Expr):
 
 
         # Se modifica el valor de la variable
-        tablaPadre = tabla.padre
         tabla.tabla[VariableAguardar][3] = entrada
 
-        if (self.identificador != None):
+        # Si el read no tiene identificadores asociados el valor de la entrada
+        # se guarda en la variable me.
+        if (self.identificador == None):
+            tablaPadre = tabla.padre
             tabla.tabla["me"][3] = entrada
-
-        tablaPadre.tabla[VariableRobot][3] = entrada
-        tablaPadre.tabla["me"][3] = entrada
-        
-
+            tablaPadre.tabla[VariableRobot][3] = entrada
+            tablaPadre.tabla["me"][3] = entrada
+ 
 #------------------------------------------------------------------------------#
 
 class Recieve(Expr):
@@ -1198,7 +1201,6 @@ class Identificadores(Expr):
         result,tabla = self.busqueda(tablaSimbolos)
         tipo = result[0]
         resultado = result[3]
-
         if (resultado != None):
             if (tipo== "int"):
                 return int(resultado)
@@ -1232,7 +1234,6 @@ class VariableMe(Expr):
         result,tabla = self.buscar(VariableRobot)
         tipo = result[0]
         resultado = result[3]
-
         if (resultado != None):
             if (tipo== "int"):
                 return int(resultado)
