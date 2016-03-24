@@ -813,25 +813,21 @@ class Advance(Expr):
                     ListaComportamiento.condicion.evaluar(identificador.value,
                                                             tablaEncontrada )
 
+                    # La expresion retorna True
                     if (resultadoExpresion):
                         comportamientoEncontrado = 1
+                        instrucciones = ListaComportamiento.instrucciones
 
                         # Se busca la tabla de simbolos de la lista de 
                         # comportamientos
                         for i in tablaEncontrada.hijos:
                             if (i.tipo == "EXPRESION_BINARIA" and 
                                 tablaEncontrada.hijos.index(i) ==\
-                                 indiceTablaComportamiento):
+                                indiceTablaComportamiento):
                                tablaLocal = i
                                break
-
-                        if (tablaLocal != None):
-                            tablaLocal.tabla["me"] = resultado
-
-                        instrucciones = ListaComportamiento.instrucciones
-                        self.CorrerInstruccionesControlador(instrucciones,tablaLocal,
-                                                            identificador.value)
                         break
+
                 ListaComportamiento = ListaComportamiento.sig
                 indiceTablaComportamiento = indiceTablaComportamiento + 1
 
@@ -843,9 +839,9 @@ class Advance(Expr):
                 ListaComportamiento = tablaEncontrada.instrucciones
                 while (ListaComportamiento!=None):
 
-                    # En caso de que no hayan, se busca el comportamiento default.
                     if (ListaComportamiento.condicion.type == "default"):
                         comportamientoEncontrado = 1
+                        instrucciones = ListaComportamiento.instrucciones
 
                         # Se busca la tabla de simbolos de la lista de 
                         # comportamientos
@@ -854,19 +850,23 @@ class Advance(Expr):
                                 tablaLocal = i
                                 break
 
-                        if (tablaLocal != None):
-                            tablaLocal.tabla["me"] = resultado
-
-                        instrucciones = ListaComportamiento.instrucciones
-                        self.CorrerInstruccionesControlador(instrucciones,tablaLocal,
-                                                            identificador.value)
-
+                        break
                     ListaComportamiento = ListaComportamiento.sig
 
             if (comportamientoEncontrado == 0):
                 print("Error: El robot \'"+identificador.value+
                     "\' no posee comportamientos para realizar un \'advance\'.")
                 sys.exit()
+
+            else:
+                # Si existe una tabla de simbolos ligada a la lista de 
+                # comportamiento se actualiza la variable me de dicha tabla.
+                if (tablaLocal != None):
+                    tablaLocal.tabla["me"] = resultado
+
+                # Se corren las instrucciones del controlador.
+                self.CorrerInstruccionesControlador(instrucciones,tablaLocal,
+                                                    identificador.value)
 
             identificador = identificador.sig
         
