@@ -529,7 +529,6 @@ class Send(Expr):
 
         resultado = tabla.buscarLocal("me")
         valor = resultado[3]
-
         if (valor == None):
             print("Error: El robot '" + VariableRobot + "' no tiene valor"
                  +  " asociado para imprimir en pantalla.")
@@ -549,6 +548,15 @@ class Send(Expr):
 
             else:
                 print(valor,end="")
+
+        elif (tipoVariable == "bool"):
+            if (valor == True):
+                print("true",end="")
+            elif (valor == False):
+                print("false",end="")
+            else:
+                print(valor,end="")
+                
         else:
             print(valor,end="")
 
