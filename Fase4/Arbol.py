@@ -146,6 +146,7 @@ class Expr:
                     ultimo = scope.padre
 
 
+
     def verificarTipos(self,tipo,elemento):
 
         mismoTipo = False
@@ -624,8 +625,6 @@ class Activate(Expr):
 
         ident = self.Identificadores
         ultimo = Expr.ultimo
-        scope = Expr.ScopeActual
-
 
         while (ident!= None):
 
@@ -645,7 +644,6 @@ class Activate(Expr):
 
         ultimo = Expr.ultimo
         tablaLocal =  None
-        scope = Expr.ScopeActual
         self.verificarActivacion()
         identificador = self.Identificadores
 
@@ -715,7 +713,6 @@ class Deactivate(Expr):
 
         ultimo = Expr.ultimo
         tablaLocal =  None
-        scope = Expr.ScopeActual
         self.verificarDesactivacion()
         identificador = self.Identificadores
 
@@ -767,7 +764,6 @@ class Advance(Expr):
 
         ident = self.Identificadores
         ultimo = Expr.ultimo
-        scope = Expr.ScopeActual
 
         while (ident!= None):
 
@@ -784,7 +780,6 @@ class Advance(Expr):
 
         ultimo = Expr.ultimo
         tablaLocal =  None
-        scope = Expr.ScopeActual
         # Los robots que se avanzaran deben estar activados:
         self.verificarActivacion()
         identificador = self.Identificadores
