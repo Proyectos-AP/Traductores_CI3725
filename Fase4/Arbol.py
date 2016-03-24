@@ -662,15 +662,7 @@ class Activate(Expr):
 
         while (ident!= None):
 
-            while (scope!= None):
-                resultado,tablaEncontrada = ultimo.buscar(ident.value)
-
-                if (resultado!=None):
-                    break
-
-                else:
-                    scope = scope.scopeAnterior
-                    ultimo = scope.padre
+            resultado,tablaEncontrada = self.buscar(ident.value)
 
             if (resultado[2] == 1):
                 print("Error en la linea",ident.numeroLinea,
@@ -680,7 +672,6 @@ class Activate(Expr):
             else:
                 tablaEncontrada.tabla[ident.value][2] = 1
 
-            resultado,tablaEncontrada = ultimo.buscar(ident.value)
             ident = ident.sig
 
     def ejecutar(self):
@@ -694,15 +685,8 @@ class Activate(Expr):
 
         while (identificador!=None):
 
-            while (scope!= None):
-                resultado, tablaEncontrada = ultimo.buscar(identificador.value)
-
-                if (resultado!=None):
-                    break
-
-                else:
-                    scope = scope.scopeAnterior
-                    ultimo = scope.padre
+            # Se busca la tabla de simbolos asociada a la variable.
+            resultado,tablaEncontrada = self.buscar(identificador.value)
 
             ListaComportamiento = tablaEncontrada.instrucciones
             tablaEncontrada.tabla["me"] = resultado
@@ -747,8 +731,7 @@ class Deactivate(Expr):
         tablaEncontrada = None
 
         while (ident!= None):
-
-            resultado,tablaEncontrada = ultimo.buscar(ident.value)
+            resultado,tablaEncontrada = self.buscar(ident.value)
 
             if (resultado[2] == 0):
                 print("Error en la linea",ident.numeroLinea,
@@ -758,10 +741,8 @@ class Deactivate(Expr):
             else:
                 tablaEncontrada.tabla[ident.value][2] = 0
 
-            resultado,tablaEncontrada = ultimo.buscar(ident.value)
             ident = ident.sig
 
-        return tablaEncontrada
 
     def ejecutar(self):
 
@@ -774,16 +755,8 @@ class Deactivate(Expr):
 
         while (identificador!=None):
 
-
-            while (scope!= None):
-                resultado, tablaEncontrada = ultimo.buscar(identificador.value)
-
-                if (resultado!=None):
-                    break
-
-                else:
-                    scope = scope.scopeAnterior
-                    ultimo = scope.padre
+            # Se busca la tabla de simbolos asociada a la variable.
+            resultado,tablaEncontrada = self.buscar(identificador.value)
 
             ListaComportamiento = tablaEncontrada.instrucciones
             tablaEncontrada.tabla["me"] = resultado
@@ -831,15 +804,7 @@ class Advance(Expr):
 
         while (ident!= None):
 
-            while (scope!= None):
-                resultado,tablaEncontrada = ultimo.buscar(ident.value)
-
-                if (resultado!=None):
-                    break
-
-                else:
-                    scope = scope.scopeAnterior
-                    ultimo = scope.padre
+            resultado,tablaEncontrada = self.buscar(ident.value)
 
             if (resultado[2] == 0):
                 print("Error en la línea " + str(ident.numeroLinea) +
@@ -862,15 +827,9 @@ class Advance(Expr):
         while (identificador != None):
 
             comportamientoEncontrado = 0
-            while (scope != None):
-                resultado, tablaEncontrada = ultimo.buscar(identificador.value)
 
-                if (resultado!=None):
-                    break
-
-                else:
-                    scope = scope.scopeAnterior
-                    ultimo = scope.padre
+            # Se busca la tabla de simbolos asociada a la variable.
+            resultado,tablaEncontrada = self.buscar(identificador.value)
 
             ListaComportamiento = tablaEncontrada.instrucciones
             tablaEncontrada.tabla["me"] = resultado
@@ -880,13 +839,16 @@ class Advance(Expr):
 
                 if (ListaComportamiento.condicion.type == "EXPRESION_BINARIA"):
                     # Se verifica si se cumple alguna de las condiciones:
-                    resultadoExpresion = ListaComportamiento.condicion.evaluar(identificador.value,tablaEncontrada )
+                    resultadoExpresion = \
+                    ListaComportamiento.condicion.evaluar(identificador.value,
+                                                            tablaEncontrada )
 
                     if (resultadoExpresion):
                         comportamientoEncontrado = 1
 
                         for i in tablaEncontrada.hijos:
-                            if (i.tipo == "EXPRESION_BINARIA" and tablaEncontrada.hijos.index(i) == indiceTablaComportamiento):
+                            if (i.tipo == "EXPRESION_BINARIA" and 
+                                tablaEncontrada.hijos.index(i) == indiceTablaComportamiento):
                                tablaLocal = i
                                break
 
