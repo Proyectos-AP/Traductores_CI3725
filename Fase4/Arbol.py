@@ -127,27 +127,11 @@ class Expr:
             else:
                 print(espacio+"-expresion:",self.value)
 
-    def buscar(self,identificador):
+    def buscar(self,identificador,tablaSimbolos):
 
-        ultimo = Expr.ultimo
+        ultimo = tablaSimbolos
         scope = Expr.ScopeActual
         ident = identificador
-
-        # while (ident!= None):
-
-        #     while (scope!= None):
-        #         print("VALOR A BUSCAR",ident.value)
-        #         resultado,tablaEncontrada = ultimo.buscar(ident.value)
-
-        #         if (resultado!=None):
-        #             return resultado,tablaEncontrada
-        #             break
-
-        #         else:
-        #             scope = scope.scopeAnterior
-        #             ultimo = scope.padre
-
-        #     ident = ident.sig
 
         while (scope!= None):
             resultado,tablaEncontrada = ultimo.buscar(ident)
@@ -161,27 +145,6 @@ class Expr:
                 if (scope != None):
                     ultimo = scope.padre
 
-    def busqueda(self,tablaSimbolos):
-
-        ultimo = tablaSimbolos
-        scope = Expr.ScopeActual
-        ident = self
-        while (ident!= None):
-
-            while (scope!= None):
-                resultado,tablaEncontrada = ultimo.buscar(ident.value)
-
-                if (resultado!=None):
-                    return resultado,tablaEncontrada
-                    break
-
-                else:
-                    scope = scope.scopeAnterior
-
-                    if (scope!=None):
-                        ultimo = scope.padre
-
-            ident = ident.sig
 
     def verificarTipos(self,tipo,elemento):
 
@@ -321,9 +284,11 @@ class Store(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
 
+        tablaPadre = tabla.padre
+
         if (self.expresiones.type == "me"):
 
-            resultado, tablaEncontrada = self.buscar(VariableRobot)
+            resultado, tablaEncontrada = self.buscar(VariableRobot,tablaPadre)
             variableParaAlmacenar = resultado[3]
 
             # La variable me no tiene un valor asociado
@@ -337,7 +302,6 @@ class Store(Expr):
             variableParaAlmacenar = self.expresiones.evaluar(VariableRobot,tabla)
 
         tabla.tabla["me"][3] = variableParaAlmacenar
-        tablaPadre = tabla.padre
         tablaPadre.tabla["me"][3] = variableParaAlmacenar
         tablaPadre.tabla[VariableRobot][3] = variableParaAlmacenar
 
@@ -556,10 +520,9 @@ class Send(Expr):
                 print("false",end="")
             else:
                 print(valor,end="")
-                
+
         else:
             print(valor,end="")
-
 
 #------------------------------------------------------------------------------#
 
@@ -666,7 +629,7 @@ class Activate(Expr):
 
         while (ident!= None):
 
-            resultado,tablaEncontrada = self.buscar(ident.value)
+            resultado,tablaEncontrada = self.buscar(ident.value,ultimo)
 
             if (resultado[2] == 1):
                 print("Error en la linea",ident.numeroLinea,
@@ -690,7 +653,7 @@ class Activate(Expr):
         while (identificador!=None):
 
             # Se busca la tabla de simbolos asociada a la variable.
-            resultado,tablaEncontrada = self.buscar(identificador.value)
+            resultado,tablaEncontrada = self.buscar(identificador.value,ultimo)
 
             ListaComportamiento = tablaEncontrada.instrucciones
             tablaEncontrada.tabla["me"] = resultado
@@ -735,7 +698,7 @@ class Deactivate(Expr):
         tablaEncontrada = None
 
         while (ident!= None):
-            resultado,tablaEncontrada = self.buscar(ident.value)
+            resultado,tablaEncontrada = self.buscar(ident.value,ultimo)
 
             if (resultado[2] == 0):
                 print("Error en la linea",ident.numeroLinea,
@@ -760,7 +723,7 @@ class Deactivate(Expr):
         while (identificador!=None):
 
             # Se busca la tabla de simbolos asociada a la variable.
-            resultado,tablaEncontrada = self.buscar(identificador.value)
+            resultado,tablaEncontrada = self.buscar(identificador.value,ultimo)
 
             ListaComportamiento = tablaEncontrada.instrucciones
             tablaEncontrada.tabla["me"] = resultado
@@ -808,14 +771,13 @@ class Advance(Expr):
 
         while (ident!= None):
 
-            resultado,tablaEncontrada = self.buscar(ident.value)
+            resultado,tablaEncontrada = self.buscar(ident.value,ultimo)
 
             if (resultado[2] == 0):
                 print("Error en la línea " + str(ident.numeroLinea) +
                     ": el robot \'"+ident.value+"\' no está activado.")
                 sys.exit()
 
-            resultado,tablaEncontrada = ultimo.buscar(ident.value)
             ident = ident.sig
 
     def ejecutar(self):
@@ -833,7 +795,7 @@ class Advance(Expr):
             comportamientoEncontrado = 0
 
             # Se busca la tabla de simbolos asociada a la variable.
-            resultado,tablaEncontrada = self.buscar(identificador.value)
+            resultado,tablaEncontrada = self.buscar(identificador.value,ultimo)
 
             ListaComportamiento = tablaEncontrada.instrucciones
             tablaEncontrada.tabla["me"] = resultado
@@ -1169,7 +1131,7 @@ class Identificadores(Expr):
 
     def evaluar(self,VariableRobot,tablaSimbolos):
 
-        result,tabla = self.busqueda(tablaSimbolos)
+        result,tabla = self.buscar(self.value,tablaSimbolos)
         tipo = result[0]
         resultado = result[3]
 
@@ -1213,7 +1175,7 @@ class VariableMe(Expr):
 
     def evaluar(self,VariableRobot,tablaSimbolos):
 
-        result,tabla = self.buscar(VariableRobot)
+        result,tabla = self.buscar(VariableRobot,tablaSimbolos)
         tipo = result[0]
         resultado = result[3]
         if (resultado != None):
