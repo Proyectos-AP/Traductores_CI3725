@@ -162,6 +162,13 @@ class Expr:
 
         return mismoTipo
 
+    def CorrerInstruccionesControlador(self,instrucciones,tabla,ident):
+
+        aux = instrucciones
+        while (aux!= None):
+            aux.ejecutar(tabla,ident)
+            aux = aux.sig
+
 
 
 #------------------------------------------------------------------------------#
@@ -440,7 +447,8 @@ class Read(Expr):
                 assert(int(entrada) or entrada == "0")
                 entrada = int(entrada)
             except:
-                print("Error: Entrada \'",entrada,"\' invalida para robot de tipo",tipoRobot)
+                print("Error: Entrada \'",entrada,
+                    "\' invalida para robot de tipo",tipoRobot)
                 sys.exit()
 
 
@@ -450,7 +458,8 @@ class Read(Expr):
                 assert(len(entrada)==1 or entrada in {"\\n","\\t","\\'"})
 
             except:
-                print("Error: Entrada \'",entrada,"\' invalida para robot de tipo",tipoRobot)
+                print("Error: Entrada \'",entrada,
+                    "\' invalida para robot de tipo",tipoRobot)
                 sys.exit()
 
         elif (tipoRobot == "bool"):
@@ -458,7 +467,8 @@ class Read(Expr):
             try:
                 assert(entrada in {'true','false'})
             except:
-                print("Error: Entrada \'",entrada,"\' invalida para robot de tipo",tipoRobot)
+                print("Error: Entrada \'",entrada,
+                    "\' invalida para robot de tipo",tipoRobot)
                 sys.exit()
 
 
@@ -547,7 +557,7 @@ class Movimiento(Expr):
 
             numeroPasos = self.expresiones.evaluar(VariableRobot,tabla)
 
-            if (numeroPasos < 0 or not(isinstance(numeroPasos,int))):
+            if (numeroPasos < 0):
                 print("Error: La expresión calculada para realizar el" +
                     "movimiento del robot" + VariableRobot + " no es válida.")
                 sys.exit()
@@ -667,11 +677,9 @@ class Activate(Expr):
             while (ListaComportamiento!= None):
 
                 if (ListaComportamiento.condicion.type == "activation"):
-                    aux = ListaComportamiento.instrucciones
-                    while (aux!= None):
-                        aux.ejecutar(tablaLocal,identificador.value)
-                        aux = aux.sig
-
+                    instrucciones = ListaComportamiento.instrucciones
+                    self.CorrerInstruccionesControlador(instrucciones,tablaLocal,
+                                                        identificador.value)
                     break
 
                 ListaComportamiento = ListaComportamiento.sig
@@ -737,10 +745,9 @@ class Deactivate(Expr):
 
                 if (ListaComportamiento.condicion.type == "deactivation"):
 
-                    aux = ListaComportamiento.instrucciones
-                    while (aux!= None):
-                        aux.ejecutar(tablaLocal,identificador.value)
-                        aux = aux.sig
+                    instrucciones = ListaComportamiento.instrucciones
+                    self.CorrerInstruccionesControlador(instrucciones,tablaLocal,
+                                                        identificador.value)
 
                     break
 
@@ -796,6 +803,8 @@ class Advance(Expr):
             tablaEncontrada.tabla["me"] = resultado
             indiceTablaComportamiento = 0 
 
+            # Se busca un comportamiendo cuya condicion (es una expresion)
+            # retorne True
             while (ListaComportamiento!= None):
 
                 if (ListaComportamiento.condicion.type == "EXPRESION_BINARIA"):
@@ -807,22 +816,28 @@ class Advance(Expr):
                     if (resultadoExpresion):
                         comportamientoEncontrado = 1
 
+                        # Se busca la tabla de simbolos de la lista de 
+                        # comportamientos
                         for i in tablaEncontrada.hijos:
                             if (i.tipo == "EXPRESION_BINARIA" and 
-                                tablaEncontrada.hijos.index(i) == indiceTablaComportamiento):
+                                tablaEncontrada.hijos.index(i) ==\
+                                 indiceTablaComportamiento):
                                tablaLocal = i
                                break
 
                         if (tablaLocal != None):
                             tablaLocal.tabla["me"] = resultado
 
-                        aux = ListaComportamiento.instrucciones
-                        while (aux!= None):
-                            aux.ejecutar(tablaLocal,identificador.value)
-                            aux = aux.sig
+                        instrucciones = ListaComportamiento.instrucciones
+                        self.CorrerInstruccionesControlador(instrucciones,tablaLocal,
+                                                            identificador.value)
                         break
                 ListaComportamiento = ListaComportamiento.sig
                 indiceTablaComportamiento = indiceTablaComportamiento + 1
+
+            # Si no se encuentra un comportamiendo cuya condicion (es una expresion)
+            # retorne True se busca la lista de comportamiento cuya condicion
+            # sea default.
 
             if (comportamientoEncontrado != 1):
                 ListaComportamiento = tablaEncontrada.instrucciones
@@ -831,6 +846,9 @@ class Advance(Expr):
                     # En caso de que no hayan, se busca el comportamiento default.
                     if (ListaComportamiento.condicion.type == "default"):
                         comportamientoEncontrado = 1
+
+                        # Se busca la tabla de simbolos de la lista de 
+                        # comportamientos
                         for i in tablaEncontrada.hijos:
                             if (i.tipo == "default"):
                                 tablaLocal = i
@@ -839,11 +857,9 @@ class Advance(Expr):
                         if (tablaLocal != None):
                             tablaLocal.tabla["me"] = resultado
 
-
-                        aux = ListaComportamiento.instrucciones
-                        while (aux != None):
-                            aux.ejecutar(tablaLocal,identificador.value)
-                            aux = aux.sig
+                        instrucciones = ListaComportamiento.instrucciones
+                        self.CorrerInstruccionesControlador(instrucciones,tablaLocal,
+                                                            identificador.value)
 
                     ListaComportamiento = ListaComportamiento.sig
 
@@ -920,8 +936,6 @@ class While(Expr):
 
                 if (resultado != True):
                     break
-
-                    
 
 #------------------------------------------------------------------------------#
 
