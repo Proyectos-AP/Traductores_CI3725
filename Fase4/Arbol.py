@@ -187,11 +187,13 @@ class Expr:
 
         mismoTipo = False
 
-        if (tipo == "int" and isinstance(elemento,int) and not(isinstance(elemento,bool))):
+        if (tipo == "int" and isinstance(elemento,int) and 
+            not(isinstance(elemento,bool))):
             mismoTipo = True
         elif (tipo == "bool" and isinstance(elemento,bool)):
             mismoTipo = True
-        elif (tipo == "char" and isinstance(elemento,str) and len(elemento) == 1):
+        elif (tipo == "char" and isinstance(elemento,str) and 
+            len(elemento) == 1 or elemento in {"\\n","\\t","\\'"}):
             mismoTipo = True
 
         return mismoTipo
@@ -339,6 +341,7 @@ class Store(Expr):
         tablaPadre.tabla["me"][3] = variableParaAlmacenar
         tablaPadre.tabla[VariableRobot][3] = variableParaAlmacenar
 
+
 #------------------------------------------------------------------------------#
 
 class Drop(Expr):
@@ -376,7 +379,7 @@ class Drop(Expr):
         # Se verifica soltado inadecuado.
         if(tipoCorrecto):
             Expr.Matriz[tuple(posicionRobot)] = variableParaAlmacenar
-            #print("Estoy guardando en la pisicion",posicionRobot,"el numero",variableParaAlmacenar,"en el robot",VariableRobot)
+
         else:
             print("Error en la linea",self.expresiones.numeroLinea,
                 ": soltado inadecuado.")
@@ -439,7 +442,6 @@ class Collect(Expr):
                     tablaPadre.tabla[VariableRobot][3] = valorMatriz
 
 
-
 #------------------------------------------------------------------------------#
 
 class Read(Expr):
@@ -481,6 +483,7 @@ class Read(Expr):
 
             try:
                 assert(len(entrada)==1 or entrada in {"\\n","\\t","\\'"})
+
             except:
                 print("Error: Entrada \'",entrada,"\' invalida para robot de tipo",tipoRobot)
                 sys.exit()
@@ -536,10 +539,10 @@ class Send(Expr):
 
         if (tipoVariable == "char"):
 
-            if (valor == "\'\\n\'"):
+            if (valor in {"\'\\n\'","\\n"}):
                 print()
-            elif (valor == "\'\\t\'"):
-                print("    ")
+            elif (valor in {"\'\\t\'","\\t"}):
+                print("    ",end="")
 
             elif (len(valor)>1):
                 print(str(valor[1]),end="")
@@ -561,7 +564,6 @@ class Movimiento(Expr):
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
-        #print("Movimiento")
 
         # Verificar si hay una expresion presente, sino mover uno
         # Actualizar la posicion del robot en su variable 
@@ -581,12 +583,8 @@ class Movimiento(Expr):
         else:
             numeroPasos = 1
 
-        # VariableRobot = identificador.value
-
         tablaPadre = tabla.padre
         posicionAnteriorRobot = tablaPadre.tabla[VariableRobot][4]
-
-        #print("La posicion anterior del robot es",posicionAnteriorRobot)
 
         # Se actualiza la posición del robot:
 
@@ -605,8 +603,6 @@ class Movimiento(Expr):
         elif (self.type == "right"):
 
             tablaPadre.tabla[VariableRobot][4][0] += numeroPasos
-
-        #print("La nueva posicion del robot es", tablaPadre.tabla[VariableRobot][4],"robot:",VariableRobot)
 
 #------------------------------------------------------------------------------#
 
