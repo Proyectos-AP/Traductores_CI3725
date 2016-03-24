@@ -359,7 +359,6 @@ class Drop(Expr):
         if (self.expresiones.type == "me"):
             # Se debe verificar si el robot tenia un valor asociado o no:
             variableParaAlmacenar = tablaRobot[3]
-
             if (variableParaAlmacenar == None):
                 print("Error: El robot '" + VariableRobot + "' no tiene valor",
                     end="")
@@ -377,6 +376,7 @@ class Drop(Expr):
         # Se verifica soltado inadecuado.
         if(tipoCorrecto):
             Expr.Matriz[tuple(posicionRobot)] = variableParaAlmacenar
+            #print("Estoy guardando en la pisicion",posicionRobot,"el numero",variableParaAlmacenar,"en el robot",VariableRobot)
         else:
             print("Error en la linea",self.expresiones.numeroLinea,
                 ": soltado inadecuado.")
@@ -431,14 +431,14 @@ class Collect(Expr):
 
                 if (identificadorPresente):
                     tabla.tabla[variableParaActualizar][3] = valorMatriz
-                    #print("La tabla actualizada es",tabla.tabla)
+
                 else:
                     # Se actualiza el valor del robot:
                     tabla.tabla["me"][3] = valorMatriz
                     tablaPadre.tabla["me"][3] = valorMatriz
                     tablaPadre.tabla[VariableRobot][3] = valorMatriz
 
-        #("EL ROBOT ACTUALIZADO ES",tablaPadre.tabla[VariableRobot])
+
 
 #------------------------------------------------------------------------------#
 
@@ -571,14 +571,12 @@ class Movimiento(Expr):
 
         if (self.expresiones != None):
 
-            if (self.expresiones.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
+            numeroPasos = self.expresiones.evaluar(VariableRobot,tabla)
 
-                numeroPasos = self.expresiones.evaluar(VariableRobot,tabla)
-
-                if (numeroPasos < 0 or not(isinstance(numeroPasos,int))):
-                    print("Error: La expresión calculada para realizar el" +
-                        "movimiento del robot" + VariableRobot + " no es válida.")
-                    sys.exit()
+            if (numeroPasos < 0 or not(isinstance(numeroPasos,int))):
+                print("Error: La expresión calculada para realizar el" +
+                    "movimiento del robot" + VariableRobot + " no es válida.")
+                sys.exit()
 
         else:
             numeroPasos = 1
@@ -608,7 +606,7 @@ class Movimiento(Expr):
 
             tablaPadre.tabla[VariableRobot][4][0] += numeroPasos
 
-        #print("La nueva posicion del robot es", tablaPadre.tabla[VariableRobot][4])
+        #print("La nueva posicion del robot es", tablaPadre.tabla[VariableRobot][4],"robot:",VariableRobot)
 
 #------------------------------------------------------------------------------#
 
@@ -903,13 +901,12 @@ class Advance(Expr):
                 ListaComportamiento = ListaComportamiento.sig
                 indiceTablaComportamiento = indiceTablaComportamiento + 1
 
+            if (comportamientoEncontrado != 1):
+                ListaComportamiento = tablaEncontrada.instrucciones
+                while (ListaComportamiento!=None):
 
-            ListaComportamiento = tablaEncontrada.instrucciones
-            while (ListaComportamiento!=None):
-  
-                # En caso de que no hayan, se busca el comportamiento default.
-                if (ListaComportamiento.condicion.type == "default"):
-
+                    # En caso de que no hayan, se busca el comportamiento default.
+                    if (ListaComportamiento.condicion.type == "default"):
                         comportamientoEncontrado = 1
                         for i in tablaEncontrada.hijos:
                             if (i.tipo == "default"):
@@ -925,7 +922,7 @@ class Advance(Expr):
                             aux.ejecutar(tablaLocal,identificador.value)
                             aux = aux.sig
 
-                ListaComportamiento = ListaComportamiento.sig
+                    ListaComportamiento = ListaComportamiento.sig
 
             if (comportamientoEncontrado == 0):
                 print("Error: El robot \'"+identificador.value+
@@ -989,7 +986,6 @@ class While(Expr):
 
         tabla = Expr.ultimo
         resultado = self.expresiones.evaluar(None,tabla)
-
         if (resultado == True):
             while True:
                 aux = self.InstruccionesWhile
@@ -1210,6 +1206,7 @@ class Identificadores(Expr):
         result,tabla = self.busqueda(tablaSimbolos)
         tipo = result[0]
         resultado = result[3]
+
         if (resultado != None):
             if (tipo== "int"):
                 return int(resultado)
