@@ -1,0 +1,39 @@
+$- a+b.bot:
+ - ========
+ - Recibe dos enteros 'a' y 'b', e imprime su suma.
+ - Autor: Ricardo Monascal, 2016
+ -$
+create
+  int bot a
+    on activation:
+      read.
+      drop me.
+    end
+  end
+  char bot b
+    on activation:
+      read.
+      store 'a'.
+      send. 
+      store '\''.
+      send.
+      store 'b'.
+      send.
+      store '\t'.
+      send.
+      store 'c'.
+      send.
+      store 'd'.
+      send.
+      store '\n'.
+      send.
+      store 'e'.
+      send.
+      
+
+    end
+  end
+
+execute
+  activate a, b.
+end

@@ -186,8 +186,7 @@ class Lexer():
 	# Descripción de la función: Reglas para caracteres. Este token solo 
 	# toma caracteres encerrados entre comillas simples.
 	def t_TkCaracter(self,t):
-
-		r'\'.\'| \'\\n\'| \'\\t\' '
+		r"'\\n'| '\\t' | '\\'' | '.'"
 		return t
 
 #------------------------------------------------------------------------------#

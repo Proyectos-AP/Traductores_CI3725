@@ -518,6 +518,9 @@ class Send(Expr):
             elif (valor in {"\'\\t\'","\\t"}):
                 print("    ",end="")
 
+            elif (valor in {"\'\\\'\'"}):
+                print("'",end="")
+
             elif (len(valor)>1):
                 print(str(valor[1]),end="")
 
