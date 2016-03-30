@@ -10,7 +10,7 @@ create
       store 'o'. send.
       store 'l'. send.
       store 'a'. send.
-      store ' '. send.
+      store '\''. send.
       store 'M'. send.
       store 'u'. send.
       store 'n'. send.

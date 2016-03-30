@@ -422,16 +422,8 @@ class Drop(Expr):
         else:
             variableParaAlmacenar = self.expresiones.evaluar(VariableRobot,tabla)
 
-        tipoCorrecto = self.verificarTipos(tipoRobot,variableParaAlmacenar)
-
-        # Se verifica soltado inadecuado:
-        if(tipoCorrecto):
-            Expr.Matriz[tuple(posicionRobot)] = variableParaAlmacenar
-
-        else:
-            print("Error en la línea",self.expresiones.numeroLinea,
-                ": soltado inadecuado.")
-            sys.exit()
+        
+        Expr.Matriz[tuple(posicionRobot)] = variableParaAlmacenar
 
 #------------------------------------------------------------------------------#
 
@@ -572,6 +564,7 @@ class Read(Expr):
             tabla.tabla["me"][3] = entrada
             tablaPadre.tabla[VariableRobot][3] = entrada
             tablaPadre.tabla["me"][3] = entrada
+            
  
 #------------------------------------------------------------------------------#
 
@@ -592,7 +585,59 @@ class Recieve(Expr):
             - VariableRobot :
         * Variables de salida: Ninguna.
         '''
-        print("Recieve")
+
+        entrada = input("Introduzca el valor que desea guardar: ")
+
+        if (self.identificador == None):
+
+            VariableAguardar = "me"
+
+        else:
+            VariableAguardar= self.identificador.value
+            
+        # Se verifica el tipo de la entrada:
+        resultado = tabla.buscarLocal(VariableAguardar)
+        tipoRobot = resultado[0]
+
+        if(tipoRobot == "int"):
+
+            try:
+                assert(int(entrada) or entrada == "0")
+                entrada = int(entrada)
+            except:
+                print("Error: Entrada \'",entrada,
+                    "\' inválida para robot de tipo",tipoRobot)
+                sys.exit()
+
+        elif(tipoRobot == "char"):
+
+            try:
+                assert(len(entrada) == 1 or entrada in {"\\n","\\t","\\'"})
+
+            except:
+                print("Error: Entrada \'",entrada,
+                    "\' inválida para robot de tipo",tipoRobot)
+                sys.exit()
+
+        elif (tipoRobot == "bool"):
+
+            try:
+                assert(entrada in {'true','false'})
+            except:
+                print("Error: Entrada \'",entrada,
+                    "\' inválida para robot de tipo",tipoRobot)
+                sys.exit()
+
+        # Se modifica el valor de la variable:
+        tabla.tabla[VariableAguardar][3] = entrada
+
+        # Si el read no tiene identificadores asociados el valor de la entrada
+        # se guarda en la variable me:
+        if (self.identificador == None):
+            tablaPadre = tabla.padre
+            tabla.tabla["me"][3] = entrada
+            tablaPadre.tabla[VariableRobot][3] = entrada
+            tablaPadre.tabla["me"][3] = entrada
 
 #------------------------------------------------------------------------------#
     

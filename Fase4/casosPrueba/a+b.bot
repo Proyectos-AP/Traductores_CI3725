@@ -8,17 +8,17 @@ create
     on activation:
       read.
       drop me.
+      store 'a'.
     end
   end
-  int bot b
+  char bot b
     on activation:
       read.
       collect as a.
-      store a + me.
       send.
     end
   end
 
 execute
-  activate a, b.
+  activate a,b.
 end
