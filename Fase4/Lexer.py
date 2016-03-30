@@ -194,8 +194,7 @@ class Lexer():
 
 #------------------------------------------------------------------------------#
 
-	# Descripción de la función: Función para localizar el número de 
-	# columna de una palabra.
+	# Descripción de la función: Localiza el número de columna de una palabra.
 	def NumeroColumna(self,input,token):
 
 		last_cr = input.rfind('\n',0,token.lexpos)
@@ -204,7 +203,7 @@ class Lexer():
 
 #------------------------------------------------------------------------------#
 
-	# Descripción de la función: Función para el manejo de errores.
+	# Descripción de la función: Se encarga del manejo de errores.
 	def t_error(self,t):
 
 		ErrorEncontrado = token(None,t.value[0],\
@@ -221,7 +220,7 @@ class Lexer():
 
 #------------------------------------------------------------------------------#
 
-	# Descripción de la función: Función que tokeniza entrada.
+	# Descripción de la función: Tokeniza la entrada.
 	def tokenizar(self):
 		
 		self.lexer.input(self.data)

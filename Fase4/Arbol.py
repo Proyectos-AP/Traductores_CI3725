@@ -28,7 +28,8 @@ import sys
 
 class Expr: 
     '''
-      * Descripción:
+      * Descripción: Clase Abstracta para representar los nodos del Árbol 
+        Sintáctico Abstracto.
     '''
 
     ScopeActual = None  # 
@@ -190,7 +191,7 @@ class RaizAST(Expr):
 
     def __init__(self,ArbolDeclaracion,ArbolInstruccion):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Raiz AST
         '''
         self.type = "RaizAST"
         self.arbolDeclaracion = ArbolDeclaracion
@@ -263,7 +264,7 @@ class RaizAST(Expr):
 class Create(Expr):
     def __init__(self,listaDeclaraciones):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Create.
         '''
         self.type = "CREATE"
         self.listaDeclaraciones = listaDeclaraciones
@@ -275,7 +276,7 @@ class Create(Expr):
 class Execute(Expr):
     def __init__(self,listaInstrucciones):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Execute.
         '''
         self.type = "EXECUTE"
         self.Instrucciones = listaInstrucciones
@@ -289,7 +290,7 @@ class Inicio_Declaracion(Expr):
 
     def __init__(self,ultimo,scopeAnterior,listaDeclaraciones):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Inicio_Declaracion.
         '''
         self.padre = ultimo
         self.scopeAnterior = scopeAnterior
@@ -327,7 +328,7 @@ class Store(Expr):
         instruccion STORE'''
     def __init__(self,listaExpresiones,numeroLinea):
         '''
-        * Descripción:
+        * Descripción: Consctructor de la clase Store.
         '''
         self.type = "STORE"
         self.expresiones = listaExpresiones
@@ -369,7 +370,7 @@ class Drop(Expr):
         instrucción DROP'''
     def __init__(self,listaExpresiones):
         '''
-        * Descripción:
+        * Descripción: Consstructor de la clase Drop.
         '''
         self.type = "DROP"
         self.expresiones = listaExpresiones
@@ -419,7 +420,7 @@ class Collect(Expr):
         instruccion COLLECT '''
     def __init__(self,identificador):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Collect.
         '''
         self.type = "COLLECT"
         self.identificador = identificador
@@ -427,7 +428,7 @@ class Collect(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
         '''
-        * Descripción de la función:
+        * Descripción de la función: 
         * Variables de entrada:
         * Variables de salida:
         '''
@@ -480,7 +481,7 @@ class Read(Expr):
         instruccion READ '''
     def __init__(self,identificador):
         '''
-        * Descripción:
+        * Descripción: Consctructor de la clase Read.
         '''
         self.type = "READ"
         self.identificador = identificador
@@ -551,7 +552,7 @@ class Read(Expr):
 class Recieve(Expr):
     def __init__(self):
         '''
-        * Descripción:
+        * Descripción: Consctructor  de la clase Recieve.
         '''
         self.type = "RECIEVE"
         self.sig = None
@@ -569,7 +570,7 @@ class Recieve(Expr):
 class Send(Expr):
     def __init__(self):
         '''
-        * Descripción:
+        * Descripción: Consctuctor de la clase Send.
         '''
         self.type = "SEND"
         self.sig = None
@@ -623,7 +624,7 @@ class Movimiento(Expr):
     ''' Nodo que almacena la direccion del movimiento del robot.'''
     def __init__(self,tipo,listaExpresiones,numeroLinea):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Movimiento.
         '''
         self.type = tipo
         self.expresiones = listaExpresiones
@@ -677,7 +678,7 @@ class Condicion(Expr):
     del robot '''
     def __init__(self,type,numeroLinea):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Condicion.
         '''
         self.type = type
         self.numeroLinea = numeroLinea
@@ -689,7 +690,7 @@ class ListaComportamiento(Expr):
     ''' Lista de comportamiento del robot.'''
     def __init__(self,condicion,instrucciones,numeroLinea):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase ListaComportamiento.
         '''
         self.type = "Lista de comportamientos"
         self.condicion = condicion
@@ -703,7 +704,7 @@ class Declaraciones(Expr):
     ''' Raíz del árbol de las variables declaradas en el programa.'''
     def __init__(self,tipoRobot,identificadores,listaComportamiento):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Declaraciones.
         '''
         self.type = "DECLARACIONES"
         self.tipoRobot = tipoRobot
@@ -721,7 +722,7 @@ class Activate(Expr):
         instruccion ACTIVATE '''
     def __init__(self,listaIdentificadores):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Activate.
         '''
         self.type = "ACTIVATE"
         self.Identificadores = listaIdentificadores
@@ -798,7 +799,7 @@ class Deactivate(Expr):
         instruccion DEACTIVATE '''
     def __init__(self,listaIdentificadores):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Deactivate.
         '''
         self.type = "DEACTIVATE"
         self.Identificadores = listaIdentificadores
@@ -876,7 +877,7 @@ class Advance(Expr):
         instruccion ADVANCE '''
     def __init__(self,listaIdentificadores):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Advance.
         '''
         self.type = "ADVANCE"
         self.Identificadores = listaIdentificadores
@@ -997,7 +998,7 @@ class While(Expr):
          indeterminada '''
     def __init__(self,listaExpresiones,listaInstrucciones):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase While.
         '''
         self.type = "ITERACION INDETERMINADA"
         self.expresiones = listaExpresiones
@@ -1066,7 +1067,7 @@ class Condicional(Expr):
     ''' Raiz del arbol de instrucciones y expresiones del condicional '''
     def __init__(self,listaExpresiones,exito,fracaso):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Condicional.
         '''
         self.type = "CONDICIONAL"
         self.expresionesCondicional = listaExpresiones
@@ -1148,7 +1149,7 @@ class ExpresionBinaria(Expr):
     ''' Raiz del árbol de las expresiones binarias '''
     def __init__(self,left,op,right,linea):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase ExpresionBinaria.
         '''
         self.type = "EXPRESION_BINARIA"
         self.left = left
@@ -1214,7 +1215,7 @@ class OperadorUnario(Expr):
     ''' Raiz del arbol de las expresiones unarias '''
     def __init__(self,op,value,numeroLinea):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase OperadorUnario.
         '''
         self.type = "OPERADOR_UNARIO"
         self.op = op
@@ -1242,7 +1243,7 @@ class Number(Expr):
     ''' Nodo que almacena los numeros del programa '''
     def __init__(self,value,numeroLinea):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Number.
         '''
         self.type = "int"
         self.value = value
@@ -1264,7 +1265,7 @@ class Booleano(Expr):
     ''' Nodo que almacena los booleanos del programa (true y false) '''
     def __init__(self,value,numeroLinea):
         '''
-        * Descripción:
+        * Descripción: Constructor de la clase Booleano.
         '''
         self.type = "bool"
         self.value = value
@@ -1274,7 +1275,9 @@ class Booleano(Expr):
         '''
         * Descripción de la función:
         * Variables de entrada:
-        * Variables de salida:
+            - VariableRobot :
+            - tablaSimbolos :
+        * Variables de salida: Booleano 
         '''
 
         resultado = self.value
@@ -1302,7 +1305,10 @@ class Identificadores(Expr):
         '''
         * Descripción de la función:
         * Variables de entrada:
+            - VariableRobot : 
+            - tablaSimbolos : 
         * Variables de salida:
+            - resultado :
         '''
 
         result,tabla = self.buscar(self.value,tablaSimbolos)
@@ -1354,7 +1360,10 @@ class VariableMe(Expr):
         '''
         * Descripción de la función:
         * Variables de entrada:
+            - VariableRobot :
+            - tablaSimbolos :
         * Variables de salida:
+            - resultado :
         '''
 
         result,tabla = self.buscar(VariableRobot,tablaSimbolos)
@@ -1394,7 +1403,10 @@ class Caracter(Expr):
         '''
         * Descripción de la función:
         * Variables de entrada:
+            - VariableRobot :
+            - tablaSimbolos :
         * Variables de salida:
+            - resultado :
         '''
 
         resultado = self.value

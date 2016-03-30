@@ -130,7 +130,7 @@ if (len(MiLexer.Errores) != 0):
   ImprimirErrores(MiLexer.Errores)
 
 else:
-  # Analisis de Sintaxis:
+  # Análisis de Sintaxis:
   tokens = MiLexer.tokens 
   parser = yacc.yacc(errorlog = yacc.NullLogger())
   Raiz = parser.parse(datos,tracking = True)

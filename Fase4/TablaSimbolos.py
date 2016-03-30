@@ -47,7 +47,7 @@ class TablaSimbolos():
 
 		aux = self
 
-		while (aux!=None):
+		while (aux != None):
 
 			try:
 				return aux.tabla[variable],aux
@@ -77,12 +77,13 @@ class TablaSimbolos():
 		* Descripción de la función: Inserta un elemento en la Tabla de 
 		  Simbolos con su información asociada.
 		* Variables de entrada:
-			- variable : 
-			- tipo : 
-			- valorAsociado :
-			- activado : 
-			- valor :
-			- coordenada :
+			- variable : nombre de la variable a insertar.
+			- tipo : tipo de la variable agregada.
+			- valorAsociado : valor asocado a la variable agregada.
+			- activado : indica si un robot esta activado.
+			- valor : posee el valor asociado 
+			- coordenada : posicion de la matriz en la que se encuentra 
+			  el robot.
 		* Variables de salida: Booleano que indica si el elemento fue insertado
 		  en la Tabla de Simbolos.
 		'''
