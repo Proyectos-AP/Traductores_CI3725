@@ -179,7 +179,7 @@ def VerificarVariableDeclaradaExecute(NodoVariable,TablaSimbolos):
 
 def VerificarTipoVariable(tipo,tipoVariableAevaluar,numeroLinea):
     '''
-    * Descripción de la función: Dado dos tipos verifica si los mismos
+    * Descripción de la función: Dados dos tipos verifica si los mismos
       son iguales o no.
     * Variables de entrada: 
         - tipo: Tipo de variable a comparar.
@@ -321,10 +321,10 @@ def VerificarInstruccionesListaDeclaraciones(ArbolInstrucciones,tipoRobot):
 
 def VerificarInstrucciones(ArbolInstrucciones):
     '''
-      * Descripción de la función: Función que verifia si el numero de 
+      * Descripción de la función: Función que verifia si el número de 
         declaraciones de activation,deactivation y default son correctas. 
-        Además chequea si la declaración default es la última en la
-        lista enlazada de declaraciones. 
+        Además, chequea si la declaración default se encuentra luego de 
+        las instrucciones on expresión (en caso de existir). 
       * Variables de entrada: 
             - ArbolInstrucciones: Lista enlazada de comportamientos.
       * Variables de salida: 

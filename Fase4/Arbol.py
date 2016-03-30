@@ -765,9 +765,11 @@ class Activate(Expr):
 
     def verificarActivacion(self):
         '''
-        * Descripción de la función:
-        * Variables de entrada: Niguna.
-        * Variables de salida: Niguna.
+        * Descripción de la función: Verifica si un robot se encuentra 
+          activado. Si lo está, se reporta un error. En caso contrario 
+          se procede a activarlo.
+        * Variables de entrada: Ninguna.
+        * Variables de salida: Ninguna.
         '''
 
         ident = self.Identificadores
@@ -843,7 +845,9 @@ class Deactivate(Expr):
 
     def verificarDesactivacion(self):
         '''
-        * Descripción de la función:
+        * Descripción de la función: Verifica si un robot se encuentra 
+          desactivado. Si lo está, se reporta un error. En caso contrario 
+          se procede a desactivarlo.
         * Variables de entrada: Ninguna.
         * Variables de salida: Ninguna.
         '''
@@ -923,7 +927,8 @@ class Advance(Expr):
 
     def verificarActivacion(self):
         '''
-        * Descripción de la función:
+        * Descripción de la función: Verifica si el robot que se desea avanzar
+          está activado. En caso de que no lo esté se reporta un error. 
         * Variables de entrada: Ninguna.
         * Variables de salida: Ninguna.
         '''
