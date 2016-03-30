@@ -28,11 +28,17 @@ class TablaSimbolos():
 		* Descripción: Constructor de la clase TablaSimbolos.
 		'''
 
+		# Apuntador a la penúltima Tabla de Símbolos creada en el scope actual.
 		self.padre = padre
-		self.hijos = hijos
-		self.tipo = tipo
-		self.instrucciones = instrucciones
-		self.tabla = {}
+		# Arreglo de las tablas de comportamiento de una tabla asociada a un robot.
+		self.hijos = hijos 
+		# Tipo de la Tabla de Símbolos.
+		self.tipo = tipo   
+		# Apuntador al nodo inicial de las instrucciones asociadas a la 
+		#Tabla de Símbolos en el AST.
+		self.instrucciones = instrucciones  
+		# Tabla de Símbolos.
+		self.tabla = {}                     
 		
 	def buscar(self,variable):
 		'''

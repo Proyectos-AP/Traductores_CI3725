@@ -32,9 +32,12 @@ class Expr:
         Sintáctico Abstracto.
     '''
 
-    ScopeActual = None  # 
-    ultimo = None       #
-    Matriz = {}         #
+    # Almacena un apuntador correspondiente al inicio del scope actual.
+    ScopeActual = None  
+    # Almacena un apuntador a la última Tabla de Símbolos creada en el scope.
+    ultimo = None
+    # Almacena los elementos que se encuentran en la Matriz.
+    Matriz = {} 
 
     def imprimirInstrucciones(self,numeroTabs):
         '''
@@ -64,12 +67,12 @@ class Expr:
 
     def imprimirInstruccionesSimples(self,numeroTabs):
         '''
-        * Descripción de la función: Esta funcion imprime el conjunto de 
-        instrucciones que son de la forma INSTRUCCION LISTA_DE_IDENTIFICADORES, 
-        es decir, ACTIVATE,DEACTIVATE,ADVANCE.
+        * Descripción de la función: Imprime el conjunto de instrucciones que 
+          son de la forma INSTRUCCION LISTA_DE_IDENTIFICADORES, 
+          es decir, ACTIVATE, DEACTIVATE, ADVANCE.
         * Variables de entrada:
-            - numeroTabs: Numero de tabulaciones que tendran las impresiones.
-        * Variables de salida: Ninguna
+            - numeroTabs: Número de tabulaciones que tendrán las impresiones.
+        * Variables de salida: Ninguna.
         '''
         espacio = "   "*numeroTabs
 
@@ -86,11 +89,11 @@ class Expr:
 
     def imprimirExpresionesBinarias(self,numeroTabs):
         '''
-        * Descripción de la función: Esta funcion imprime el arbol de 
-        expresiones binarias en preorder.
+        * Descripción de la función: Imprime el árbol de expresiones binarias 
+          en preorder.
         * Variables de entrada:
-            - numeroTabs: Numero de tabulaciones que tendran las impresiones.
-        * Variables de salida: Ninguna
+            - numeroTabs: Número de tabulaciones que tendrán las impresiones.
+        * Variables de salida: Ninguna.
         '''
         numeroTabs += 1
         espacio = "   " * numeroTabs
@@ -132,7 +135,9 @@ class Expr:
         '''
         * Descripción de la función:
         * Variables de entrada:
-        * Variables de salida:
+            - identificador :
+            - tablaSimbolos :
+        * Variables de salida: Ninguna.
         '''
 
         ultimo = tablaSimbolos
@@ -155,7 +160,10 @@ class Expr:
         '''
         * Descripción de la función:
         * Variables de entrada:
-        * Variables de salida:
+            - tipo :
+            - elemento :
+        * Variables de salida: Booleano que indica si los tipos son iguales 
+          o no.
         '''
 
         mismoTipo = False
@@ -175,7 +183,10 @@ class Expr:
         '''
         * Descripción de la función:
         * Variables de entrada:
-        * Variables de salida:
+            - instrucciones : 
+            - tabla :
+            - ident :
+        * Variables de salida: Ninguna.
         '''
 
         aux = instrucciones
@@ -191,7 +202,7 @@ class RaizAST(Expr):
 
     def __init__(self,ArbolDeclaracion,ArbolInstruccion):
         '''
-        * Descripción: Constructor de la clase Raiz AST
+        * Descripción: Constructor de la clase RaizAST
         '''
         self.type = "RaizAST"
         self.arbolDeclaracion = ArbolDeclaracion
@@ -200,10 +211,10 @@ class RaizAST(Expr):
 
     def imprimirAST(self,numeroTabs):
         '''
-        * Descripción de la función: Esta funcion se encarga de imprimir la 
-        rama de instrucciones del AST.
+        * Descripción de la función: Se encarga de imprimir la rama de 
+          instrucciones del AST.
         * Variables de entrada:
-            - numeroTabs: Numero de tabulaciones que tendran las impresiones.
+            - numeroTabs: Número de tabulaciones que tendrán las impresiones.
         * Variables de salida: Ninguna.
         '''
 
@@ -218,7 +229,8 @@ class RaizAST(Expr):
         '''
         * Descripción de la función:
         * Variables de entrada:
-        * Variables de salida:
+            - tabla : 
+        * Variables de salida: Ninguna.
         '''
         
         aux = tabla
@@ -234,19 +246,21 @@ class RaizAST(Expr):
 
     def ejecutar(self):
         '''
-        * Descripción de la función:
-        * Variables de entrada:
-        * Variables de salida:
+        * Descripción de la función: Se encarga de ejecutar las instrucciones
+          del programa leído, las cuales realizan las verificaciónes de 
+          correctitud correspondientes.
+        * Variables de entrada: Ninguna.
+        * Variables de salida: Ninguna.
         '''
 
-        if (self.arbolDeclaracion!= None):
+        if (self.arbolDeclaracion != None):
             auxDeclaracion = self.arbolDeclaracion.listaDeclaraciones
             auxDeclaracion.actualizarScope()
             self.inicializarTablas(Expr.ultimo)
             
         auxInstrucciones = self.arbolInstruccion.Instrucciones
         
-        while (auxInstrucciones!=None):
+        while (auxInstrucciones != None):
             auxInstrucciones.ejecutar()
             auxInstrucciones = auxInstrucciones.sig
 
@@ -337,9 +351,12 @@ class Store(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
         '''
-        * Descripción de la función:
+        * Descripción de la función: Ejecuta las instrucciones correspondientes
+          a la instrucción store.
         * Variables de entrada:
-        * Variables de salida:
+            - tabla :
+            - VariableRobot : 
+        * Variables de salida: Ninguna.
         '''
 
         tablaPadre = tabla.padre
@@ -378,9 +395,12 @@ class Drop(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
         '''
-        * Descripción de la función:
+        * Descripción de la función: Ejecuta las instrucciones correspondientes
+          a la instrucción Drop.
         * Variables de entrada:
-        * Variables de salida:
+            - tabla : 
+            - VariableRobot : 
+        * Variables de salida: Ninguna.
         '''
 
         tablaPadre = tabla.padre
@@ -428,9 +448,12 @@ class Collect(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
         '''
-        * Descripción de la función: 
+        * Descripción de la función: Ejecuta las acciones correspondientes
+          a la instrucción Collect
         * Variables de entrada:
-        * Variables de salida:
+            - tabla : 
+            - VariableRobot : 
+        * Variables de salida: Ninguna.
         '''
         # Se busca la posición actual del robot:
         tablaPadre = tabla.padre
@@ -489,9 +512,12 @@ class Read(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
         '''
-        * Descripción de la función:
+        * Descripción de la función: Ejecuta las instrucciones correspondientes
+          a la instrucción Read.
         * Variables de entrada:
-        * Variables de salida:
+            - tabla : 
+            - VariableRobot : 
+        * Variables de salida: Ninguna.
         '''
 
         entrada = input("Introduzca el valor que desea guardar: ")
@@ -552,16 +578,19 @@ class Read(Expr):
 class Recieve(Expr):
     def __init__(self):
         '''
-        * Descripción: Consctructor  de la clase Recieve.
+        * Descripción: Constructor de la clase Recieve.
         '''
         self.type = "RECIEVE"
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
         '''
-        * Descripción de la función:
+        * Descripción de la función: Ejecuta las acciones correspondientes
+          a la instrucción Recieve.
         * Variables de entrada:
-        * Variables de salida:
+            - tabla :
+            - VariableRobot :
+        * Variables de salida: Ninguna.
         '''
         print("Recieve")
 
@@ -570,16 +599,19 @@ class Recieve(Expr):
 class Send(Expr):
     def __init__(self):
         '''
-        * Descripción: Consctuctor de la clase Send.
+        * Descripción: Constructor de la clase Send.
         '''
         self.type = "SEND"
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
         '''
-        * Descripción de la función:
+        * Descripción de la función: Ejecuta las acciones correspondientes 
+          a la acción Send.
         * Variables de entrada:
-        * Variables de salida:
+            - tabla :
+            - VariableRobot : 
+        * Variables de salida: Niguna.
         '''
 
         resultado = tabla.buscarLocal("me")
@@ -621,7 +653,7 @@ class Send(Expr):
 #------------------------------------------------------------------------------#
 
 class Movimiento(Expr):
-    ''' Nodo que almacena la direccion del movimiento del robot.'''
+    ''' Nodo que almacena la dirección del movimiento del robot.'''
     def __init__(self,tipo,listaExpresiones,numeroLinea):
         '''
         * Descripción: Constructor de la clase Movimiento.
@@ -633,9 +665,12 @@ class Movimiento(Expr):
 
     def ejecutar(self,tabla,VariableRobot):
         '''
-        * Descripción de la función:
+        * Descripción de la función: Ejecuta las acciones correspondientes
+          a las intrucciones de movimiento.
         * Variables de entrada:
-        * Variables de salida:
+            - tabla : 
+            - VariableRobot : 
+        * Variables de salida: Ninguna.
         '''
 
         if (self.expresiones != None):
@@ -731,8 +766,8 @@ class Activate(Expr):
     def verificarActivacion(self):
         '''
         * Descripción de la función:
-        * Variables de entrada:
-        * Variables de salida:
+        * Variables de entrada: Niguna.
+        * Variables de salida: Niguna.
         '''
 
         ident = self.Identificadores
@@ -754,9 +789,10 @@ class Activate(Expr):
 
     def ejecutar(self):
         '''
-        * Descripción de la función:
-        * Variables de entrada:
-        * Variables de salida:
+        * Descripción de la función: Ejecuta las acciones correspondientes
+          a la instrucción activate.
+        * Variables de entrada: Ninguna.
+        * Variables de salida: Ninguna.
         '''
 
         ultimo = Expr.ultimo
@@ -808,8 +844,8 @@ class Deactivate(Expr):
     def verificarDesactivacion(self):
         '''
         * Descripción de la función:
-        * Variables de entrada:
-        * Variables de salida:
+        * Variables de entrada: Ninguna.
+        * Variables de salida: Ninguna.
         '''
 
         ident = self.Identificadores
@@ -831,9 +867,10 @@ class Deactivate(Expr):
 
     def ejecutar(self):
         '''
-        * Descripción de la función:
-        * Variables de entrada:
-        * Variables de salida:
+        * Descripción de la función: Ejecuta las acciones correspondientes
+          a la instrucción deactivate.
+        * Variables de entrada: Ninguna.
+        * Variables de salida: Ninguna.
         '''
 
         ultimo = Expr.ultimo
@@ -886,7 +923,9 @@ class Advance(Expr):
 
     def verificarActivacion(self):
         '''
-        * Descripción:
+        * Descripción de la función:
+        * Variables de entrada: Ninguna.
+        * Variables de salida: Ninguna.
         '''
 
         ident = self.Identificadores
@@ -905,7 +944,10 @@ class Advance(Expr):
 
     def ejecutar(self):
         '''
-        * Descripción:
+        * Descripción de la función: Ejecuta las acciones correspondientes
+          a la instrucción advance.
+        * Variables de entrada: Ninguna.
+        * Variables de salida: Ninguna.
         '''
 
         ultimo = Expr.ultimo
@@ -1046,6 +1088,11 @@ class While(Expr):
         self.InstruccionesWhile.imprimirInstrucciones(numeroTabs)
 
     def ejecutar(self):
+        '''
+        * Descripción de la función:
+        * Variables de entrada: Ninguna.
+        * Variables de salida: Ninguna.
+        '''
 
         tabla = Expr.ultimo
         resultado = self.expresiones.evaluar(None,tabla)
@@ -1064,7 +1111,7 @@ class While(Expr):
 #------------------------------------------------------------------------------#
 
 class Condicional(Expr):
-    ''' Raiz del arbol de instrucciones y expresiones del condicional '''
+    ''' Raiz del árbol de instrucciones y expresiones del condicional '''
     def __init__(self,listaExpresiones,exito,fracaso):
         '''
         * Descripción: Constructor de la clase Condicional.
@@ -1080,17 +1127,17 @@ class Condicional(Expr):
         * Descripción de la función: Esta funcion se encarga de imprimir
         la instruccion IF con su guardia y sus instrucciones.
         * Variables de entrada:
-            - numeroTabs: Numero de tabulaciones que tendran las impresiones.
-        * Variables de salida: Ninguna
+            - numeroTabs: Número de tabulaciones que tendrán las impresiones.
+        * Variables de salida: Ninguna.
         '''
 
-        # Se calcula el número de tabs para la instruccion IF:
+        # Se calcula el número de tabs para la instrucción IF:
         espacio = "   "*numeroTabs
         print(espacio + self.type)
 
         # Se calcula el número de tabs para la guardia del IF:
         numeroTabs += 1
-        espacio = "   "*numeroTabs
+        espacio = "   " * numeroTabs
 
         print(espacio + "-guardia :",self.expresionesCondicional.type)
 
@@ -1101,7 +1148,7 @@ class Condicional(Expr):
 
         if(self.expresionesCondicional.type == "OPERADOR_UNARIO"):
 
-            # Se recalcula el numero de tabs para las expresiones:
+            # Se recalcula el número de tabs para las expresiones:
             expr = self.expresionesCondicional.value
             numeroTabsExpr = numeroTabs2
             print(espacio2 + "-operador unario:",self.expresionesCondicional.op)
@@ -1122,9 +1169,10 @@ class Condicional(Expr):
 
     def ejecutar(self):
         '''
-        * Descripción de la función:
-        * Variables de entrada:
-        * Variables de salida:
+        * Descripción de la función: Ejecuta las acciones correspondientes 
+          a la instrucción condicional.
+        * Variables de entrada: Ninguna.
+        * Variables de salida: Ninguna.
         '''
 
         tabla = Expr.ultimo
@@ -1161,7 +1209,10 @@ class ExpresionBinaria(Expr):
         '''
         * Descripción de la función:
         * Variables de entrada:
-        * Variables de salida:
+            - VariableRobot : 
+            - tablaSimbolos : Apuntador a la tabla de Símbolos a partir de la 
+              cual se buscarán la información asociada a VariableRobot.
+        * Variables de salida: Resultado de la expresión binaria evaluada.
         '''
       
         resultadoIzq = self.left.evaluar(VariableRobot,tablaSimbolos)
@@ -1226,7 +1277,10 @@ class OperadorUnario(Expr):
         '''
         * Descripción de la función:
         * Variables de entrada:
-        * Variables de salida:
+            - VariableRobot :
+            - tablaSimbolos : Apuntador a la tabla de Símbolos a partir de la 
+              cual se buscarán la información asociada a VariableRobot.
+        * Variables de salida: Resultado de la expresión unaria evaluada.
         '''
 
         resultado = self.value.evaluar(VariableRobot,tablaSimbolos)
@@ -1253,7 +1307,10 @@ class Number(Expr):
         '''
         * Descripción de la función:
         * Variables de entrada:
-        * Variables de salida:
+            - VariableRobot :
+            - tablaSimbolos : Apuntador a la tabla de Símbolos a partir de la 
+              cual se buscarán la información asociada a VariableRobot.
+        * Variables de salida: Devuelve el entero encontrado en el nodo.
         '''
 
         resultado = self.value
@@ -1276,8 +1333,9 @@ class Booleano(Expr):
         * Descripción de la función:
         * Variables de entrada:
             - VariableRobot :
-            - tablaSimbolos :
-        * Variables de salida: Booleano 
+            - tablaSimbolos : Apuntador a la tabla de Símbolos a partir de la 
+              cual se buscarán la información asociada a VariableRobot.
+        * Variables de salida: Devuelve el booleano encontrado en el nodo.
         '''
 
         resultado = self.value
@@ -1303,10 +1361,12 @@ class Identificadores(Expr):
 
     def evaluar(self,VariableRobot,tablaSimbolos):
         '''
-        * Descripción de la función:
+        * Descripción de la función: Devuelve el valor encontrado en 
+          un nodo de tipo Identificadores.
         * Variables de entrada:
             - VariableRobot : 
-            - tablaSimbolos : 
+            - tablaSimbolos : Apuntador a la tabla de Símbolos a partir de la 
+              cual se buscarán la información asociada a VariableRobot.
         * Variables de salida:
             - resultado :
         '''
@@ -1360,8 +1420,9 @@ class VariableMe(Expr):
         '''
         * Descripción de la función:
         * Variables de entrada:
-            - VariableRobot :
-            - tablaSimbolos :
+            - VariableRobot : 
+            - tablaSimbolos : Apuntador a la tabla de Símbolos a partir de la 
+              cual se buscarán la información asociada a VariableRobot.
         * Variables de salida:
             - resultado :
         '''
@@ -1401,12 +1462,15 @@ class Caracter(Expr):
 
     def evaluar(self,VariableRobot,tablaSimbolos):
         '''
-        * Descripción de la función:
+        * Descripción de la función: Devuelve el caracter encontrado en 
+          un nodo de tipo Caracter.
         * Variables de entrada:
-            - VariableRobot :
-            - tablaSimbolos :
+            - VariableRobot : Apuntador al nodo en el que se encuentra el 
+              caracter a devolver.
+            - tablaSimbolos : Apuntador a la tabla de Símbolos a partir de la 
+              cual se buscarán la información asociada a VariableRobot.
         * Variables de salida:
-            - resultado :
+            - resultado : Caracter encontrado en el nodo.
         '''
 
         resultado = self.value
