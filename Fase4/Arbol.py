@@ -1,7 +1,7 @@
 '''
 *
-* Universidad Simon Bolivar
-* Departamento de Computacion y Tecnologia de la Informacion
+* Universidad Simón Bolívar
+* Departamento de Computación y Tecnología de la Información
 * Traductores e Interpretadores - CI3725 (Laboratorio)
 *
 * Archivo: Arbol.py
@@ -10,42 +10,44 @@
 *     Alejandra Cordero / Carnet: 12-10645
 *     Pablo Maldonado   / Carnet: 12-10561
 *
-* Descripcion: Definicion de la clase Arbol.
+* Descripción: Definición de la clase Árbol.
 *
-*
-* Ultima modificacion: 12/02/2016
+* Última modificación: 30/03/2016
 *
 '''
 #------------------------------------------------------------------------------#
-#                            IMPORTE DE MODULOS                                #
+#                            IMPORTE DE MÓDULOS                                #
 #------------------------------------------------------------------------------#
 
 from TablaSimbolos import *
 import sys
 
 #------------------------------------------------------------------------------#
-#                        DEFINICION DE LA CLASE ARBOL                          #
+#                        DEFINICIÓN DE LA CLASE ÁRBOL                          #
 #------------------------------------------------------------------------------#
 
 class Expr: 
+    '''
+      * Descripción:
+    '''
 
-    ScopeActual = None
-    ultimo = None
-    Matriz = {}
+    ScopeActual = None  # 
+    ultimo = None       #
+    Matriz = {}         #
 
     def imprimirInstrucciones(self,numeroTabs):
         '''
-        * Descripción de la función: Esta funcion imprime las instrucciones del
-        arbol de instrucciones.
+        * Descripción de la función: Imprime las instrucciones del árbol de 
+          instrucciones.
         * Variables de entrada:
-            - numeroTabs: Numero de tabulaciones que tendran las impresiones.
-        * Variables de salida: Ninguna
+            - numeroTabs: Número de tabulaciones que tendrán las impresiones.
+        * Variables de salida: Ninguna.
         '''
         aux = self
 
         if(aux.sig != None):
-            espacio = "   "*numeroTabs
-            print(espacio+"SECUENCIACION")
+            espacio = "   " * numeroTabs
+            print(espacio + "SECUENCIACION")
 
         while (aux!= None):
             if (aux.type in {"ACTIVATE","DEACTIVATE","ADVANCE"}):
@@ -57,8 +59,7 @@ class Expr:
                     aux.imprimirCondicional(numeroTabs)
             else:
                 aux.imprimirAST(numeroTabs)
-            aux=aux.sig
-
+            aux = aux.sig
 
     def imprimirInstruccionesSimples(self,numeroTabs):
         '''
@@ -71,17 +72,16 @@ class Expr:
         '''
         espacio = "   "*numeroTabs
 
-        # Se imprime el tipo de la instruccion.
-        print(espacio+self.type)
-        # Se imprimen las identificadores de las instrucciones
-        numeroTabs+=1
-        espacio = "   "*numeroTabs
+        # Se imprime el tipo de la instrucción:
+        print(espacio + self.type)
+        # Se imprimen las identificadores de las instrucciones:
+        numeroTabs += 1
+        espacio = "   " * numeroTabs
         aux = self.Identificadores
 
         while (aux != None):
-            print(espacio+"- var:",aux.value)
+            print(espacio + "- var:",aux.value)
             aux = aux.sig
-
 
     def imprimirExpresionesBinarias(self,numeroTabs):
         '''
@@ -91,52 +91,57 @@ class Expr:
             - numeroTabs: Numero de tabulaciones que tendran las impresiones.
         * Variables de salida: Ninguna
         '''
-        numeroTabs+=1
-        espacio = "   "*numeroTabs
+        numeroTabs += 1
+        espacio = "   " * numeroTabs
         if (self != None):
-            if (self.type=="EXPRESION_BINARIA"):
-                print(espacio+"-operacion: ",self.op)
+            if (self.type == "EXPRESION_BINARIA"):
+                print(espacio + "-operacion: ",self.op)
 
                 if (self.left.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
-                    operadorIzquierdo=self.left.op
+                    operadorIzquierdo = self.left.op
       
                 else:
-                    operadorIzquierdo=self.left.value
+                    operadorIzquierdo = self.left.value
 
-                print(espacio+"-operador izquierdo:",operadorIzquierdo)
+                print(espacio + "-operador izquierdo:",operadorIzquierdo)
 
                 if (self.right.type in {"EXPRESION_BINARIA","OPERADOR_UNARIO"}):
-                    operadorDerecho=self.right.op
+                    operadorDerecho = self.right.op
 
                 else:
-                    operadorDerecho=self.right.value
+                    operadorDerecho = self.right.value
 
-                print(espacio+"-operador derecho:",operadorDerecho)
+                print(espacio + "-operador derecho:",operadorDerecho)
 
-                # Se llama recursivamente la funcion para imprimir
-                if (self.left.type=="EXPRESION_BINARIA"):
+                # Se llama recursivamente la funcion para imprimir:
+                if (self.left.type == "EXPRESION_BINARIA"):
                     self.left.imprimirExpresionesBinarias(numeroTabs)
-                elif(self.left.type=="OPERADOR_UNARIO"):
+                elif(self.left.type == "OPERADOR_UNARIO"):
                     self.left.value.imprimirExpresionesBinarias(numeroTabs)
 
-                if (self.right.type=="EXPRESION_BINARIA"):
+                if (self.right.type == "EXPRESION_BINARIA"):
                     self.right.imprimirExpresionesBinarias(numeroTabs)
-                elif(self.right.type=="OPERADOR_UNARIO"):
+                elif(self.right.type == "OPERADOR_UNARIO"):
                     self.right.value.imprimirExpresionesBinarias(numeroTabs)
 
             else:
-                print(espacio+"-expresion:",self.value)
+                print(espacio + "-expresion:",self.value)
 
     def buscar(self,identificador,tablaSimbolos):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         ultimo = tablaSimbolos
         scope = Expr.ScopeActual
         ident = identificador
 
-        while (scope!= None):
+        while (scope != None):
             resultado,tablaEncontrada = ultimo.buscar(ident)
 
-            if (resultado!=None):
+            if (resultado != None):
                 return resultado,tablaEncontrada
                 break
 
@@ -145,9 +150,12 @@ class Expr:
                 if (scope != None):
                     ultimo = scope.padre
 
-
-
     def verificarTipos(self,tipo,elemento):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         mismoTipo = False
 
@@ -163,21 +171,27 @@ class Expr:
         return mismoTipo
 
     def CorrerInstruccionesControlador(self,instrucciones,tabla,ident):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         aux = instrucciones
         while (aux!= None):
             aux.ejecutar(tabla,ident)
             aux = aux.sig
 
-
-
 #------------------------------------------------------------------------------#
-#                               RAIZ DEL AST                                   #
+#                               RAÍZ DEL AST                                   #
 #------------------------------------------------------------------------------#
 
 class RaizAST(Expr):
 
     def __init__(self,ArbolDeclaracion,ArbolInstruccion):
+        '''
+        * Descripción:
+        '''
         self.type = "RaizAST"
         self.arbolDeclaracion = ArbolDeclaracion
         self.arbolInstruccion = ArbolInstruccion
@@ -200,6 +214,11 @@ class RaizAST(Expr):
             aux.imprimirInstrucciones(numeroTabs)
 
     def inicializarTablas(self,tabla):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
         
         aux = tabla
 
@@ -213,6 +232,11 @@ class RaizAST(Expr):
             aux = aux.padre
 
     def ejecutar(self):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         if (self.arbolDeclaracion!= None):
             auxDeclaracion = self.arbolDeclaracion.listaDeclaraciones
@@ -229,46 +253,63 @@ class RaizAST(Expr):
         while (ultimo!=None):
             ultimo = ultimo.padre
             
-
         if (self.arbolDeclaracion!= None):
             auxDeclaracion.devolverScope()
     
-
 #------------------------------------------------------------------------------#
-#                      RAIZ DEL ARBOL DE DECLARACIONES                         #
+#                      RAÍZ DEL ÁRBOL DE DECLARACIONES                         #
 #------------------------------------------------------------------------------#
 
 class Create(Expr):
     def __init__(self,listaDeclaraciones):
+        '''
+        * Descripción:
+        '''
         self.type = "CREATE"
         self.listaDeclaraciones = listaDeclaraciones
  
 #------------------------------------------------------------------------------#
-#                      RAIZ DEL ARBOL DE INSTRUCCIONES                         #
+#                      RAÍZ DEL ÁRBOL DE INSTRUCCIONES                         #
 #------------------------------------------------------------------------------#
 
 class Execute(Expr):
     def __init__(self,listaInstrucciones):
+        '''
+        * Descripción:
+        '''
         self.type = "EXECUTE"
         self.Instrucciones = listaInstrucciones
         self.sig = None
 
 #------------------------------------------------------------------------------#
-#                         RAIZ LISTA DE DECLARACIONES                          #
+#                         RAÍZ LISTA DE DECLARACIONES                          #
 #------------------------------------------------------------------------------#
 
 class Inicio_Declaracion(Expr):
 
     def __init__(self,ultimo,scopeAnterior,listaDeclaraciones):
+        '''
+        * Descripción:
+        '''
         self.padre = ultimo
         self.scopeAnterior = scopeAnterior
         self.listaDeclaraciones = listaDeclaraciones
 
     def actualizarScope(self):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
         Expr.ScopeActual = self
         Expr.ultimo = self.padre
 
     def devolverScope(self):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
         Expr.ScopeActual = self.scopeAnterior
 
         if(self.scopeAnterior!=None):
@@ -285,12 +326,20 @@ class Store(Expr):
     ''' Nodo que almacena el apuntador del arbol de expresiones de la 
         instruccion STORE'''
     def __init__(self,listaExpresiones,numeroLinea):
+        '''
+        * Descripción:
+        '''
         self.type = "STORE"
         self.expresiones = listaExpresiones
         self.numeroLinea = numeroLinea
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         tablaPadre = tabla.padre
 
@@ -299,7 +348,7 @@ class Store(Expr):
             resultado, tablaEncontrada = self.buscar(VariableRobot,tablaPadre)
             variableParaAlmacenar = resultado[3]
 
-            # La variable me no tiene un valor asociado
+            # La variable me no tiene un valor asociado:
             if (variableParaAlmacenar == None):
                 print("Error en la linea",self.expresiones.numeroLinea,
                     ": la variable \'"+self.expresiones.value+
@@ -313,18 +362,25 @@ class Store(Expr):
         tablaPadre.tabla["me"][3] = variableParaAlmacenar
         tablaPadre.tabla[VariableRobot][3] = variableParaAlmacenar
 
-
 #------------------------------------------------------------------------------#
 
 class Drop(Expr):
-    ''' Nodo que almacena el apuntador del arbol de expresiones de la 
-        instruccion DROP'''
+    ''' Nodo que almacena el apuntador del árbol de expresiones de la 
+        instrucción DROP'''
     def __init__(self,listaExpresiones):
+        '''
+        * Descripción:
+        '''
         self.type = "DROP"
         self.expresiones = listaExpresiones
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         tablaPadre = tabla.padre
         tablaRobot = tablaPadre.tabla[VariableRobot]
@@ -345,19 +401,16 @@ class Drop(Expr):
         else:
             variableParaAlmacenar = self.expresiones.evaluar(VariableRobot,tabla)
 
-
         tipoCorrecto = self.verificarTipos(tipoRobot,variableParaAlmacenar)
 
-        # Se verifica soltado inadecuado.
+        # Se verifica soltado inadecuado:
         if(tipoCorrecto):
             Expr.Matriz[tuple(posicionRobot)] = variableParaAlmacenar
 
         else:
-            print("Error en la linea",self.expresiones.numeroLinea,
+            print("Error en la línea",self.expresiones.numeroLinea,
                 ": soltado inadecuado.")
             sys.exit()
-
-
 
 #------------------------------------------------------------------------------#
 
@@ -365,11 +418,19 @@ class Collect(Expr):
     ''' Nodo que almacena el apuntador de la lista de identificadores de la 
         instruccion COLLECT '''
     def __init__(self,identificador):
+        '''
+        * Descripción:
+        '''
         self.type = "COLLECT"
         self.identificador = identificador
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
         # Se busca la posición actual del robot:
         tablaPadre = tabla.padre
         posicionRobot = tablaPadre.tabla[VariableRobot][4]
@@ -379,7 +440,6 @@ class Collect(Expr):
         if (self.identificador != None):
             # Si hay presente un identificador, el tipo de este debe
             # coincidir con el tipo del robot:
-            #print("El identificador es",self.identificador.value)
             identificadorPresente = True
             variableParaActualizar = self.identificador.value
             tipoVariableParaActualizar = tabla.tabla[variableParaActualizar][0]
@@ -413,19 +473,25 @@ class Collect(Expr):
                     tablaPadre.tabla["me"][3] = valorMatriz
                     tablaPadre.tabla[VariableRobot][3] = valorMatriz
 
-
 #------------------------------------------------------------------------------#
 
 class Read(Expr):
-
     ''' Nodo que almacena el apuntador de la lista de identificadores de la 
         instruccion READ '''
     def __init__(self,identificador):
+        '''
+        * Descripción:
+        '''
         self.type = "READ"
         self.identificador = identificador
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         entrada = input("Introduzca el valor que desea guardar: ")
 
@@ -436,8 +502,7 @@ class Read(Expr):
         else:
             VariableAguardar= self.identificador.value
             
-
-        # Se verifica el tipo de la entrada
+        # Se verifica el tipo de la entrada:
         resultado = tabla.buscarLocal(VariableAguardar)
         tipoRobot = resultado[0]
 
@@ -448,18 +513,17 @@ class Read(Expr):
                 entrada = int(entrada)
             except:
                 print("Error: Entrada \'",entrada,
-                    "\' invalida para robot de tipo",tipoRobot)
+                    "\' inválida para robot de tipo",tipoRobot)
                 sys.exit()
-
 
         elif(tipoRobot == "char"):
 
             try:
-                assert(len(entrada)==1 or entrada in {"\\n","\\t","\\'"})
+                assert(len(entrada) == 1 or entrada in {"\\n","\\t","\\'"})
 
             except:
                 print("Error: Entrada \'",entrada,
-                    "\' invalida para robot de tipo",tipoRobot)
+                    "\' inválida para robot de tipo",tipoRobot)
                 sys.exit()
 
         elif (tipoRobot == "bool"):
@@ -468,15 +532,14 @@ class Read(Expr):
                 assert(entrada in {'true','false'})
             except:
                 print("Error: Entrada \'",entrada,
-                    "\' invalida para robot de tipo",tipoRobot)
+                    "\' inválida para robot de tipo",tipoRobot)
                 sys.exit()
 
-
-        # Se modifica el valor de la variable
+        # Se modifica el valor de la variable:
         tabla.tabla[VariableAguardar][3] = entrada
 
         # Si el read no tiene identificadores asociados el valor de la entrada
-        # se guarda en la variable me.
+        # se guarda en la variable me:
         if (self.identificador == None):
             tablaPadre = tabla.padre
             tabla.tabla["me"][3] = entrada
@@ -487,20 +550,36 @@ class Read(Expr):
 
 class Recieve(Expr):
     def __init__(self):
+        '''
+        * Descripción:
+        '''
         self.type = "RECIEVE"
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
         print("Recieve")
 
 #------------------------------------------------------------------------------#
     
 class Send(Expr):
     def __init__(self):
+        '''
+        * Descripción:
+        '''
         self.type = "SEND"
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         resultado = tabla.buscarLocal("me")
         valor = resultado[3]
@@ -519,42 +598,44 @@ class Send(Expr):
                 print("    ",end="")
 
             elif (valor in {"\'\\\'\'"}):
-                print("'",end="")
+                print("'",end = "")
 
-            elif (len(valor)>1):
-                print(str(valor[1]),end="")
+            elif (len(valor) > 1):
+                print(str(valor[1]),end = "")
 
             else:
-                print(valor,end="")
+                print(valor,end = "")
 
         elif (tipoVariable == "bool"):
             if (valor == True):
-                print("true",end="")
+                print("true",end = "")
             elif (valor == False):
-                print("false",end="")
+                print("false",end = "")
             else:
-                print(valor,end="")
+                print(valor,end = "")
 
         else:
-            print(valor,end="")
+            print(valor,end = "")
 
 #------------------------------------------------------------------------------#
 
 class Movimiento(Expr):
-    ''' Nodo que almacena la direccion del movimiento del robot '''
+    ''' Nodo que almacena la direccion del movimiento del robot.'''
     def __init__(self,tipo,listaExpresiones,numeroLinea):
+        '''
+        * Descripción:
+        '''
         self.type = tipo
         self.expresiones = listaExpresiones
         self.numeroLinea = numeroLinea
         self.sig = None
 
     def ejecutar(self,tabla,VariableRobot):
-
-        # Verificar si hay una expresion presente, sino mover uno
-        # Actualizar la posicion del robot en su variable 
-
-        # aca hay que verificar que sea una expresion numerica 
-        # no se si eso se hacia de antes 
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         if (self.expresiones != None):
 
@@ -592,9 +673,12 @@ class Movimiento(Expr):
 #------------------------------------------------------------------------------#
 
 class Condicion(Expr):
-    ''' Nodo que almacena el tipo de condicion de la lista de comportamiento 
+    ''' Nodo que almacena el tipo de condición de la lista de comportamiento.
     del robot '''
     def __init__(self,type,numeroLinea):
+        '''
+        * Descripción:
+        '''
         self.type = type
         self.numeroLinea = numeroLinea
         self.sig = None
@@ -602,8 +686,11 @@ class Condicion(Expr):
 #------------------------------------------------------------------------------#
 
 class ListaComportamiento(Expr):
-    ''' Lista de comportamiento del robot'''
+    ''' Lista de comportamiento del robot.'''
     def __init__(self,condicion,instrucciones,numeroLinea):
+        '''
+        * Descripción:
+        '''
         self.type = "Lista de comportamientos"
         self.condicion = condicion
         self.instrucciones = instrucciones
@@ -613,8 +700,11 @@ class ListaComportamiento(Expr):
 #------------------------------------------------------------------------------#
 
 class Declaraciones(Expr):
-    ''' Raiz del arbol de las variables declaradas en el programa '''
+    ''' Raíz del árbol de las variables declaradas en el programa.'''
     def __init__(self,tipoRobot,identificadores,listaComportamiento):
+        '''
+        * Descripción:
+        '''
         self.type = "DECLARACIONES"
         self.tipoRobot = tipoRobot
         self.identificadores = identificadores
@@ -630,11 +720,19 @@ class Activate(Expr):
     ''' Nodo que almacena el apuntador de la lista de identificadores de la 
         instruccion ACTIVATE '''
     def __init__(self,listaIdentificadores):
+        '''
+        * Descripción:
+        '''
         self.type = "ACTIVATE"
         self.Identificadores = listaIdentificadores
         self.sig = None
 
     def verificarActivacion(self):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         ident = self.Identificadores
         ultimo = Expr.ultimo
@@ -644,8 +742,8 @@ class Activate(Expr):
             resultado,tablaEncontrada = self.buscar(ident.value,ultimo)
 
             if (resultado[2] == 1):
-                print("Error en la linea",ident.numeroLinea,
-                    ": activacion ilegal del robot \'"+ident.value+"\'.")
+                print("Error en la línea",ident.numeroLinea,
+                    ": activación ilegal del robot \'"+ident.value+"\'.")
                 sys.exit()
 
             else:
@@ -654,16 +752,20 @@ class Activate(Expr):
             ident = ident.sig
 
     def ejecutar(self):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         ultimo = Expr.ultimo
         tablaLocal =  None
         self.verificarActivacion()
         identificador = self.Identificadores
 
+        while (identificador != None):
 
-        while (identificador!=None):
-
-            # Se busca la tabla de simbolos asociada a la variable.
+            # Se busca la tabla de simbolos asociada a la variable:
             resultado,tablaEncontrada = self.buscar(identificador.value,ultimo)
 
             ListaComportamiento = tablaEncontrada.instrucciones
@@ -677,7 +779,7 @@ class Activate(Expr):
             if (tablaLocal != None):
                 tablaLocal.tabla["me"] = resultado
 
-            while (ListaComportamiento!= None):
+            while (ListaComportamiento != None):
 
                 if (ListaComportamiento.condicion.type == "activation"):
                     instrucciones = ListaComportamiento.instrucciones
@@ -689,29 +791,36 @@ class Activate(Expr):
 
             identificador = identificador.sig
         
-
 #------------------------------------------------------------------------------#
 
 class Deactivate(Expr):
     ''' Nodo que almacena el apuntador de la lista de identificadores de la 
         instruccion DEACTIVATE '''
     def __init__(self,listaIdentificadores):
+        '''
+        * Descripción:
+        '''
         self.type = "DEACTIVATE"
         self.Identificadores = listaIdentificadores
         self.sig = None
 
     def verificarDesactivacion(self):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         ident = self.Identificadores
         ultimo = Expr.ultimo
         tablaEncontrada = None
 
-        while (ident!= None):
+        while (ident != None):
             resultado,tablaEncontrada = self.buscar(ident.value,ultimo)
 
             if (resultado[2] == 0):
-                print("Error en la linea",ident.numeroLinea,
-                    ": desactivacion ilegal del robot \'"+ident.value+"\'.")
+                print("Error en la línea",ident.numeroLinea,
+                    ": desactivación ilegal del robot \'" + ident.value + "\'.")
                 sys.exit()
 
             else:
@@ -719,18 +828,21 @@ class Deactivate(Expr):
 
             ident = ident.sig
 
-
     def ejecutar(self):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         ultimo = Expr.ultimo
         tablaLocal =  None
         self.verificarDesactivacion()
         identificador = self.Identificadores
 
+        while (identificador != None):
 
-        while (identificador!=None):
-
-            # Se busca la tabla de simbolos asociada a la variable.
+            # Se busca la tabla de símbolos asociada a la variable:
             resultado,tablaEncontrada = self.buscar(identificador.value,ultimo)
 
             ListaComportamiento = tablaEncontrada.instrucciones
@@ -744,38 +856,42 @@ class Deactivate(Expr):
             if (tablaLocal != None):
                 tablaLocal.tabla["me"] = resultado
 
-            while (ListaComportamiento!= None):
+            while (ListaComportamiento != None):
 
                 if (ListaComportamiento.condicion.type == "deactivation"):
 
                     instrucciones = ListaComportamiento.instrucciones
                     self.CorrerInstruccionesControlador(instrucciones,tablaLocal,
                                                         identificador.value)
-
                     break
 
                 ListaComportamiento = ListaComportamiento.sig
 
             identificador = identificador.sig
         
-
 #------------------------------------------------------------------------------#
 
 class Advance(Expr):
     ''' Nodo que almacena el apuntador de la lista de identificadores de la 
         instruccion ADVANCE '''
     def __init__(self,listaIdentificadores):
+        '''
+        * Descripción:
+        '''
         self.type = "ADVANCE"
         self.Identificadores = listaIdentificadores
 
         self.sig = None
 
     def verificarActivacion(self):
+        '''
+        * Descripción:
+        '''
 
         ident = self.Identificadores
         ultimo = Expr.ultimo
 
-        while (ident!= None):
+        while (ident != None):
 
             resultado,tablaEncontrada = self.buscar(ident.value,ultimo)
 
@@ -787,27 +903,29 @@ class Advance(Expr):
             ident = ident.sig
 
     def ejecutar(self):
+        '''
+        * Descripción:
+        '''
 
         ultimo = Expr.ultimo
         tablaLocal =  None
-        # Los robots que se avanzaran deben estar activados:
+        # Los robots que se avanzarán deben estar activados:
         self.verificarActivacion()
         identificador = self.Identificadores
-
 
         while (identificador != None):
 
             comportamientoEncontrado = 0
 
-            # Se busca la tabla de simbolos asociada a la variable.
+            # Se busca la tabla de simbolos asociada a la variable:
             resultado,tablaEncontrada = self.buscar(identificador.value,ultimo)
 
             ListaComportamiento = tablaEncontrada.instrucciones
             tablaEncontrada.tabla["me"] = resultado
             indiceTablaComportamiento = 0 
 
-            # Se busca un comportamiendo cuya condicion (es una expresion)
-            # retorne True
+            # Se busca un comportamiendo cuya condición (es una expresion)
+            # retorne True:
             while (ListaComportamiento!= None):
 
                 if (ListaComportamiento.condicion.type == "EXPRESION_BINARIA"):
@@ -821,11 +939,11 @@ class Advance(Expr):
                         comportamientoEncontrado = 1
                         instrucciones = ListaComportamiento.instrucciones
 
-                        # Se busca la tabla de simbolos de la lista de 
-                        # comportamientos
+                        # Se busca la tabla de símbolos de la lista de 
+                        # comportamientos:
                         for i in tablaEncontrada.hijos:
                             if (i.tipo == "EXPRESION_BINARIA" and 
-                                tablaEncontrada.hijos.index(i) ==\
+                                tablaEncontrada.hijos.index(i) == \
                                 indiceTablaComportamiento):
                                tablaLocal = i
                                break
@@ -834,13 +952,13 @@ class Advance(Expr):
                 ListaComportamiento = ListaComportamiento.sig
                 indiceTablaComportamiento = indiceTablaComportamiento + 1
 
-            # Si no se encuentra un comportamiendo cuya condicion (es una expresion)
-            # retorne True se busca la lista de comportamiento cuya condicion
-            # sea default.
+            # Si no se encuentra un comportamiendo cuya condición (es una expresión)
+            # retorne True se busca la lista de comportamiento cuya condición
+            # sea default:
 
             if (comportamientoEncontrado != 1):
                 ListaComportamiento = tablaEncontrada.instrucciones
-                while (ListaComportamiento!=None):
+                while (ListaComportamiento != None):
 
                     if (ListaComportamiento.condicion.type == "default"):
                         comportamientoEncontrado = 1
@@ -852,22 +970,21 @@ class Advance(Expr):
                             if (i.tipo == "default"):
                                 tablaLocal = i
                                 break
-
                         break
                     ListaComportamiento = ListaComportamiento.sig
 
             if (comportamientoEncontrado == 0):
-                print("Error: El robot \'"+identificador.value+
+                print("Error: El robot \'" + identificador.value +
                     "\' no posee comportamientos para realizar un \'advance\'.")
                 sys.exit()
 
             else:
                 # Si existe una tabla de simbolos ligada a la lista de 
-                # comportamiento se actualiza la variable me de dicha tabla.
+                # comportamiento se actualiza la variable me de dicha tabla:
                 if (tablaLocal != None):
                     tablaLocal.tabla["me"] = resultado
 
-                # Se corren las instrucciones del controlador.
+                # Se corren las instrucciones del controlador:
                 self.CorrerInstruccionesControlador(instrucciones,tablaLocal,
                                                     identificador.value)
 
@@ -876,9 +993,12 @@ class Advance(Expr):
 #------------------------------------------------------------------------------#
 
 class While(Expr):
-    ''' Raiz del arbol de instrucciones y expresiones de la iteracion
+    ''' Raiz del árbol de instrucciones y expresiones de la iteración
          indeterminada '''
     def __init__(self,listaExpresiones,listaInstrucciones):
+        '''
+        * Descripción:
+        '''
         self.type = "ITERACION INDETERMINADA"
         self.expresiones = listaExpresiones
         self.InstruccionesWhile = listaInstrucciones
@@ -886,42 +1006,42 @@ class While(Expr):
 
     def imprimirWhile(self,numeroTabs):
         '''
-        * Descripción de la función: Esta funcion se encarga de imprimir
+        * Descripción de la función: Esta función se encarga de imprimir
         la instruccion WHILE con su guardia y sus instrucciones.
         * Variables de entrada:
-            - numeroTabs: Numero de tabulaciones que tendran las impresiones.
-        * Variables de salida: Ninguna
+            - numeroTabs: Número de tabulaciones que tendrán las impresiones.
+        * Variables de salida: Ninguna.
         '''
-        # Se calcula el numero de tabs para la instruccion WHILE
-        espacio = "   "*numeroTabs
-        numeroTabs+=1
+        # Se calcula el número de tabs para la instruccion WHILE:
+        espacio = "   " * numeroTabs
+        numeroTabs += 1
 
-        # Se imprime un WHILE
+        # Se imprime un WHILE:
         print(espacio+self.type)
 
-        espacio = "   "*numeroTabs
-        print(espacio+"-guardia :",self.expresiones.type)
+        espacio = "   " * numeroTabs
+        print(espacio + "-guardia :",self.expresiones.type)
 
-        # Numero de tabs para las expresiones
-        numeroTabsExpr=numeroTabs+1         
-        if(self.expresiones.type=="OPERADOR_UNARIO"):
+        # Numero de tabs para las expresiones:
+        numeroTabsExpr = numeroTabs + 1         
+        if(self.expresiones.type == "OPERADOR_UNARIO"):
             expr = self.expresiones.value
 
-            # Se calcula una nueva cantidad de tabs para las expresiones
-            numeroTabs2= numeroTabs+1
-            espacio2 = "   "*numeroTabs2
-            numeroTabsExpr=numeroTabs2
+            # Se calcula una nueva cantidad de tabs para las expresiones:
+            numeroTabs2 = numeroTabs + 1
+            espacio2 = "   " * numeroTabs2
+            numeroTabsExpr = numeroTabs2
 
-            print(espacio2+"-operador unario:",self.expresiones.op)
+            print(espacio2 + "-operador unario:",self.expresiones.op)
             
         else:
             expr = self.expresiones
 
         expr.imprimirExpresionesBinarias(numeroTabsExpr)
 
-        # Numero de tabs para las instrucciones
-        numeroTabs+=1
-        print(espacio+"-instrucciones:")
+        # Número de tabs para las instrucciones:
+        numeroTabs += 1
+        print(espacio + "-instrucciones:")
         self.InstruccionesWhile.imprimirInstrucciones(numeroTabs)
 
     def ejecutar(self):
@@ -931,7 +1051,7 @@ class While(Expr):
         if (resultado == True):
             while True:
                 aux = self.InstruccionesWhile
-                while (aux!=None):
+                while (aux != None):
                     aux.ejecutar()
                     aux = aux.sig
 
@@ -945,6 +1065,9 @@ class While(Expr):
 class Condicional(Expr):
     ''' Raiz del arbol de instrucciones y expresiones del condicional '''
     def __init__(self,listaExpresiones,exito,fracaso):
+        '''
+        * Descripción:
+        '''
         self.type = "CONDICIONAL"
         self.expresionesCondicional = listaExpresiones
         self.exito = exito
@@ -960,43 +1083,48 @@ class Condicional(Expr):
         * Variables de salida: Ninguna
         '''
 
-        # Se calcula el numero de tabs para la instruccion IF
+        # Se calcula el número de tabs para la instruccion IF:
         espacio = "   "*numeroTabs
-        print(espacio+self.type)
+        print(espacio + self.type)
 
-        # Se calcula el numero de tabs para la guardia del IF
-        numeroTabs+=1
+        # Se calcula el número de tabs para la guardia del IF:
+        numeroTabs += 1
         espacio = "   "*numeroTabs
 
-        print(espacio+"-guardia :",self.expresionesCondicional.type)
+        print(espacio + "-guardia :",self.expresionesCondicional.type)
 
-        # Se calcula el numero de tabs para las expresiones
+        # Se calcula el número de tabs para las expresiones:
         numeroTabs2 = numeroTabs + 1
-        espacio2 = "   "*numeroTabs2
+        espacio2 = "   " * numeroTabs2
         numeroTabsExpr = numeroTabs
 
-        if(self.expresionesCondicional.type=="OPERADOR_UNARIO"):
+        if(self.expresionesCondicional.type == "OPERADOR_UNARIO"):
 
-            # Se recalcula el numero de tabs para las expresiones
+            # Se recalcula el numero de tabs para las expresiones:
             expr = self.expresionesCondicional.value
             numeroTabsExpr = numeroTabs2
-            print(espacio2+"-operador unario:",self.expresionesCondicional.op)
+            print(espacio2 + "-operador unario:",self.expresionesCondicional.op)
 
         else:
             expr = self.expresionesCondicional
 
 
         expr.imprimirExpresionesBinarias(numeroTabsExpr)
-        print(espacio+"-exito:")
+        print(espacio + "-exito:")
 
-        numeroTabs+=1    # Numero de tabs para las instrucciones del IF
+        numeroTabs += 1 # Número de tabs para las instrucciones del IF:
         self.exito.imprimirInstrucciones(numeroTabs)
 
-        if(self.fracaso!=None):
-            print(espacio+"-fracaso:")
+        if(self.fracaso != None):
+            print(espacio + "-fracaso:")
             self.fracaso.imprimirInstrucciones(numeroTabs)
 
     def ejecutar(self):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         tabla = Expr.ultimo
         resultado = self.expresionesCondicional.evaluar(None,tabla)
@@ -1012,14 +1140,16 @@ class Condicional(Expr):
             aux.ejecutar()
             aux = aux.sig
 
-
 #------------------------------------------------------------------------------#
 #                               EXPRESIONES                                    #
 #------------------------------------------------------------------------------#
 
 class ExpresionBinaria(Expr):
-    ''' Raiz del arbol de las expresiones binarias '''
+    ''' Raiz del árbol de las expresiones binarias '''
     def __init__(self,left,op,right,linea):
+        '''
+        * Descripción:
+        '''
         self.type = "EXPRESION_BINARIA"
         self.left = left
         self.right = right
@@ -1027,7 +1157,11 @@ class ExpresionBinaria(Expr):
         self.numeroLinea = linea
 
     def evaluar(self,VariableRobot,tablaSimbolos):
-
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
       
         resultadoIzq = self.left.evaluar(VariableRobot,tablaSimbolos)
         resultadoDer = self.right.evaluar(VariableRobot,tablaSimbolos)
@@ -1039,11 +1173,9 @@ class ExpresionBinaria(Expr):
             return resultadoIzq - resultadoDer
 
         elif (self.op == "/"):
-
             if (resultadoDer == 0):
-                print("Error en la linea",self.numeroLinea,": division entre 0.")
+                print("Error en la línea",self.numeroLinea,": división entre 0.")
                 sys.exit()
-
             return resultadoIzq / resultadoDer
 
         elif (self.op == "*"):
@@ -1062,7 +1194,6 @@ class ExpresionBinaria(Expr):
             return resultadoIzq != resultadoDer
 
         elif (self.op == "="):
-
             return resultadoIzq == resultadoDer
 
         elif (self.op == "<="):
@@ -1077,18 +1208,25 @@ class ExpresionBinaria(Expr):
         elif (self.op == "\\/"):
             return resultadoIzq or resultadoDer
 
-    
 #------------------------------------------------------------------------------#
 
 class OperadorUnario(Expr):
     ''' Raiz del arbol de las expresiones unarias '''
     def __init__(self,op,value,numeroLinea):
+        '''
+        * Descripción:
+        '''
         self.type = "OPERADOR_UNARIO"
         self.op = op
         self.value = value
         self.numeroLinea = numeroLinea
 
     def evaluar(self,VariableRobot,tablaSimbolos):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         resultado = self.value.evaluar(VariableRobot,tablaSimbolos)
 
@@ -1103,11 +1241,19 @@ class OperadorUnario(Expr):
 class Number(Expr):
     ''' Nodo que almacena los numeros del programa '''
     def __init__(self,value,numeroLinea):
+        '''
+        * Descripción:
+        '''
         self.type = "int"
         self.value = value
         self.numeroLinea = numeroLinea
 
     def evaluar(self,VariableRobot,tablaSimbolos):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         resultado = self.value
         return int(resultado)
@@ -1117,11 +1263,19 @@ class Number(Expr):
 class Booleano(Expr):
     ''' Nodo que almacena los booleanos del programa (true y false) '''
     def __init__(self,value,numeroLinea):
+        '''
+        * Descripción:
+        '''
         self.type = "bool"
         self.value = value
         self.numeroLinea = numeroLinea
 
     def evaluar(self,VariableRobot,tablaSimbolos):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         resultado = self.value
 
@@ -1136,19 +1290,27 @@ class Identificadores(Expr):
     ''' Nodo que almacena los identificadores del programa '''
 
     def __init__(self,value,linea):
+        '''
+        * Descripción: Constructor de la clase Identificadores.
+        '''
         self.type = "ident"
         self.value = value
         self.numeroLinea = linea
         self.sig = None
 
     def evaluar(self,VariableRobot,tablaSimbolos):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         result,tabla = self.buscar(self.value,tablaSimbolos)
         tipo = result[0]
         resultado = result[3]
 
         if (resultado != None):
-            if (tipo== "int"):
+            if (tipo == "int"):
                 return int(resultado)
 
             elif (tipo == "bool"):
@@ -1163,16 +1325,16 @@ class Identificadores(Expr):
 
         else:
 
-            # El robot no esta activo. 
-            if (result[1]=="robot" and result[2]!=1):
-                print("Error en la linea",self.numeroLinea,": el robot \'"+
-                    self.value+"\' no ha sido activado.")
+            # El robot no está activo:
+            if (result[1] == "robot" and result[2]!=1):
+                print("Error en la línea",self.numeroLinea,": el robot \'" +
+                    self.value + "\' no ha sido activado.")
                 sys.exit()
 
-            # No hay un valor asociado a la variable.
+            # No hay un valor asociado a la variable:
             else:
-                print("Error en la linea",self.numeroLinea,": la variable \'"
-                    +self.value+"\' no tiene valor asociado.")
+                print("Error en la línea",self.numeroLinea,": la variable \'"
+                    + self.value + "\' no tiene valor asociado.")
                 sys.exit()
 
 #------------------------------------------------------------------------------#
@@ -1180,18 +1342,26 @@ class Identificadores(Expr):
 class VariableMe(Expr):
     ''' Nodo que almacena la variable me programa '''
     def __init__(self,value,linea):
+        '''
+        * Descripción: Constructor de la clase VariableMe
+        '''
         self.type = "me"
         self.value = value
         self.numeroLinea = linea
         self.sig = None
 
     def evaluar(self,VariableRobot,tablaSimbolos):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         result,tabla = self.buscar(VariableRobot,tablaSimbolos)
         tipo = result[0]
         resultado = result[3]
         if (resultado != None):
-            if (tipo== "int"):
+            if (tipo == "int"):
                 return int(resultado)
 
             elif (tipo == "bool"):
@@ -1203,10 +1373,9 @@ class VariableMe(Expr):
 
             elif (tipo == "char"):
                 return resultado
-
         else:
-            print("Error en la linea",self.numeroLinea,": la variable \'"
-                +self.value+"\' no tiene valor asociado.")
+            print("Error en la línea",self.numeroLinea,": la variable \'"
+                + self.value + "\' no tiene valor asociado.")
             sys.exit()
 
 #------------------------------------------------------------------------------#
@@ -1214,18 +1383,21 @@ class VariableMe(Expr):
 class Caracter(Expr):
     ''' Nodo que almacena los caracteres del programa '''
     def __init__(self,value,numeroLinea):
+        '''
+        * Descripción: Constructor de la clase Caracter.
+        '''
         self.type = "char"
         self.value = value
         self.numeroLinea = numeroLinea
 
     def evaluar(self,VariableRobot,tablaSimbolos):
+        '''
+        * Descripción de la función:
+        * Variables de entrada:
+        * Variables de salida:
+        '''
 
         resultado = self.value
         return resultado
 
-
-
 #------------------------------------------------------------------------------#
-
-
-

@@ -1,7 +1,7 @@
 '''
 *
-* Universidad Simon Bolivar
-* Departamento de Computacion y Tecnologia de la Informacion
+* Universidad Simón Bolívar
+* Departamento de Computación y Tecnología de la Información
 * Traductores e Interpretadores - CI3725 (Laboratorio)
 *
 * Archivo: Lexer.py
@@ -10,15 +10,15 @@
 *     Alejandra Cordero / Carnet: 12-10645
 * 	  Pablo Maldonado   / Carnet: 12-10561
 *
-* Descripcion: Definicion de la clase Lexer.
+* Descripción: Definición de la clase Lexer.
 *
 *
-* Ultima modificacion: 12/02/2016
+* Última modificación: 30/03/2016
 *
 '''
 
 #------------------------------------------------------------------------------#
-#					         IMPORTE DE MODULOS				          		   #
+#					         IMPORTE DE MÓDULOS				          		   #
 #------------------------------------------------------------------------------#
 
 import sys
@@ -27,12 +27,12 @@ from Tokens import *
 import ply.lex as lex
 
 #------------------------------------------------------------------------------#
-#					     DEFINICION DE LA CLASE LEXER				           #
+#					     DEFINICIÓN DE LA CLASE LEXER				           #
 #------------------------------------------------------------------------------#
 
 class Lexer():
 
-	def __init__(self,data=None):
+	def __init__(self,data = None):
 		'''
 		Descripción de la función: Clase Lexer.
 		Variables de entrada:
@@ -110,7 +110,7 @@ class Lexer():
 	   'TkErrorNum'
 	] + list(reserved.values())
 
-	# Expresiones regulares para tokens simples.
+	# Expresiones regulares para tokens simples:
 	t_TkComa		 = r','
 	t_TkPunto        = r'\.'
 	t_TkDosPuntos    = r'\:'
@@ -132,11 +132,14 @@ class Lexer():
 	t_TkDesigual     = r'/='
 
 
-	# Ignora los tabs y espacios
+	# Se ignoran los tabs y espacios:
 	t_ignore  = ' \t'
 
 #------------------------------------------------------------------------------#
 
+	# Descripción de la función: Regla detectar un error de la forma
+	# (al menos número o un _) seguido de al menos una letra (mayúscula o 
+	# minúscula). Ejemplo: _9a
 	def t_TkErrorNum(self,t):
 
 		r'[\d_]+[a-zA-Z_]+'
@@ -146,7 +149,7 @@ class Lexer():
 #------------------------------------------------------------------------------#
 
 	# Descripción de la función: Regla para tokens correspondientes
-	# a numeros.
+	# a números.
 	def t_TkNum(self,t):
 		r'\d+'
 		t.value = int(t.value)
@@ -154,9 +157,9 @@ class Lexer():
 
 #------------------------------------------------------------------------------#
 
-	# Descripción de la función:	Regla para conjuntos de caracteres. 
-	# Si el caracter es igual a algun caracter reservado entonces t.type 
-	# sera igual al del caracter reservado,de no ser igual a ningun 
+	# Descripción de la función: Regla para conjuntos de caracteres. 
+	# Si el caracter es igual a algún carácter reservado entonces t.type 
+	# será igual al del carácter reservado, de no ser igual a ningún 
 	# caracter reservado entonces t.type sera igual a TkIdent.
 	def t_TkIdent(self,t):
 
@@ -166,7 +169,7 @@ class Lexer():
 
 #------------------------------------------------------------------------------#
 
-	# Descripción de la función:Regla para contar los numeros de linea.
+	# Descripción de la función: Regla para contar los números de línea.
 	def t_newline(self,t):
 
 		r'\n+'
@@ -175,7 +178,7 @@ class Lexer():
 #------------------------------------------------------------------------------#
 
 	# Descripción de la función: Reglas para los comentarios.
-	# Los tokens obtenidos por esta expresion regular seran omitidos.
+	# Los tokens obtenidos por esta expresión regular serán omitidos.
 	def t_TkComment(self,t):
 		r'(\$-(.|\n)*?-\$)|(\$\$.*)'
 		t.lexer.lineno += t.value.count('\n')
@@ -183,14 +186,15 @@ class Lexer():
 
 #------------------------------------------------------------------------------#
 
-	# Descripción de la función: Reglas para caracteres. Este token solo 
+	# Descripción de la función: Reglas para caracteres. Este token sólo 
 	# toma caracteres encerrados entre comillas simples.
 	def t_TkCaracter(self,t):
 		r"'\\n'| '\\t' | '\\'' | '.'"
 		return t
 
 #------------------------------------------------------------------------------#
-	# Descripción de la función: Funcion para localizar el numero de 
+
+	# Descripción de la función: Función para localizar el número de 
 	# columna de una palabra.
 	def NumeroColumna(self,input,token):
 
@@ -200,24 +204,24 @@ class Lexer():
 
 #------------------------------------------------------------------------------#
 
-	# Descripción de la función: Funcion para el manejo de errores .
+	# Descripción de la función: Función para el manejo de errores.
 	def t_error(self,t):
 
 		ErrorEncontrado = token(None,t.value[0],\
 			t.lineno,self.NumeroColumna(self.data,t))
-		self.Errores+=[ErrorEncontrado] 
+		self.Errores += [ErrorEncontrado] 
 		t.lexer.skip(1)
 #------------------------------------------------------------------------------#
 
 	# Descripción de la función: Constructor del lexer.
 	def build(self,**kwargs):
 
-		self.lexer = lex.lex(module=self, **kwargs)
+		self.lexer = lex.lex(module = self, **kwargs)
 		return self.lexer
 
 #------------------------------------------------------------------------------#
 
-	# Descripción de la función: Funcion que tokeniza entrada.
+	# Descripción de la función: Función que tokeniza entrada.
 	def tokenizar(self):
 		
 		self.lexer.input(self.data)
@@ -227,21 +231,19 @@ class Lexer():
 				self.build()
 				break
 
-			if ( tok.type=="TkErrorNum" ):
+			if (tok.type == "TkErrorNum"):
 				NodoError = token(None,tok.value,tok.lineno,\
 					self.NumeroColumna(self.data,tok))
-				self.Errores+=[NodoError]
+				self.Errores += [NodoError]
 
 			elif ( tok.type in {"TkNum","TkIdent","TkCaracter"} ):
 				NodoToken = token(tok.type,tok.value,tok.lineno,\
 					self.NumeroColumna(self.data,tok))
-				self.Tokens+=[NodoToken]  
+				self.Tokens += [NodoToken]  
 
 			else:
 				NodoToken = token(tok.type,None,tok.lineno,\
 					self.NumeroColumna(self.data,tok))
-				self.Tokens+=[NodoToken] 
+				self.Tokens += [NodoToken] 
 				
 #------------------------------------------------------------------------------#   
-
-
