@@ -604,12 +604,7 @@ class Recieve(Expr):
 
         entrada = input("Introduzca el valor que desea guardar: ")
 
-        if (self.identificador == None):
-
-            VariableAguardar = "me"
-
-        else:
-            VariableAguardar= self.identificador.value
+        VariableAguardar = "me"
             
         # Se verifica el tipo de la entrada:
         resultado = tabla.buscarLocal(VariableAguardar)
@@ -647,13 +642,10 @@ class Recieve(Expr):
         # Se modifica el valor de la variable:
         tabla.tabla[VariableAguardar][3] = entrada
 
-        # Si el read no tiene identificadores asociados el valor de la entrada
-        # se guarda en la variable me:
-        if (self.identificador == None):
-            tablaPadre = tabla.padre
-            tabla.tabla["me"][3] = entrada
-            tablaPadre.tabla[VariableRobot][3] = entrada
-            tablaPadre.tabla["me"][3] = entrada
+        tablaPadre = tabla.padre
+        tabla.tabla["me"][3] = entrada
+        tablaPadre.tabla[VariableRobot][3] = entrada
+        tablaPadre.tabla["me"][3] = entrada
 
 #------------------------------------------------------------------------------#
     
