@@ -43,9 +43,9 @@ class TablaSimbolos():
 	def buscar(self,variable):
 		'''
 		* Descripción de la función: Busca un elemento en las Tablas de 
-		  Símbolos de los scopes definidos.
+		  Símbolos del scope actual.
 		* Variables de entrada:
-			- variable : Elemento a buscar en los scopes definidos.
+			- variable : Elemento a buscar en el scope actual.
 		* Variables de salida: Si encuentra al elemento buscado en alguno de 
 		  los scopes definidos, devuelve la información asociada a él de la 
 		  tabla de símbolos. En caso contrario devuelve None.
@@ -64,8 +64,8 @@ class TablaSimbolos():
 
 	def buscarLocal(self,variable):
 		'''
-		* Descripción de la función: Busca un elemento en las Tablas de 
-		  Símbolos del scope local.
+		* Descripción de la función: Busca un elemento en la Tabla de Símbolos
+		  de la cuál es llamada la función.
 		* Variables de entrada:
 			- variable : Elemento a buscar en el scope local.
 		* Variables de salida: Si encuentra al elemento buscado en el scope 
