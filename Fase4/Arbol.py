@@ -545,7 +545,7 @@ class Read(Expr):
                 assert(int(entrada) or entrada == "0")
                 entrada = int(entrada)
             except:
-                print("Error: Entrada \'",entrada,
+                print("Error: Entrada \'" + entrada +
                     "\' inválida para robot de tipo",tipoRobot)
                 sys.exit()
 
@@ -555,7 +555,7 @@ class Read(Expr):
                 assert(len(entrada) == 1 or entrada in {"\\n","\\t","\\'"})
 
             except:
-                print("Error: Entrada \'",entrada,
+                print("Error: Entrada \'" + entrada +
                     "\' inválida para robot de tipo",tipoRobot)
                 sys.exit()
 
@@ -564,7 +564,7 @@ class Read(Expr):
             try:
                 assert(entrada in {'true','false'})
             except:
-                print("Error: Entrada \'",entrada,
+                print("Error: Entrada \'" + entrada +
                     "\' inválida para robot de tipo",tipoRobot)
                 sys.exit()
 
@@ -616,7 +616,7 @@ class Recieve(Expr):
                 assert(int(entrada) or entrada == "0")
                 entrada = int(entrada)
             except:
-                print("Error: Entrada \'",entrada,
+                print("Error: Entrada \'" + entrada +
                     "\' inválida para robot de tipo",tipoRobot)
                 sys.exit()
 
@@ -626,7 +626,7 @@ class Recieve(Expr):
                 assert(len(entrada) == 1 or entrada in {"\\n","\\t","\\'"})
 
             except:
-                print("Error: Entrada \'",entrada,
+                print("Error: Entrada \'" + entrada +
                     "\' inválida para robot de tipo",tipoRobot)
                 sys.exit()
 
@@ -635,7 +635,7 @@ class Recieve(Expr):
             try:
                 assert(entrada in {'true','false'})
             except:
-                print("Error: Entrada \'",entrada,
+                print("Error: Entrada \'" + entrada +
                     "\' inválida para robot de tipo",tipoRobot)
                 sys.exit()
 
